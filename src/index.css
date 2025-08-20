@@ -4,14 +4,13 @@
 
 body {
   margin: 0;
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen",
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000000;
-  color: #ffffff;
-  line-height: 1.5;
+  background-color: #0f172a;
+  color: #fff;
 }
 
 code {
@@ -19,95 +18,20 @@ code {
     monospace;
 }
 
-/* Custom colors and styles based on the detailed report */
-:root {
-  --bg-dark: #000000;
-  --bg-card: #121212;
-  --bg-darker: #050505;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --accent-gold: #ffd700;
-  --accent-teal: #00ffff;
-  --accent-green: #00ff00;
-  --accent-red: #ff4757;
-  --accent-blue: #1e90ff;
-  --accent-orange: #ffa500;
-  --accent-purple: #9370db;
-  --accent-pink: #ff1493;
-  --border-color: #2a2a2a;
-  --card-beige: #fff3e0;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: bold;
+::-webkit-scrollbar-track {
+  background: #1e293b;
 }
 
-h1 {
-  font-size: 24px;
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
 }
 
-h2 {
-  font-size: 20px;
-}
-
-h3 {
-  font-size: 18px;
-}
-
-.body-text {
-  font-size: 16px;
-}
-
-.small-text {
-  font-size: 12px;
-}
-
-/* Borders and rounding */
-.rounded-small {
-  border-radius: 8px;
-}
-
-.rounded-medium {
-  border-radius: 16px;
-}
-
-.rounded-pill {
-  border-radius: 24px;
-}
-
-.rounded-circle {
-  border-radius: 50%;
-}
-
-/* Spacing */
-.section-spacing {
-  margin-bottom: 20px;
-}
-
-.card-padding {
-  padding: 16px;
-}
-
-.icon-text-gap {
-  margin-left: 8px;
-}
-
-/* Custom background patterns */
-.diamond-pattern {
-  background-image: linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.1) 25%,
-      transparent 25%
-    ),
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
