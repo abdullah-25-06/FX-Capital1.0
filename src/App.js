@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Header from "./components/Header";
 import Navigation from "./components/Navigation";
 import Dashboard from "./components/Dashboard";
@@ -10,10 +11,12 @@ import Settings from "./components/Settings";
 import AuthModal from "./components/AuthModal";
 import Sidebar from "./components/Sidebar";
 
-function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const { isAuthenticated, user, logout } = useAuth();
 
   const renderContent = () => {
     const commonProps = { setShowSidebar };
@@ -30,9 +33,7 @@ function App() {
       case "assets":
         return <Assets {...commonProps} />;
       case "settings":
-        return (
-          <Settings {...commonProps} setShowAuthModal={setShowAuthModal} />
-        );
+        return <Settings {...commonProps} />;
       default:
         return <Dashboard {...commonProps} />;
     }
@@ -43,20 +44,56 @@ function App() {
     setShowSidebar(false);
   };
 
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    setActiveTab("dashboard");
+  };
+
+  const handleAuthAction = (mode) => {
+    setAuthMode(mode);
+    setShowAuthModal(true);
+  };
+
   return (
     <div className='App min-h-screen bg-poloniex-section text-poloniex-text'>
-      <Header setShowSidebar={setShowSidebar} />
+      <Header
+        setShowSidebar={setShowSidebar}
+        isAuthenticated={isAuthenticated}
+        user={user}
+        onLogout={logout}
+        onLogin={() => handleAuthAction("login")}
+        onSignup={() => handleAuthAction("signup")}
+      />
       <div className='container mx-auto px-4 py-6 pb-20'>{renderContent()}</div>
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
-      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      {showAuthModal && (
+        <AuthModal
+          mode={authMode}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
       {showSidebar && (
         <Sidebar
           activeTab={activeTab}
           onNavigate={handleNavigation}
           onClose={() => setShowSidebar(false)}
+          isAuthenticated={isAuthenticated}
+          user={user}
+          onLogin={() => handleAuthAction("login")}
+          onSignup={() => handleAuthAction("signup")}
+          onLogout={logout}
         />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

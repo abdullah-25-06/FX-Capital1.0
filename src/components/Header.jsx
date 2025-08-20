@@ -1,6 +1,13 @@
 import React from "react";
 
-const Header = ({ setShowSidebar }) => {
+const Header = ({
+  setShowSidebar,
+  isAuthenticated,
+  user,
+  onLogout,
+  onLogin,
+  onSignup,
+}) => {
   return (
     <header className='bg-dark py-3 px-6 diamond-pattern'>
       <div className='container mx-auto flex justify-between items-center'>
@@ -42,8 +49,33 @@ const Header = ({ setShowSidebar }) => {
         </div>
 
         <div className='flex items-center space-x-4'>
-          <span className='text-sm text-teal'>1058788[Anas Naeem]</span>
-          <button className='bg-red text-white px-3 py-1 rounded-small text-sm font-medium'>
+          {isAuthenticated ? (
+            <>
+              <span className='text-sm text-teal'>{user?.name}</span>
+              <button
+                onClick={onLogout}
+                className='bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors'
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={onLogin}
+                className='text-teal hover:text-white px-3 py-1 text-sm font-medium transition-colors'
+              >
+                Login
+              </button>
+              <button
+                onClick={onSignup}
+                className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors'
+              >
+                Sign Up
+              </button>
+            </>
+          )}
+          <button className='bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors'>
             Exit
           </button>
         </div>
