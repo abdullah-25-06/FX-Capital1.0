@@ -9,8 +9,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa;
-  color: #333;
+  background-color: #0a0a0a;
+  color: #ffffff;
 }
 
 code {
@@ -18,48 +18,63 @@ code {
     monospace;
 }
 
-/* Custom styles for exact design matching */
-.bg-poloniex-header {
-  background-color: #1666f6;
+/* Custom colors based on the report */
+:root {
+  --bg-dark: #0a0a0a;
+  --bg-darker: #050505;
+  --bg-card: #121212;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --accent-gold: #ffd700;
+  --accent-teal: #00ffff;
+  --accent-green: #00ff00;
+  --accent-red: #ff4757;
+  --accent-blue: #1e90ff;
+  --accent-orange: #ffa500;
+  --accent-pink: #ff1493;
+  --border-color: #2a2a2a;
 }
 
-.bg-poloniex-light {
-  background-color: #ffffff;
+.bg-dark {
+  background-color: var(--bg-dark);
 }
 
-.bg-poloniex-section {
-  background-color: #f8f9fa;
+.bg-darker {
+  background-color: var(--bg-darker);
 }
 
-.text-poloniex-blue {
-  color: #1666f6;
+.bg-card {
+  background-color: var(--bg-card);
 }
 
-.border-poloniex {
-  border-color: #e9ecef;
+.text-gold {
+  color: var(--accent-gold);
 }
 
-.btn-poloniex {
-  background-color: #1666f6;
-  color: white;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
+.text-teal {
+  color: var(--accent-teal);
 }
 
-.btn-poloniex:hover {
-  background-color: #135ad1;
+.text-green {
+  color: var(--accent-green);
 }
 
-.btn-poloniex-outline {
-  background-color: transparent;
-  border: 1px solid #1666f6;
-  color: #1666f6;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
+.text-red {
+  color: var(--accent-red);
 }
 
-.btn-poloniex-outline:hover {
-  background-color: #f0f5ff;
+.text-blue {
+  color: var(--accent-blue);
+}
+
+.text-orange {
+  color: var(--accent-orange);
+}
+
+.text-pink {
+  color: var(--accent-pink);
+}
+
+.border-custom {
+  border-color: var(--border-color);
 }

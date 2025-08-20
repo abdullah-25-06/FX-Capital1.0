@@ -51,8 +51,8 @@ const Trading = ({ setShowSidebar }) => {
       {
         label: "BTC/USDT",
         data: generateChartData(),
-        borderColor: "#1666f6",
-        backgroundColor: "rgba(22, 102, 246, 0.1)",
+        borderColor: "#00ffff", // Teal
+        backgroundColor: "rgba(0, 255, 255, 0.1)",
         borderWidth: 2,
         fill: true,
         tension: 0.4,
@@ -73,9 +73,9 @@ const Trading = ({ setShowSidebar }) => {
         mode: "index",
         intersect: false,
         backgroundColor: "rgba(0, 0, 0, 0.8)",
-        titleColor: "#fff",
-        bodyColor: "#fff",
-        borderColor: "#1666f6",
+        titleColor: "#ffd700", // Gold
+        bodyColor: "#ffffff",
+        borderColor: "#00ffff", // Teal
         borderWidth: 1,
         displayColors: false,
         callbacks: {
@@ -133,17 +133,17 @@ const Trading = ({ setShowSidebar }) => {
 
   return (
     <div className='mb-16'>
-      <div className='bg-white rounded-lg p-6 shadow-sm border border-poloniex-border'>
-        <h2 className='text-xl font-semibold mb-4 border-b border-poloniex-border pb-3'>
+      <div className='bg-card-bg rounded-lg p-6 border border-border-custom'>
+        <h2 className='text-xl font-semibold mb-4 border-b border-border-custom pb-3 text-gold'>
           OptionsTransaction
         </h2>
-        <h3 className='text-lg font-semibold mb-2'>BTC/USDT</h3>
+        <h3 className='text-lg font-semibold mb-2 text-teal'>BTC/USDT</h3>
 
         <div className='flex justify-between mb-6'>
           <div>
             <p
               className={`text-2xl font-semibold ${
-                price > 116593.006 ? "text-green-500" : "text-red-500"
+                price > 116593.006 ? "text-green" : "text-red"
               }`}
             >
               {price.toFixed(3)}
@@ -151,22 +151,22 @@ const Trading = ({ setShowSidebar }) => {
             </p>
           </div>
           <div className='text-right'>
-            <p className='text-poloniex-gray'>117625 - 116593.01</p>
+            <p className='text-teal'>117625 - 116593.01</p>
             <div className='flex space-x-6 mt-2 text-sm'>
               <div>
-                <p className='text-poloniex-gray'>Today's High</p>
-                <p className='font-medium'>117972.5</p>
+                <p className='text-teal'>Today's High</p>
+                <p className='font-medium text-gold'>117972.5</p>
               </div>
               <div>
-                <p className='text-poloniex-gray'>Today's low</p>
-                <p className='font-medium'>114652.02</p>
+                <p className='text-teal'>Today's low</p>
+                <p className='font-medium text-gold'>114652.02</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Chart Container */}
-        <div className='bg-poloniex-section rounded-lg p-4 mb-6 border border-poloniex-border'>
+        <div className='bg-darker-bg rounded-lg p-4 mb-6 border border-border-custom'>
           <div className='flex justify-between items-center mb-4'>
             <div className='flex space-x-2'>
               {timeframes.map((timeframe) => (
@@ -174,8 +174,8 @@ const Trading = ({ setShowSidebar }) => {
                   key={timeframe}
                   className={`px-3 py-1 rounded text-xs ${
                     activeTimeframe === timeframe
-                      ? "bg-poloniex-blue text-white"
-                      : "bg-white border border-poloniex-border text-poloniex-gray"
+                      ? "bg-teal text-dark-bg"
+                      : "bg-card-bg border border-border-custom text-teal"
                   }`}
                   onClick={() => setActiveTimeframe(timeframe)}
                 >
@@ -183,7 +183,7 @@ const Trading = ({ setShowSidebar }) => {
                 </button>
               ))}
             </div>
-            <div className='text-sm text-poloniex-gray'>MA: 14:33:36.000</div>
+            <div className='text-sm text-teal'>MA: 14:33:36.000</div>
           </div>
 
           {/* Chart */}
@@ -194,92 +194,56 @@ const Trading = ({ setShowSidebar }) => {
           {/* Chart Indicators */}
           <div className='grid grid-cols-4 gap-2 mt-4 text-xs'>
             <div className='text-center'>
-              <div className='text-poloniex-gray'>MA10</div>
-              <div className='font-medium'>113627.7030</div>
+              <div className='text-teal'>MA10</div>
+              <div className='font-medium text-gold'>113627.7030</div>
             </div>
             <div className='text-center'>
-              <div className='text-poloniex-gray'>MA20</div>
-              <div className='font-medium'>522.965K</div>
+              <div className='text-teal'>MA20</div>
+              <div className='font-medium text-gold'>522.965K</div>
             </div>
             <div className='text-center'>
-              <div className='text-poloniex-gray'>MA30</div>
-              <div className='font-medium'>531.863K</div>
+              <div className='text-teal'>MA30</div>
+              <div className='font-medium text-gold'>531.863K</div>
             </div>
             <div className='text-center'>
-              <div className='text-poloniex-gray'>VOL</div>
-              <div className='font-medium'>113620.000</div>
+              <div className='text-teal'>VOL</div>
+              <div className='font-medium text-gold'>113620.000</div>
             </div>
           </div>
         </div>
 
         {/* Technical Indicators */}
         <div className='grid grid-cols-2 gap-4 mb-6'>
-          <div className='bg-poloniex-section p-3 rounded border border-poloniex-border'>
-            <h4 className='font-semibold mb-2 text-sm'>MACD</h4>
+          <div className='bg-darker-bg p-3 rounded border border-border-custom'>
+            <h4 className='font-semibold mb-2 text-sm text-gold'>MACD</h4>
             <div className='space-y-1 text-xs'>
-              <p>
+              <p className='text-teal'>
                 <span className='font-semibold'>DIF:</span> -149.5552
               </p>
-              <p>
+              <p className='text-green'>
                 <span className='font-semibold'>DEA:</span> -103.4250
               </p>
-              <p>
+              <p className='text-blue'>
                 <span className='font-semibold'>MAC:</span> 120.0000
               </p>
             </div>
           </div>
 
-          <div className='bg-poloniex-section p-3 rounded border border-poloniex-border'>
-            <h4 className='font-semibold mb-2 text-sm'>BOLL</h4>
+          <div className='bg-darker-bg p-3 rounded border border-border-custom'>
+            <h4 className='font-semibold mb-2 text-sm text-gold'>BOLL</h4>
             <div className='space-y-1 text-xs'>
-              <p>
+              <p className='text-teal'>
                 <span className='font-semibold'>UP:</span> 116490.0000
               </p>
-              <p>
+              <p className='text-green'>
                 <span className='font-semibold'>MB:</span> 111190.0000
               </p>
-              <p>
+              <p className='text-blue'>
                 <span className='font-semibold'>DN:</span> 11970.0000
               </p>
-              <p>
+              <p className='text-orange'>
                 <span className='font-semibold'>WIDTH:</span> 11848.0000
               </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Price Levels */}
-        <div className='grid grid-cols-2 gap-4 mb-6'>
-          <div className='bg-poloniex-section p-3 rounded border border-poloniex-border'>
-            <h4 className='font-semibold mb-2 text-sm'>Support Levels</h4>
-            <div className='space-y-1 text-xs'>
-              <p>S1: 11499.0000</p>
-              <p>S2: 11190.0000</p>
-              <p>S3: 10970.0000</p>
-            </div>
-          </div>
-
-          <div className='bg-poloniex-section p-3 rounded border border-poloniex-border'>
-            <h4 className='font-semibold mb-2 text-sm'>Resistance Levels</h4>
-            <div className='space-y-1 text-xs'>
-              <p>R1: 11848.0000</p>
-              <p>R2: 12000.0000</p>
-              <p>R3: 12250.0000</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Trading Volume */}
-        <div className='bg-poloniex-section p-3 rounded border border-poloniex-border mb-6'>
-          <h4 className='font-semibold mb-2 text-sm'>Trading Volume</h4>
-          <div className='flex justify-between text-xs'>
-            <div>
-              <p className='text-poloniex-gray'>24h Volume</p>
-              <p className='font-medium'>11,649.00K</p>
-            </div>
-            <div>
-              <p className='text-poloniex-gray'>Market Cap</p>
-              <p className='font-medium'>16,979.00K</p>
             </div>
           </div>
         </div>
@@ -288,14 +252,14 @@ const Trading = ({ setShowSidebar }) => {
         <div className='flex justify-between'>
           <button
             onClick={handleBuy}
-            className='btn-poloniex flex-1 mr-2'
+            className='bg-red text-white px-6 py-3 rounded flex-1 mr-2 font-medium'
             disabled={isBuying}
           >
             {isBuying ? "Processing..." : "Buy more"}
           </button>
           <button
             onClick={handleSell}
-            className='btn-poloniex-outline flex-1 ml-2'
+            className='bg-teal text-dark-bg px-6 py-3 rounded flex-1 ml-2 font-medium'
             disabled={isBuying}
           >
             Buy less
@@ -303,7 +267,7 @@ const Trading = ({ setShowSidebar }) => {
         </div>
 
         {/* Time indicators */}
-        <div className='flex justify-between mt-4 text-xs text-poloniex-gray'>
+        <div className='flex justify-between mt-4 text-xs text-teal'>
           <span>20:22</span>
           <span>20:37</span>
           <span>20:52</span>

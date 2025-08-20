@@ -86,28 +86,28 @@ const Markets = ({ setShowSidebar }) => {
 
   return (
     <div className='mb-16'>
-      <div className='bg-white rounded-lg p-6 shadow-sm border border-poloniex-border'>
-        <h2 className='text-xl font-semibold mb-6 border-b border-poloniex-border pb-3'>
+      <div className='bg-card-bg rounded-lg p-6 border border-border-custom'>
+        <h2 className='text-xl font-semibold mb-6 border-b border-border-custom pb-3 text-gold'>
           TransactionQuote
         </h2>
 
         <div className='overflow-x-auto'>
           <table className='min-w-full'>
             <thead>
-              <tr className='border-b border-poloniex-border'>
-                <th className='py-3 text-left text-poloniex-gray font-normal text-sm'>
+              <tr className='border-b border-border-custom'>
+                <th className='py-3 text-left text-teal font-normal text-sm'>
                   Coin
                 </th>
-                <th className='py-3 text-left text-poloniex-gray font-normal text-sm'>
+                <th className='py-3 text-left text-teal font-normal text-sm'>
                   Trading Pair
                 </th>
-                <th className='py-3 text-left text-poloniex-gray font-normal text-sm'>
+                <th className='py-3 text-left text-teal font-normal text-sm'>
                   Status
                 </th>
-                <th className='py-3 text-left text-poloniex-gray font-normal text-sm'>
+                <th className='py-3 text-left text-teal font-normal text-sm'>
                   Latest Price
                 </th>
-                <th className='py-3 text-left text-poloniex-gray font-normal text-sm'>
+                <th className='py-3 text-left text-teal font-normal text-sm'>
                   24h Change
                 </th>
               </tr>
@@ -116,17 +116,15 @@ const Markets = ({ setShowSidebar }) => {
               {tradingPairs.map((coin, index) => (
                 <tr
                   key={index}
-                  className='border-b border-poloniex-border hover:bg-poloniex-section cursor-pointer'
+                  className='border-b border-border-custom hover:bg-darker-bg cursor-pointer'
                 >
-                  <td className='py-3 font-medium'>{coin.coin}</td>
-                  <td className='py-3'>{coin.pair}</td>
-                  <td className='py-3 text-green-500 text-sm'>{coin.status}</td>
-                  <td className='py-3 font-mono'>{coin.price}</td>
+                  <td className='py-3 font-medium text-gold'>{coin.coin}</td>
+                  <td className='py-3 text-blue'>{coin.pair}</td>
+                  <td className='py-3 text-green text-sm'>{coin.status}</td>
+                  <td className='py-3 text-red font-mono'>{coin.price}</td>
                   <td
                     className={`py-3 ${
-                      coin.change.includes("+")
-                        ? "text-green-500"
-                        : "text-red-500"
+                      coin.change.includes("+") ? "text-green" : "text-red"
                     }`}
                   >
                     {coin.change}

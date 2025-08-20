@@ -29,39 +29,35 @@ const Assets = ({ setShowSidebar }) => {
 
   return (
     <div className='mb-16'>
-      <div className='bg-white rounded-lg p-6 shadow-sm border border-poloniex-border'>
-        <h2 className='text-xl font-semibold mb-6 border-b border-poloniex-border pb-3'>
+      <div className='bg-card-bg rounded-lg p-6 border border-border-custom'>
+        <h2 className='text-xl font-semibold mb-6 border-b border-border-custom pb-3 text-gold'>
           Available Assets
         </h2>
 
         <div className='flex justify-between items-center mb-6'>
-          <h3 className='text-lg'>Convert total assets</h3>
-          <button className='text-poloniex-blue text-sm'>
+          <h3 className='text-lg text-teal'>Convert total assets</h3>
+          <button className='text-orange text-sm'>
             Account change record ►
           </button>
         </div>
 
-        <div className='bg-poloniex-section rounded-lg p-6 mb-6 border border-poloniex-border'>
-          <p className='text-2xl font-bold text-center mb-6'>
+        <div className='bg-darker-bg rounded-lg p-6 mb-6 border border-border-custom'>
+          <p className='text-2xl font-bold text-center mb-6 text-gold'>
             {totalAssets.toFixed(2)} USDT
           </p>
 
           <div className='grid grid-cols-3 gap-4 text-center'>
             <div>
-              <p className='text-poloniex-gray text-sm'>
-                Yesterday's income[USDT]
-              </p>
-              <p className='font-medium'>0.00</p>
+              <p className='text-teal text-sm'>Yesterday's income[USDT]</p>
+              <p className='font-medium text-gold'>0.00</p>
             </div>
             <div>
-              <p className='text-poloniex-gray text-sm'>
-                Current earnings[USDT]
-              </p>
-              <p className='font-medium'>0.00</p>
+              <p className='text-teal text-sm'>Current earnings[USDT]</p>
+              <p className='font-medium text-gold'>0.00</p>
             </div>
             <div>
-              <p className='text-poloniex-gray text-sm'>Total revenue[USDT]</p>
-              <p className='font-medium'>0</p>
+              <p className='text-teal text-sm'>Total revenue[USDT]</p>
+              <p className='font-medium text-gold'>0</p>
             </div>
           </div>
         </div>
@@ -70,23 +66,29 @@ const Assets = ({ setShowSidebar }) => {
           <button
             onClick={handleRecharge}
             disabled={isProcessing}
-            className='btn-poloniex disabled:opacity-50'
+            className='bg-teal text-dark-bg px-6 py-2 rounded font-medium disabled:opacity-50'
           >
             {isProcessing ? "Processing..." : "Recharge"}
           </button>
           <button
             onClick={handleWithdraw}
             disabled={isProcessing || totalAssets < 50}
-            className='btn-poloniex disabled:opacity-50'
+            className='bg-green text-dark-bg px-6 py-2 rounded font-medium disabled:opacity-50'
           >
             {isProcessing ? "Processing..." : "Withdrawal/Transfer"}
           </button>
-          <button className='btn-poloniex'>Futures Market</button>
+          <button className='bg-orange text-dark-bg px-6 py-2 rounded font-medium'>
+            Futures Market
+          </button>
         </div>
 
         <div className='flex gap-3'>
-          <button className='btn-poloniex-outline'>Position</button>
-          <button className='btn-poloniex-outline'>History</button>
+          <button className='bg-blue text-white px-6 py-2 rounded font-medium'>
+            Position
+          </button>
+          <button className='bg-pink text-white px-6 py-2 rounded font-medium'>
+            History
+          </button>
         </div>
       </div>
     </div>

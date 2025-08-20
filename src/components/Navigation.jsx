@@ -10,15 +10,15 @@ const Navigation = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <nav className='fixed bottom-0 left-0 right-0 bg-white py-3 border-t border-poloniex-border shadow-md'>
+    <nav className='fixed bottom-0 left-0 right-0 bg-darker-bg py-3 border-t border-border-custom shadow-md'>
       <div className='container mx-auto flex justify-around'>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             className={`px-3 py-2 text-sm ${
               activeTab === tab.id
-                ? "text-poloniex-blue font-medium border-b-2 border-poloniex-blue"
-                : "text-poloniex-gray"
+                ? "text-teal font-medium border-b-2 border-teal"
+                : "text-gold"
             }`}
             onClick={() => setActiveTab(tab.id)}
           >
