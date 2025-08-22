@@ -75,9 +75,9 @@ const Header = ({
               </button>
             </>
           )}
-          <button className='bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors'>
+          {/* <button className='bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors'>
             Exit
-          </button>
+          </button> */}
         </div>
       </div>
     </header>
