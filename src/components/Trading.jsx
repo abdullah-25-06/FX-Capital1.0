@@ -77,7 +77,7 @@ const Trading = ({ setShowSidebar }) => {
   const renderCandlestickChart = () => {
     if (!candleData.length) {
       return (
-        <div className='h-64 flex items-center justify-center text-gray-400'>
+        <div className='h-64 flex items-center justify-center text-gray-400 text-sm'>
           Loading chart data...
         </div>
       );
@@ -108,7 +108,7 @@ const Trading = ({ setShowSidebar }) => {
               x={padding - 5}
               y={padding + ratio * (chartHeight - padding * 2)}
               fill='#ccc'
-              fontSize='10'
+              fontSize='9'
               textAnchor='end'
               dominantBaseline='middle'
             >
@@ -182,7 +182,7 @@ const Trading = ({ setShowSidebar }) => {
   return (
     <div className='bg-[#0F172A] min-h-screen py-6 px-4'>
       <div className='bg-[#1A1A1A] rounded-2xl shadow-lg p-5 max-w-4xl mx-auto'>
-        <h2 className='text-xl font-semibold mb-4 text-yellow-400 text-center'>
+        <h2 className='text-lg font-semibold mb-4 text-yellow-400 text-center'>
           BTC/USDT Trading
         </h2>
 
@@ -190,14 +190,14 @@ const Trading = ({ setShowSidebar }) => {
         <div className='flex flex-col md:flex-row justify-between items-center mb-6'>
           <div>
             <p
-              className={`text-3xl font-bold ${
+              className={`text-2xl font-bold ${
                 change >= 0 ? "text-green-400" : "text-red-400"
               }`}
             >
               {price.toFixed(3)} {change >= 0 ? "↑" : "↓"}
             </p>
             <p
-              className={`text-sm ${
+              className={`text-xs ${
                 change >= 0 ? "text-green-400" : "text-red-400"
               }`}
             >
@@ -205,7 +205,7 @@ const Trading = ({ setShowSidebar }) => {
               {change.toFixed(2)}%
             </p>
           </div>
-          <div className='text-right text-gray-400 text-sm'>
+          <div className='text-right text-gray-400 text-xs'>
             <p>
               High: <span className='text-yellow-400'>117972.5</span>
             </p>
@@ -238,7 +238,7 @@ const Trading = ({ setShowSidebar }) => {
         </div>
 
         {/* Indicators */}
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 text-center text-sm'>
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 text-center text-xs'>
           <div className='bg-[#2A2A2A] p-3 rounded-xl text-gray-300'>
             <p>MA10</p>
             <p className='font-semibold text-yellow-400'>113627.70</p>
@@ -262,14 +262,14 @@ const Trading = ({ setShowSidebar }) => {
           <button
             onClick={handleBuy}
             disabled={isBuying}
-            className='flex-1 bg-gradient-to-r from-green-400 to-green-500 text-black font-semibold py-3 rounded-xl shadow-md hover:scale-105 transition'
+            className='flex-1 bg-gradient-to-r from-green-400 to-green-500 text-black font-semibold py-3 rounded-xl shadow-md hover:scale-105 transition text-sm'
           >
             {isBuying ? "Processing..." : "Buy"}
           </button>
           <button
             onClick={handleSell}
             disabled={isBuying}
-            className='flex-1 bg-gradient-to-r from-red-400 to-red-500 text-white font-semibold py-3 rounded-xl shadow-md hover:scale-105 transition'
+            className='flex-1 bg-gradient-to-r from-red-400 to-red-500 text-white font-semibold py-3 rounded-xl shadow-md hover:scale-105 transition text-sm'
           >
             {isBuying ? "Processing..." : "Sell"}
           </button>

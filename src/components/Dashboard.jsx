@@ -43,53 +43,55 @@ const Dashboard = ({ setShowSidebar }) => {
   };
 
   return (
-    <div className='mb-16'>
+    <div className='mb-16 bg-[#0F172A] min-h-screen px-4 py-4'>
       {/* Header Section */}
-      <div className='bg-poloniex-dark py-4 px-6 border-b border-poloniex-border mb-6'>
+      <div className='bg-[#1A1A1A] py-4 px-6 border-b border-gray-700 mb-6 rounded-lg'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center'>
-            <h1 className='text-2xl font-bold text-poloniex-gold whitespace-nowrap mr-4'>
+            <h1 className='text-lg font-bold text-yellow-400 whitespace-nowrap mr-4'>
               FX CAPITAL
             </h1>
-            <span className='text-sm text-gray-400 hidden sm:block'>
+            <span className='text-xs text-gray-400 hidden sm:block'>
               fx-capial.online
             </span>
           </div>
-          <div className='text-sm text-gray-400'>12:06</div>
+          <div className='text-xs text-gray-400'>12:06</div>
         </div>
       </div>
 
       {/* Total Assets Section */}
-      <div className='bg-poloniex-gray rounded-lg p-6 mb-6 shadow'>
-        <h2 className='text-lg font-semibold mb-4 text-gray-300'>
+      <div className='bg-[#1A1A1A] rounded-lg p-6 mb-6 shadow'>
+        <h2 className='text-base font-semibold mb-4 text-gray-300'>
           Total assets equivalent (USDT)
         </h2>
-        <p className='text-3xl font-bold text-white'>0.00</p>
+        <p className='text-2xl font-bold text-white'>0.00</p>
 
         {/* Buttons in single line for mobile - Fixed to stay within screen */}
         <div className='grid grid-cols-2 sm:flex gap-2 mt-4'>
-          <button className='bg-poloniex-blue hover:bg-blue-700 text-white px-3 py-2 rounded text-sm whitespace-nowrap text-center'>
+          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
             Recharge
           </button>
-          <button className='bg-poloniex-blue hover:bg-blue-700 text-white px-3 py-2 rounded text-sm whitespace-nowrap text-center'>
+          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
             Withdrawal
           </button>
-          <button className='bg-poloniex-blue hover:bg-blue-700 text-white px-3 py-2 rounded text-sm whitespace-nowrap text-center'>
+          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
             Transaction
           </button>
-          <button className='bg-poloniex-blue hover:bg-blue-700 text-white px-3 py-2 rounded text-sm whitespace-nowrap text-center'>
+          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
             Futures Market
           </button>
         </div>
       </div>
 
       {/* Ad Slider Section */}
-      <div className='bg-poloniex-gray rounded-lg p-4 mb-6 shadow relative overflow-hidden'>
+      <div className='bg-[#1A1A1A] rounded-lg p-4 mb-6 shadow relative overflow-hidden'>
         <div
           className={`${ads[currentAd].bgColor} rounded-lg p-4 text-white transition-all duration-500`}
         >
-          <h3 className='text-lg font-semibold mb-2'>{ads[currentAd].title}</h3>
-          <p className='text-sm'>{ads[currentAd].content}</p>
+          <h3 className='text-base font-semibold mb-2'>
+            {ads[currentAd].title}
+          </h3>
+          <p className='text-xs'>{ads[currentAd].content}</p>
 
           {/* Navigation dots */}
           <div className='flex justify-center mt-4 space-x-2'>
@@ -147,7 +149,7 @@ const Dashboard = ({ setShowSidebar }) => {
       {/* Scrolling Banner Section */}
       <div className='bg-gradient-to-r from-red-900 to-red-700 rounded-lg p-3 mb-6 shadow overflow-hidden'>
         <div className='relative w-full'>
-          <div className='animate-scroll whitespace-nowrap text-white text-sm'>
+          <div className='animate-scroll whitespace-nowrap text-white text-xs'>
             🔥 In your payment, please feel free to contact our representatives
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔥 In your payment, please feel free
             to contact our representatives &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔥 In
@@ -159,17 +161,21 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
       {/* Trading Pairs Section */}
-      <div className='bg-poloniex-gray rounded-lg p-6 mb-6 shadow'>
-        <h3 className='text-lg font-semibold mb-4 text-white'>
+      <div className='bg-[#1A1A1A] rounded-lg p-6 mb-6 shadow'>
+        <h3 className='text-base font-semibold mb-4 text-white'>
           Show trade these coins with Unocoin.
         </h3>
         <div className='overflow-x-auto'>
           <table className='min-w-full'>
             <thead>
               <tr className='border-b border-gray-700'>
-                <th className='py-2 text-left text-gray-400'>Trading Pair</th>
-                <th className='py-2 text-left text-gray-400'>Status</th>
-                <th className='py-2 text-left text-gray-400'>Latest Price</th>
+                <th className='py-2 text-left text-gray-400 text-xs'>
+                  Trading Pair
+                </th>
+                <th className='py-2 text-left text-gray-400 text-xs'>Status</th>
+                <th className='py-2 text-left text-gray-400 text-xs'>
+                  Latest Price
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -196,9 +202,9 @@ const Dashboard = ({ setShowSidebar }) => {
                 },
               ].map((coin, index) => (
                 <tr key={index} className='border-b border-gray-700'>
-                  <td className='py-3 text-white'>{coin.pair}</td>
-                  <td className='py-3 text-green-400'>{coin.status}</td>
-                  <td className='py-3 text-white'>{coin.price}</td>
+                  <td className='py-3 text-white text-xs'>{coin.pair}</td>
+                  <td className='py-3 text-green-400 text-xs'>{coin.status}</td>
+                  <td className='py-3 text-white text-xs'>{coin.price}</td>
                 </tr>
               ))}
             </tbody>
@@ -207,11 +213,11 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
       {/* History Section */}
-      <div className='bg-poloniex-gray rounded-lg p-6 shadow'>
-        <h3 className='text-lg font-semibold mb-2 text-white'>
+      <div className='bg-[#1A1A1A] rounded-lg p-6 shadow'>
+        <h3 className='text-base font-semibold mb-2 text-white'>
           When and how did it all start?
         </h3>
-        <p className='text-gray-300'>
+        <p className='text-gray-300 text-xs'>
           On the 15th of December 2013, when India started trading crypto
           assets!
         </p>
