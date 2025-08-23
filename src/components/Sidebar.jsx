@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FiHome,
   FiTrendingUp,
@@ -59,7 +59,6 @@ const Sidebar = ({
         },
       ];
 
-  // Get current time
   const getCurrentTime = () => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -74,21 +73,29 @@ const Sidebar = ({
     }
   };
 
+  // ✅ Disable background scroll when sidebar is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
     <div className='fixed inset-0 z-50'>
-      {/* Backdrop with reduced transparency */}
+      {/* Backdrop */}
       <div
-        className='absolute inset-0 bg-gray-900 bg-opacity-90'
+        className='absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm'
         onClick={onClose}
       ></div>
 
       {/* Sidebar */}
-      <div className='absolute left-0 top-0 h-full w-72 bg-gray-900 shadow-xl border-r border-gray-700 transform transition-transform duration-300'>
-        {/* Header Section */}
+      <div className='absolute left-0 top-0 h-full w-72 bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl border-r border-gray-700 transform transition-transform duration-300 overflow-y-auto'>
+        {/* Header */}
         <div className='p-5 border-b border-gray-700 bg-gray-850'>
           <div className='flex items-center justify-between mb-5'>
             <div className='flex items-center space-x-3'>
-              <div className='bg-blue-500 rounded-lg p-2 flex items-center justify-center'>
+              <div className='bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg p-2 flex items-center justify-center shadow-md'>
                 <svg
                   className='w-6 h-6 text-white'
                   viewBox='0 0 24 24'
@@ -97,21 +104,25 @@ const Sidebar = ({
                   <path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5' />
                 </svg>
               </div>
-              <h2 className='text-xl font-bold text-white'>FX CAPITAL</h2>
+              <h2 className='text-xl font-bold text-white tracking-wide'>
+                FX CAPITAL
+              </h2>
             </div>
             <button
               onClick={onClose}
-              className='text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors'
+              className='text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition'
             >
-              <FiX size={24} />
+              <FiX size={22} />
             </button>
           </div>
 
-          {/* User Profile Quick Access */}
-          <div className='flex items-center space-x-3 p-3 bg-gray-800 rounded-lg'>
+          {/* User Quick Profile */}
+          <div className='flex items-center space-x-3 p-3 bg-gray-800 rounded-xl shadow'>
             <div
               className={`rounded-full p-2 ${
-                isAuthenticated ? "bg-green-600" : "bg-blue-600"
+                isAuthenticated
+                  ? "bg-green-500 shadow-md"
+                  : "bg-blue-500 shadow-md"
               }`}
             >
               <FiUser size={16} className='text-white' />
@@ -136,8 +147,8 @@ const Sidebar = ({
           </div>
         </div>
 
-        {/* Navigation Menu */}
-        <nav className='p-4 flex-1 overflow-y-auto'>
+        {/* Main Menu */}
+        <nav className='p-4 flex-1'>
           <h3 className='text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3 pl-4'>
             Main Menu
           </h3>
@@ -148,7 +159,7 @@ const Sidebar = ({
                   onClick={() => handleItemClick(item)}
                   className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-all duration-200 ${
                     activeTab === item.id
-                      ? "bg-blue-600 text-white shadow-lg"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
                       : "text-gray-300 hover:bg-gray-800 hover:text-white"
                   }`}
                 >
@@ -168,6 +179,7 @@ const Sidebar = ({
             ))}
           </ul>
 
+          {/* Auth Section */}
           <h3 className='text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3 pl-4'>
             Account
           </h3>
@@ -196,15 +208,15 @@ const Sidebar = ({
           </ul>
         </nav>
 
-        {/* Support Section */}
+        {/* Support */}
         <div className='p-4 border-t border-gray-700'>
-          <button className='w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors'>
+          <button className='w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition'>
             <FiHelpCircle size={20} />
             <span className='font-medium'>Help & Support</span>
           </button>
         </div>
 
-        {/* Footer Section */}
+        {/* Footer */}
         <div className='w-full p-4 border-t border-gray-700 bg-gray-850'>
           <div className='text-center'>
             <p className='text-gray-400 text-sm'>2-6 poloniextrade.online</p>
