@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Wallet, ArrowDownCircle, Receipt, LineChart } from "lucide-react";
 
 const Dashboard = ({ setShowSidebar }) => {
   const [currentAd, setCurrentAd] = useState(0);
@@ -7,21 +8,21 @@ const Dashboard = ({ setShowSidebar }) => {
   const ads = [
     {
       id: 1,
-      title: "Special Offer!",
+      title: "🔥 Special Offer!",
       content: "Get 0% trading fees for the first month on all BTC pairs",
-      bgColor: "bg-gradient-to-r from-blue-900 to-blue-700",
+      bgColor: "bg-gradient-to-r from-blue-800 to-blue-600",
     },
     {
       id: 2,
-      title: "New Listing",
+      title: "✨ New Listing",
       content: "Trade the new YOBAHENT/USDT pair with enhanced liquidity",
-      bgColor: "bg-gradient-to-r from-purple-900 to-purple-700",
+      bgColor: "bg-gradient-to-r from-purple-800 to-purple-600",
     },
     {
       id: 3,
-      title: "Referral Bonus",
+      title: "🎁 Referral Bonus",
       content: "Earn 50% commission on every friend you refer to POLONIEX",
-      bgColor: "bg-gradient-to-r from-green-900 to-green-700",
+      bgColor: "bg-gradient-to-r from-green-800 to-green-600",
     },
   ];
 
@@ -29,69 +30,64 @@ const Dashboard = ({ setShowSidebar }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentAd((prev) => (prev + 1) % ads.length);
-    }, 5000); // Change ad every 5 seconds
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [ads.length]);
 
-  const nextAd = () => {
-    setCurrentAd((prev) => (prev + 1) % ads.length);
-  };
-
-  const prevAd = () => {
+  const nextAd = () => setCurrentAd((prev) => (prev + 1) % ads.length);
+  const prevAd = () =>
     setCurrentAd((prev) => (prev - 1 + ads.length) % ads.length);
-  };
 
   return (
-    <div className='mb-16 bg-[#0F172A] min-h-screen px-4 py-4'>
+    <div className='mb-16 bg-[#0F172A] min-h-screen px-4 py-6'>
       {/* Header Section */}
-      <div className='bg-[#1A1A1A] py-4 px-6 border-b border-gray-700 mb-6 rounded-lg'>
+      <div className='bg-[#1A1A1A] py-4 px-6 border border-gray-800 mb-6 rounded-2xl shadow-md'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center'>
-            <h1 className='text-lg font-bold text-yellow-400 whitespace-nowrap mr-4'>
+            <img src='/logo.png' alt='Logo' className='w-8 h-8 mr-2' />
+            <h1 className='text-lg font-bold text-yellow-400 mr-4'>
               FX CAPITAL
             </h1>
             <span className='text-xs text-gray-400 hidden sm:block'>
-              fx-capial.online
+              fx-capital.online
             </span>
           </div>
           <div className='text-xs text-gray-400'>12:06</div>
         </div>
       </div>
 
-      {/* Total Assets Section */}
-      <div className='bg-[#1A1A1A] rounded-lg p-6 mb-6 shadow'>
-        <h2 className='text-base font-semibold mb-4 text-gray-300'>
-          Total assets equivalent (USDT)
-        </h2>
-        <p className='text-2xl font-bold text-white'>0.00</p>
+{/* Total Assets Section */}
+<div className='bg-[#1A1A1A] rounded-2xl p-6 mb-6 shadow-lg border border-gray-800 hover:shadow-xl transition'>
+  <h2 className='text-base font-semibold mb-3 text-gray-300'>
+    Total Assets (USDT)
+  </h2>
+  <p className='text-3xl font-bold text-white'>0.00</p>
 
-        {/* Buttons in single line for mobile - Fixed to stay within screen */}
-        <div className='grid grid-cols-2 sm:flex gap-2 mt-4'>
-          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
-            Recharge
-          </button>
-          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
-            Withdrawal
-          </button>
-          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
-            Transaction
-          </button>
-          <button className='bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs whitespace-nowrap text-center'>
-            Futures Market
-          </button>
-        </div>
-      </div>
+  {/* Buttons Row */}
+  <div className='flex justify-center gap-4 mt-5'>
+    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
+      <Wallet size={22} />
+    </button>
+    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
+      <ArrowDownCircle size={22} />
+    </button>
+    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
+      <Receipt size={22} />
+    </button>
+    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
+      <LineChart size={22} />
+    </button>
+  </div>
+</div>
+
 
       {/* Ad Slider Section */}
-      <div className='bg-[#1A1A1A] rounded-lg p-4 mb-6 shadow relative overflow-hidden'>
+      <div className='bg-[#1A1A1A] rounded-2xl p-4 mb-6 shadow-lg relative overflow-hidden border border-gray-800'>
         <div
-          className={`${ads[currentAd].bgColor} rounded-lg p-4 text-white transition-all duration-500`}
+          className={`${ads[currentAd].bgColor} rounded-xl p-5 text-white transition-all duration-700`}
         >
-          <h3 className='text-base font-semibold mb-2'>
-            {ads[currentAd].title}
-          </h3>
-          <p className='text-xs'>{ads[currentAd].content}</p>
+          <h3 className='text-lg font-semibold mb-2'>{ads[currentAd].title}</h3>
+          <p className='text-sm opacity-90'>{ads[currentAd].content}</p>
 
           {/* Navigation dots */}
           <div className='flex justify-center mt-4 space-x-2'>
@@ -99,8 +95,8 @@ const Dashboard = ({ setShowSidebar }) => {
               <button
                 key={index}
                 onClick={() => setCurrentAd(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentAd ? "bg-white" : "bg-white bg-opacity-50"
+                className={`w-3 h-3 rounded-full transition-all ${
+                  index === currentAd ? "bg-white scale-110" : "bg-white/50"
                 }`}
               />
             ))}
@@ -109,7 +105,7 @@ const Dashboard = ({ setShowSidebar }) => {
           {/* Navigation arrows */}
           <button
             onClick={prevAd}
-            className='absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50 transition-all'
+            className='absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 rounded-full p-2 hover:bg-black/60 transition'
           >
             <svg
               className='w-4 h-4 text-white'
@@ -127,7 +123,7 @@ const Dashboard = ({ setShowSidebar }) => {
           </button>
           <button
             onClick={nextAd}
-            className='absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50 transition-all'
+            className='absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 rounded-full p-2 hover:bg-black/60 transition'
           >
             <svg
               className='w-4 h-4 text-white'
@@ -146,62 +142,60 @@ const Dashboard = ({ setShowSidebar }) => {
         </div>
       </div>
 
-      {/* Scrolling Banner Section */}
-      <div className='bg-gradient-to-r from-red-900 to-red-700 rounded-lg p-3 mb-6 shadow overflow-hidden'>
+      {/* Scrolling Banner */}
+      <div className='bg-gradient-to-r from-red-700 to-red-500 rounded-xl p-3 mb-6 shadow-md overflow-hidden'>
         <div className='relative w-full'>
-          <div className='animate-scroll whitespace-nowrap text-white text-xs'>
+          <div className='animate-scroll whitespace-nowrap text-white text-sm font-medium'>
             🔥 In your payment, please feel free to contact our representatives
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔥 In your payment, please feel free
-            to contact our representatives &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔥 In
-            your payment, please feel free to contact our representatives
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔥 In your payment, please feel free
-            to contact our representatives
+            🔥 &nbsp;&nbsp;&nbsp; 🔥 In your payment, please feel free to
+            contact our representatives 🔥
           </div>
         </div>
       </div>
 
       {/* Trading Pairs Section */}
-      <div className='bg-[#1A1A1A] rounded-lg p-6 mb-6 shadow'>
+      <div className='bg-[#1A1A1A] rounded-2xl p-6 mb-6 shadow-lg border border-gray-800'>
         <h3 className='text-base font-semibold mb-4 text-white'>
-          Show trade these coins with Unocoin.
+          Trade these coins with Unocoin
         </h3>
         <div className='overflow-x-auto'>
-          <table className='min-w-full'>
+          <table className='min-w-full border-collapse'>
             <thead>
-              <tr className='border-b border-gray-700'>
-                <th className='py-2 text-left text-gray-400 text-xs'>
-                  Trading Pair
-                </th>
-                <th className='py-2 text-left text-gray-400 text-xs'>Status</th>
-                <th className='py-2 text-left text-gray-400 text-xs'>
-                  Latest Price
-                </th>
+              <tr className='border-b border-gray-700 text-gray-400 text-xs'>
+                <th className='py-2 text-left'>Trading Pair</th>
+                <th className='py-2 text-left'>Status</th>
+                <th className='py-2 text-left'>Latest Price</th>
               </tr>
             </thead>
             <tbody>
               {[
                 {
                   pair: "BTC/USDT",
-                  status: "in transaction",
+                  status: "In transaction",
                   price: "16,993.0080",
                 },
                 {
                   pair: "ETH/USDT",
-                  status: "in transaction",
+                  status: "In transaction",
                   price: "2,345.37",
                 },
                 {
                   pair: "BNB/USDT",
-                  status: "in transaction",
+                  status: "In transaction",
                   price: "845.3770",
                 },
                 {
                   pair: "YOBAHENT/USDT",
-                  status: "in transaction",
+                  status: "In transaction",
                   price: "Notebook",
                 },
-              ].map((coin, index) => (
-                <tr key={index} className='border-b border-gray-700'>
+              ].map((coin, i) => (
+                <tr
+                  key={i}
+                  className={`border-b border-gray-700 ${
+                    i % 2 === 0 ? "bg-[#151515]" : ""
+                  }`}
+                >
                   <td className='py-3 text-white text-xs'>{coin.pair}</td>
                   <td className='py-3 text-green-400 text-xs'>{coin.status}</td>
                   <td className='py-3 text-white text-xs'>{coin.price}</td>
@@ -213,17 +207,17 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
       {/* History Section */}
-      <div className='bg-[#1A1A1A] rounded-lg p-6 shadow'>
+      <div className='bg-[#1A1A1A] rounded-2xl p-6 shadow-lg border border-gray-800'>
         <h3 className='text-base font-semibold mb-2 text-white'>
           When and how did it all start?
         </h3>
-        <p className='text-gray-300 text-xs'>
+        <p className='text-gray-300 text-sm'>
           On the 15th of December 2013, when India started trading crypto
           assets!
         </p>
       </div>
 
-      {/* Add custom CSS for scrolling animation */}
+      {/* Custom CSS for scroll */}
       <style jsx>{`
         @keyframes scroll {
           0% {
@@ -234,7 +228,7 @@ const Dashboard = ({ setShowSidebar }) => {
           }
         }
         .animate-scroll {
-          animation: scroll 15s linear infinite;
+          animation: scroll 18s linear infinite;
           display: inline-block;
         }
       `}</style>
