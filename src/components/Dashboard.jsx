@@ -41,10 +41,10 @@ const Dashboard = ({ setShowSidebar }) => {
   return (
     <div className='mb-16 bg-[#0F172A] min-h-screen px-4 py-6'>
       {/* Header Section */}
-      <div className='bg-[#1A1A1A] py-4 px-6 border border-gray-800 mb-6 rounded-2xl shadow-md'>
+      <div className='py-4 px-6 mb-6'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center'>
-            <img src='/logo.png' alt='Logo' className='w-8 h-8 mr-2' />
+            <img src='/Logo.png' alt='Logo' className='w-8 h-8 mr-2' />
             <h1 className='text-lg font-bold text-yellow-400 mr-4'>
               FX CAPITAL
             </h1>
@@ -57,32 +57,43 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
 {/* Total Assets Section */}
-<div className='bg-[#1A1A1A] rounded-2xl p-6 mb-6 shadow-lg border border-gray-800 hover:shadow-xl transition'>
+<div className='p-6 mb-6'>
   <h2 className='text-base font-semibold mb-3 text-gray-300'>
     Total Assets (USDT)
   </h2>
   <p className='text-3xl font-bold text-white'>0.00</p>
 
   {/* Buttons Row */}
-  <div className='flex justify-center gap-4 mt-5'>
-    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
-      <Wallet size={22} />
-    </button>
-    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
-      <ArrowDownCircle size={22} />
-    </button>
-    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
-      <Receipt size={22} />
-    </button>
-    <button className='flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black p-3 rounded-full shadow-md hover:shadow-yellow-500/40 transition'>
-      <LineChart size={22} />
-    </button>
+  <div className='grid grid-cols-4 gap-2 mt-5'>
+    <div className='flex flex-col items-center'>
+      <button className='w-full flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black py-4 rounded-full transition'>
+        <Wallet size={24} />
+      </button>
+      <span className='text-xs text-gray-400 mt-2'>Wallet</span>
+    </div>
+    <div className='flex flex-col items-center'>
+      <button className='w-full flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black py-4 rounded-full transition'>
+        <ArrowDownCircle size={24} />
+      </button>
+      <span className='text-xs text-gray-400 mt-2'>Deposit</span>
+    </div>
+    <div className='flex flex-col items-center'>
+      <button className='w-full flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black py-4 rounded-full transition'>
+        <Receipt size={24} />
+      </button>
+      <span className='text-xs text-gray-400 mt-2'>History</span>
+    </div>
+    <div className='flex flex-col items-center'>
+      <button className='w-full flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-black py-4 rounded-full transition'>
+        <LineChart size={24} />
+      </button>
+      <span className='text-xs text-gray-400 mt-2'>Analytics</span>
+    </div>
   </div>
 </div>
 
-
       {/* Ad Slider Section */}
-      <div className='bg-[#1A1A1A] rounded-2xl p-4 mb-6 shadow-lg relative overflow-hidden border border-gray-800'>
+      <div className='p-4 mb-6 relative overflow-hidden'>
         <div
           className={`${ads[currentAd].bgColor} rounded-xl p-5 text-white transition-all duration-700`}
         >
@@ -143,7 +154,7 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
       {/* Scrolling Banner */}
-      <div className='bg-gradient-to-r from-red-700 to-red-500 rounded-xl p-3 mb-6 shadow-md overflow-hidden'>
+      <div className='bg-gradient-to-r from-red-700 to-red-500 rounded-xl p-3 mb-6 overflow-hidden'>
         <div className='relative w-full'>
           <div className='animate-scroll whitespace-nowrap text-white text-sm font-medium'>
             🔥 In your payment, please feel free to contact our representatives
@@ -154,14 +165,14 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
       {/* Trading Pairs Section */}
-      <div className='bg-[#1A1A1A] rounded-2xl p-6 mb-6 shadow-lg border border-gray-800'>
+      <div className='p-6 mb-6'>
         <h3 className='text-base font-semibold mb-4 text-white'>
           Trade these coins with Unocoin
         </h3>
         <div className='overflow-x-auto'>
           <table className='min-w-full border-collapse'>
             <thead>
-              <tr className='border-b border-gray-700 text-gray-400 text-xs'>
+              <tr className='text-gray-400 text-xs'>
                 <th className='py-2 text-left'>Trading Pair</th>
                 <th className='py-2 text-left'>Status</th>
                 <th className='py-2 text-left'>Latest Price</th>
@@ -190,12 +201,7 @@ const Dashboard = ({ setShowSidebar }) => {
                   price: "Notebook",
                 },
               ].map((coin, i) => (
-                <tr
-                  key={i}
-                  className={`border-b border-gray-700 ${
-                    i % 2 === 0 ? "bg-[#151515]" : ""
-                  }`}
-                >
+                <tr key={i}>
                   <td className='py-3 text-white text-xs'>{coin.pair}</td>
                   <td className='py-3 text-green-400 text-xs'>{coin.status}</td>
                   <td className='py-3 text-white text-xs'>{coin.price}</td>
@@ -207,7 +213,7 @@ const Dashboard = ({ setShowSidebar }) => {
       </div>
 
       {/* History Section */}
-      <div className='bg-[#1A1A1A] rounded-2xl p-6 shadow-lg border border-gray-800'>
+      <div className='p-6'>
         <h3 className='text-base font-semibold mb-2 text-white'>
           When and how did it all start?
         </h3>

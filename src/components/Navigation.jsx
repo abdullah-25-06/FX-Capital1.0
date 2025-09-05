@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  FiHome,
   FiPieChart,
   FiDollarSign,
   FiBriefcase,
@@ -9,7 +8,11 @@ import {
 
 const Navigation = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { id: "dashboard", label: "Home", icon: <FiHome size={20} /> },
+    {
+      id: "dashboard",
+      label: "Home",
+      icon: <img src="/Logo.png" alt="home" width={24} height={24} />, // ✅ Logo instead of FiHome
+    },
     { id: "markets", label: "Markets", icon: <FiBarChart2 size={20} /> },
     { id: "trade", label: "Trade", icon: <FiDollarSign size={20} /> },
     { id: "finance", label: "Finance", icon: <FiPieChart size={20} /> },
@@ -17,8 +20,8 @@ const Navigation = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <nav className='fixed bottom-0 left-0 right-0 bg-poloniex-gray py-2 border-t border-gray-700 z-50'>
-      <div className='container mx-auto flex justify-around'>
+    <nav className="fixed bottom-0 left-0 right-0 bg-poloniex-gray py-2 border-t border-gray-700 z-50">
+      <div className="container mx-auto flex justify-around">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -29,8 +32,8 @@ const Navigation = ({ activeTab, setActiveTab }) => {
             }`}
             onClick={() => setActiveTab(tab.id)}
           >
-            <span className='mb-1'>{tab.icon}</span>
-            <span className='text-xs'>{tab.label}</span>
+            <span className="mb-1">{tab.icon}</span>
+            <span className="text-xs">{tab.label}</span>
           </button>
         ))}
       </div>
