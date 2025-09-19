@@ -55,17 +55,23 @@ function AppContent() {
   };
 
   return (
-    <div className='App min-h-screen bg-poloniex-section text-poloniex-text'>
-      <Header
-        setShowSidebar={setShowSidebar}
-        isAuthenticated={isAuthenticated}
-        user={user}
-        onLogout={logout}
-        onLogin={() => handleAuthAction("login")}
-        onSignup={() => handleAuthAction("signup")}
-      />
-      <div className='container mx-auto px-4 py-6 pb-20'>{renderContent()}</div>
+    <div className="App min-h-screen bg-poloniex-section text-poloniex-text">
+      {/* ✅ Header only for dashboard */}
+      {activeTab === "dashboard" && (
+        <Header
+          setShowSidebar={setShowSidebar}
+          isAuthenticated={isAuthenticated}
+          user={user}
+          onLogout={logout}
+          onLogin={() => handleAuthAction("login")}
+          onSignup={() => handleAuthAction("signup")}
+        />
+      )}
+
+      <div className="container mx-auto px-4 py-6 pb-20">{renderContent()}</div>
+
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+
       {showAuthModal && (
         <AuthModal
           mode={authMode}
@@ -73,6 +79,7 @@ function AppContent() {
           onSuccess={handleAuthSuccess}
         />
       )}
+
       {showSidebar && (
         <Sidebar
           activeTab={activeTab}

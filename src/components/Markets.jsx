@@ -1,144 +1,160 @@
 import React, { useState, useEffect } from "react";
 
+const coins = [
+  { symbol: "BTCUSDT", display: "BTC/USDT", id: "BTC" },
+  { symbol: "ETHUSDT", display: "ETH/USDT", id: "ETH" },
+  { symbol: "LTCUSDT", display: "LTC/USDT", id: "LTC" },
+  { symbol: "BNBUSDT", display: "BNB/USDT", id: "BNB" },
+  { symbol: "NEOUSDT", display: "NEO/USDT", id: "NEO" },
+  { symbol: "QTUMUSDT", display: "QTUM/USDT", id: "QTUM" },
+  { symbol: "EOSUSDT", display: "EOS/USDT", id: "EOS" },
+  { symbol: "SNTUSDT", display: "SNT/USDT", id: "SNT" },
+  { symbol: "BNTUSDT", display: "BNT/USDT", id: "BNT" },
+  { symbol: "BCHUSDT", display: "BCH/USDT", id: "BCH" },
+  { symbol: "GASUSDT", display: "GAS/USDT", id: "GAS" },
+];
+
+const coinIcons = {
+  BTC: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+  ETH: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+  LTC: "https://assets.coingecko.com/coins/images/2/large/litecoin.png",
+  BNB: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
+  NEO: "https://assets.coingecko.com/coins/images/480/large/neo.png",
+  QTUM: "https://assets.coingecko.com/coins/images/684/large/qtum.png",
+  EOS: "https://assets.coingecko.com/coins/images/738/large/eos-eos-logo.png",
+  SNT: "https://assets.coingecko.com/coins/images/779/large/status.png",
+  BNT: "https://assets.coingecko.com/coins/images/736/large/bancor.png",
+  BCH: "https://assets.coingecko.com/coins/images/780/large/bitcoin-cash-circle.png",
+  GAS: "https://assets.coingecko.com/coins/images/1785/large/neogas.png",
+};
+
 const Markets = () => {
-  const [tradingPairs, setTradingPairs] = useState([
-    { coin: "BTC", pair: "BTC/USDT", status: "In Transaction", price: "116593.00601", change: "+2.5%" },
-    { coin: "ETH", pair: "ETH/USDT", status: "In Transaction", price: "4348.52401", change: "+1.2%" },
-    { coin: "BNB", pair: "BNB/USDT", status: "In Transaction", price: "845.37701", change: "-0.5%" },
-    { coin: "XRP", pair: "XRP/USDT", status: "In Transaction", price: "3.08681", change: "+3.1%" },
-    { coin: "LINK", pair: "LINK/USDT", status: "In Transaction", price: "25.48421", change: "+1.8%" },
-    { coin: "BCH", pair: "BCH/USDT", status: "In Transaction", price: "570.15991", change: "-1.2%" },
-    { coin: "LTC", pair: "LTC/USDT", status: "In Transaction", price: "118.02001", change: "+0.8%" },
-    { coin: "BSV", pair: "BSV/USDT", status: "In Transaction", price: "26.92881", change: "-2.1%" },
-    { coin: "ADA", pair: "ADA/USDT", status: "In Transaction", price: "0.92051", change: "+4.2%" },
-  ]);
+  const [activeTab, setActiveTab] = useState("coin"); // "optional" | "coin"
+  const [tradingPairs, setTradingPairs] = useState(
+    coins.map((coin) => ({
+      ...coin,
+      price: "0.0000",
+      status: Math.random() > 0.5 ? "in transaction" : "closed",
+      image: coinIcons[coin.id],
+    }))
+  );
 
-  // Simulate real-time price updates
+  const fetchPrices = async () => {
+    try {
+      const response = await fetch("https://api.binance.com/api/v3/ticker/24hr");
+      const data = await response.json();
+
+      const updatedPairs = coins.map((coin) => {
+        const coinData = data.find((d) => d.symbol === coin.symbol);
+        const price = coinData ? parseFloat(coinData.lastPrice).toFixed(4) : "0.0000";
+        return {
+          ...coin,
+          price,
+          status: Math.random() > 0.5 ? "in transaction" : "closed",
+          image: coinIcons[coin.id],
+        };
+      });
+
+      setTradingPairs(updatedPairs);
+    } catch (error) {
+      console.error("Failed to fetch Binance prices:", error);
+    }
+  };
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTradingPairs((prevPairs) =>
-        prevPairs.map((pair) => ({
-          ...pair,
-          price: (
-            parseFloat(pair.price) *
-            (1 + (Math.random() - 0.5) * 0.01)
-          ).toFixed(5),
-        }))
-      );
-    }, 5000);
-
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
-      {/* Page Header */}
-      <div className="w-full py-6">
-        <h2 className="text-2xl lg:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 pl-6">
-          Transaction Quote
-        </h2>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt-0 pb-4">
+      <div className="w-full max-w-3xl space-y-3">
+        {/* Slim Wide Toggle Tabs */}
+        <div className="flex bg-gray-800 rounded-full p-1 w-full max-w-lg mx-auto shadow-inner mt-2">
+          <button
+            onClick={() => setActiveTab("optional")}
+            className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
+              activeTab === "optional"
+                ? "bg-gradient-to-r from-amber-200 to-amber-300 text-black"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Optional
+          </button>
+          <button
+            onClick={() => setActiveTab("coin")}
+            className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
+              activeTab === "coin"
+                ? "bg-gradient-to-r from-amber-200 to-amber-300 text-black"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Coin
+          </button>
+        </div>
 
-      {/* Desktop Table View */}
-      <div className="hidden lg:block w-full">
-        <table className="w-full text-sm">
-          <thead>
-            <tr>
-              <th className="py-4 px-6 text-left text-gray-300 font-semibold">Coin</th>
-              <th className="py-4 px-6 text-left text-gray-300 font-semibold">Trading Pair</th>
-              <th className="py-4 px-6 text-left text-gray-300 font-semibold">Status</th>
-              <th className="py-4 px-6 text-left text-gray-300 font-semibold">Latest Price</th>
-              <th className="py-4 px-6 text-left text-gray-300 font-semibold">24h Change</th>
-            </tr>
-          </thead>
-          <tbody>
+        {/* Table */}
+        {activeTab === "coin" && (
+          <>
+            {/* Heading */}
+            <div className="grid grid-cols-3 text-gray-400 text-sm font-semibold pl-3 pr-6 py-2 border-b border-gray-800">
+              <div>Trading Pair</div>
+              <div className="text-center">Status</div>
+              <div className="text-right">Latest Price</div>
+            </div>
+
+            {/* Rows */}
             {tradingPairs.map((coin, index) => (
-              <tr
+              <div
                 key={index}
-                className="hover:bg-slate-700/30 transition-all duration-300 cursor-pointer group"
+                className="grid grid-cols-3 items-center pl-3 pr-6 py-3 border-b border-gray-800 hover:bg-slate-800/30 transition"
               >
-                <td className="py-4 px-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg">
-                      <span className="text-slate-900 font-bold text-sm">
-                        {coin.coin.charAt(0)}
-                      </span>
-                    </div>
-                    <span className="font-bold text-yellow-400 group-hover:text-yellow-300 transition-colors text-base">
-                      {coin.coin}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-4 px-6 text-blue-400 font-semibold text-base">{coin.pair}</td>
-                <td className="py-4 px-6">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-500/20 text-green-400 border border-green-500/40">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                    {coin.status}
+                {/* Trading Pair + Icon (left) */}
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={coin.image}
+                    alt={coin.symbol}
+                    className="w-6 h-6 rounded-full"
+                  />
+                  <span className="text-white text-sm font-semibold">
+                    {coin.display}
                   </span>
-                </td>
-                <td className="py-4 px-6 font-mono text-white font-bold text-base">
-                  ${coin.price}
-                </td>
-                <td className="py-4 px-6">
+                </div>
+
+                {/* Status (center) */}
+                <div className="flex justify-center">
                   <span
-                    className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold ${
-                      coin.change.includes("+")
-                        ? "bg-green-500/20 text-green-400 border border-green-500/40"
-                        : "bg-red-500/20 text-red-400 border border-red-500/40"
+                    className={`px-2 py-1 rounded-md text-xs font-medium ${
+                      coin.status === "in transaction"
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-red-500/20 text-red-400"
                     }`}
                   >
-                    {coin.change}
+                    {coin.status}
                   </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
 
-      {/* Mobile Card View */}
-      <div className="lg:hidden">
-        {tradingPairs.map((coin, index) => (
-          <div
-            key={index}
-            className="p-4 hover:bg-slate-700/20 transition-all duration-300 cursor-pointer"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-slate-900 font-bold text-xs sm:text-sm">
-                    {coin.coin.charAt(0)}
-                  </span>
-                </div>
-                <div>
-                  <div className="font-bold text-yellow-400 text-sm sm:text-base">{coin.coin}</div>
-                  <div className="text-blue-400 text-xs sm:text-sm">{coin.pair}</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-mono text-white font-bold text-sm sm:text-base">
-                  ${parseFloat(coin.price).toLocaleString()}
-                </div>
-                <span
-                  className={`inline-flex items-center px-2 py-1 rounded text-xs font-bold ${
-                    coin.change.includes("+")
-                      ? "bg-green-500/20 text-green-400"
-                      : "bg-red-500/20 text-red-400"
+                {/* Latest Price (right) */}
+                <div
+                  className={`text-sm font-bold text-right ${
+                    coin.status === "in transaction"
+                      ? "text-green-400"
+                      : "text-red-400"
                   }`}
                 >
-                  {coin.change}
-                </span>
+                  {coin.price}
+                </div>
               </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400 text-xs sm:text-sm">Status:</span>
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400 border border-green-500/40">
-                <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 animate-pulse"></div>
-                {coin.status}
-              </span>
-            </div>
+            ))}
+          </>
+        )}
+
+        {activeTab === "optional" && (
+          <div className="text-center text-gray-400 py-6">
+            No optional data yet.
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

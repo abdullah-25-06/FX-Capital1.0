@@ -1,205 +1,229 @@
 import React, { useState, useEffect } from "react";
-import { Wallet, ArrowDownCircle, Receipt, LineChart } from "lucide-react";
+import {
+  Banknote,
+  ArrowUpRight,
+  ReceiptText,
+  CandlestickChart,
+  ArrowLeft,
+} from "lucide-react";
 
-const Dashboard = ({ setShowSidebar }) => {
+const Dashboard = () => {
+  const [page, setPage] = useState("dashboard");
   const [currentAd, setCurrentAd] = useState(0);
+  const [prices, setPrices] = useState({});
+  const [status, setStatus] = useState({});
+  const [amount, setAmount] = useState("");
 
   const ads = [
-    {
-      id: 1,
-      title: "🔥 Special Offer!",
-      content: "Get 0% trading fees for the first month on all BTC pairs",
-      bgColor: "bg-gradient-to-r from-blue-800 to-blue-600",
-    },
-    {
-      id: 2,
-      title: "✨ New Listing",
-      content: "Trade the new YOBAHENT/USDT pair with enhanced liquidity",
-      bgColor: "bg-gradient-to-r from-purple-800 to-purple-600",
-    },
-    {
-      id: 3,
-      title: "🎁 Referral Bonus",
-      content: "Earn 50% commission on every friend you refer to POLONIEX",
-      bgColor: "bg-gradient-to-r from-green-800 to-green-600",
-    },
+    { id: 1, title: "🔥 Special Offer!", content: "Get 0% trading fees for the first month on all BTC pairs", bgColor: "bg-gradient-to-r from-blue-800 to-blue-600" },
+    { id: 2, title: "✨ New Listing", content: "Trade the new YOBAHENT/USDT pair with enhanced liquidity", bgColor: "bg-gradient-to-r from-purple-800 to-purple-600" },
+    { id: 3, title: "🎁 Referral Bonus", content: "Earn 50% commission on every friend you refer to POLONIEX", bgColor: "bg-gradient-to-r from-green-800 to-green-600" },
   ];
 
+  const coinList = [
+    { symbol: "BTCUSDT", pair: "BTC/USDT", logo: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
+    { symbol: "ETHUSDT", pair: "ETH/USDT", logo: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
+    { symbol: "LTCUSDT", pair: "LTC/USDT", logo: "https://assets.coingecko.com/coins/images/2/large/litecoin.png" },
+    { symbol: "BNBUSDT", pair: "BNB/USDT", logo: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
+    { symbol: "NEOUSDT", pair: "NEO/USDT", logo: "https://assets.coingecko.com/coins/images/480/large/NEO_512_512.png" },
+    { symbol: "QTUMUSDT", pair: "QTUM/USDT", logo: "https://assets.coingecko.com/coins/images/684/large/qtum.png" },
+    { symbol: "EOSUSDT", pair: "EOS/USDT", logo: "https://assets.coingecko.com/coins/images/738/large/eos-eos-logo.png" },
+    { symbol: "SNTUSDT", pair: "SNT/USDT", logo: "https://assets.coingecko.com/coins/images/779/large/status.png" },
+    { symbol: "BNTUSDT", pair: "BNT/USDT", logo: "https://assets.coingecko.com/coins/images/736/large/bancor.png" },
+    { symbol: "BCHUSDT", pair: "BCH/USDT", logo: "https://assets.coingecko.com/coins/images/780/large/bitcoin-cash-circle.png" },
+    { symbol: "GASUSDT", pair: "GAS/USDT", logo: "https://assets.coingecko.com/coins/images/858/large/gas.png" },
+  ];
+
+  const rechargeOptions = [500, 2000, 5000, 10000, 50000];
+
+  // Rotate ads
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentAd((prev) => (prev + 1) % ads.length);
-    }, 5000);
+    const interval = setInterval(() => setCurrentAd(prev => (prev + 1) % ads.length), 5000);
     return () => clearInterval(interval);
   }, [ads.length]);
 
-  const nextAd = () => setCurrentAd((prev) => (prev + 1) % ads.length);
-  const prevAd = () =>
-    setCurrentAd((prev) => (prev - 1 + ads.length) % ads.length);
+  // Live prices
+  useEffect(() => {
+    const streamUrl = "wss://stream.binance.com:9443/stream?streams=" +
+      coinList.map(c => `${c.symbol.toLowerCase()}@ticker`).join("/");
+    const ws = new WebSocket(streamUrl);
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message?.data?.s) {
+        const symbol = message.data.s;
+        const price = parseFloat(message.data.c).toFixed(2);
+        setPrices(prev => ({ ...prev, [symbol]: price }));
+        setStatus(prev => ({ ...prev, [symbol]: Math.random() > 0.3 ? "In transaction" : "Closed" }));
+      }
+    };
+    return () => ws.close();
+  }, []);
 
-  return (
-    <div className="bg-[#0F172A] min-h-screen">
-      {/* ✅ Header Section - No Padding */}
-      <div className="border-b border-gray-700">
-        <div className="flex justify-between items-center px-2 py-3">
-          <div className="flex items-center">
-            <img src="/Logo.png" alt="Logo" className="w-9 h-9 mr-2" />
-            <h1 className="text-xl font-bold text-yellow-400 mr-4">
-              FX CAPITAL
-            </h1>
-            <span className="text-xs text-gray-400 hidden sm:block">
-              fx-capital.online
-            </span>
-          </div>
-          <div className="text-xs text-gray-400 pr-2">12:06</div>
+  // Dashboard Page
+  const renderDashboard = () => (
+    <div className="bg-[#0F172A] min-h-screen font-roboto">
+      <div className="relative border-b border-gray-800 overflow-hidden">
+        {/* Animated coins background */}
+        <div className="absolute inset-0 opacity-10 flex justify-around items-center -top-6">
+          <img src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png" alt="btc" className="w-20 h-20 animate-slowspin"/>
+          <img src="https://assets.coingecko.com/coins/images/279/large/ethereum.png" alt="eth" className="w-16 h-16 animate-float"/>
+          <img src="https://assets.coingecko.com/coins/images/325/large/Tether-logo.png" alt="usdt" className="w-14 h-14 animate-slowspin"/>
         </div>
-      </div>
 
-      {/* Total Assets Section */}
-      <div className="p-4 border-b border-gray-800">
-        <h2 className="text-base font-semibold mb-3 text-gray-300">
-          Total Assets (USDT)
-        </h2>
-        <p className="text-3xl font-bold text-white">0.00</p>
+        {/* Foreground */}
+        <div className="relative z-10 p-2 pt-2">
+          <h2 className="text-xs text-gray-400 font-light mb-1">Total assets equivalent (USDT)</h2>
+          <p className="text-3xl font-reddit text-white tracking-tight mb-3">944.32</p>
 
-        {/* Buttons Row */}
-        <div className="grid grid-cols-4 gap-2 mt-5">
-          {[
-            { icon: <Wallet size={24} />, label: "Wallet" },
-            { icon: <ArrowDownCircle size={24} />, label: "Deposit" },
-            { icon: <Receipt size={24} />, label: "History" },
-            { icon: <LineChart size={24} />, label: "Analytics" },
-          ].map((btn, i) => (
-            <div key={i} className="flex flex-col items-center">
-              <button className="w-full flex items-center justify-center bg-transparent text-yellow-500 py-4 rounded-full transition">
-                {btn.icon}
-              </button>
-              <span className="text-xs text-gray-400 mt-2">{btn.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Ad Slider Section */}
-      <div className="p-4 relative overflow-hidden border-b border-gray-800">
-        <div
-          className={`${ads[currentAd].bgColor} rounded-xl p-5 text-white transition-all duration-700`}
-        >
-          <h3 className="text-lg font-semibold mb-2">
-            {ads[currentAd].title}
-          </h3>
-          <p className="text-sm opacity-90">{ads[currentAd].content}</p>
-
-          {/* Navigation dots */}
-          <div className="flex justify-center mt-4 space-x-2">
-            {ads.map((_, index) => (
+          {/* Buttons */}
+          <div className="grid grid-cols-4 gap-4 mt-2">
+            {[
+              { icon: <Banknote size={28} />, label: "Recharge", action: () => setPage("recharge") },
+              { icon: <ArrowUpRight size={28} />, label: "Withdrawal" },
+              { icon: <ReceiptText size={28} />, label: "Transaction" },
+              { icon: <CandlestickChart size={28} />, label: "Future Market" },
+            ].map((btn, i) => (
               <button
-                key={index}
-                onClick={() => setCurrentAd(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentAd ? "bg-white scale-110" : "bg-white/50"
-                }`}
-              />
+                key={i}
+                onClick={btn.action}
+                className="flex flex-col items-center justify-center py-3 transition"
+              >
+                {/* Icon solid gold */}
+                <span className="text-yellow-400">{btn.icon}</span>
+
+                {/* Text with gradient */}
+                <span className="text-xs font-light mt-1 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                  {btn.label}
+                </span>
+              </button>
             ))}
           </div>
-
-          {/* Navigation arrows */}
-          <button
-            onClick={prevAd}
-            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 rounded-full p-2 hover:bg-black/60 transition"
-          >
-            <svg
-              className="w-4 h-4 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={nextAd}
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 rounded-full p-2 hover:bg-black/60 transition"
-          >
-            <svg
-              className="w-4 h-4 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
         </div>
       </div>
 
-      {/* Scrolling Banner */}
-      <div className="bg-gradient-to-r from-red-700 to-red-500 rounded-xl p-3 mb-4 overflow-hidden">
-        <div className="relative w-full">
-          <div className="animate-scroll whitespace-nowrap text-white text-sm font-medium">
-            🔥 In your payment, please feel free to contact our representatives 🔥 &nbsp;&nbsp;&nbsp; 🔥 In your payment, please feel free to contact our representatives 🔥
-          </div>
+      {/* Ad Slider */}
+      <div className="relative overflow-hidden border-b border-gray-800">
+        <div className={`${ads[currentAd].bgColor} rounded-lg p-4 text-white transition-all duration-700`}>
+          <h3 className="text-sm font-light mb-1">{ads[currentAd].title}</h3>
+          <p className="text-xs font-light opacity-90">{ads[currentAd].content}</p>
         </div>
       </div>
 
-      {/* Trading Pairs Section */}
-      <div className="p-4 border-b border-gray-800">
-        <h3 className="text-base font-semibold mb-4 text-white">
-          Trade these coins with Unocoin
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse">
+      {/* Horizontal Scroller */}
+      <div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
+        <div className="inline-block animate-marquee text-white font-light">
+          🔥 In your payment, please feel free to contact our representatives 🔥 &nbsp;
+          🔥 In your payment, please feel free to contact our representatives 🔥
+        </div>
+      </div>
+
+      {/* Trading Pairs */}
+      <div>
+        <h3 className="text-sm font-light mb-3 text-white p-3">Trade these coins with FX Capital</h3>
+        <div className="overflow-x-auto p-3">
+          <table className="min-w-full border-collapse table-fixed">
             <thead>
-              <tr className="text-gray-400 text-xs">
-                <th className="py-2 text-left">Trading Pair</th>
-                <th className="py-2 text-left">Status</th>
-                <th className="py-2 text-left">Latest Price</th>
+              <tr className="text-gray-400 text-[11px] font-light">
+                <th className="py-2 text-left w-1/3">Pair</th>
+                <th className="py-2 text-center w-1/3">Status</th>
+                <th className="py-2 text-right w-1/3">Price</th>
               </tr>
             </thead>
             <tbody>
-              {[
-                { pair: "BTC/USDT", status: "In transaction", price: "16,993.0080" },
-                { pair: "ETH/USDT", status: "In transaction", price: "2,345.37" },
-                { pair: "BNB/USDT", status: "In transaction", price: "845.3770" },
-                { pair: "YOBAHENT/USDT", status: "In transaction", price: "Notebook" },
-              ].map((coin, i) => (
-                <tr key={i}>
-                  <td className="py-3 text-white text-xs">{coin.pair}</td>
-                  <td className="py-3 text-green-400 text-xs">{coin.status}</td>
-                  <td className="py-3 text-white text-xs">{coin.price}</td>
+              {coinList.map((coin, i) => (
+                <tr key={i} className="border-b border-gray-800 hover:bg-gray-800/40 transition">
+                  <td className="py-3 flex items-center space-x-2 text-white text-sm w-1/3 font-light">
+                    <img src={coin.logo} alt={coin.pair} className="w-6 h-6"/>
+                    <span>{coin.pair}</span>
+                  </td>
+                  <td className={`py-3 text-sm w-1/3 text-center font-light ${status[coin.symbol]==="In transaction"?"text-green-400":"text-red-400"}`}>
+                    {status[coin.symbol] || "--"}
+                  </td>
+                  <td className="py-3 text-sm w-1/3 text-right text-white font-reddit">
+                    {prices[coin.symbol] || "--"}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* History Section */}
-      <div className="p-4">
-        <h3 className="text-base font-semibold mb-2 text-white">
-          When and how did it all start?
-        </h3>
-        <p className="text-gray-300 text-sm">
-          On the 15th of December 2013, when India started trading crypto assets!
-        </p>
-      </div>
-
-      {/* Custom CSS for scroll */}
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-        .animate-scroll {
-          animation: scroll 18s linear infinite;
-          display: inline-block;
-        }
-      `}</style>
     </div>
   );
+
+  // Recharge Page
+  const renderRecharge = () => (
+    <div className="bg-[#0A1A2F] min-h-screen text-white font-roboto">
+      <div className="flex items-center mb-6 p-3 pt-0">
+        <button onClick={() => setPage("dashboard")} className="text-gray-300 hover:text-blue-400">
+          <ArrowLeft size={28} />
+        </button>
+        <h1 className="ml-3 text-2xl font-light text-white">Recharge</h1>
+      </div>
+
+      <div className="space-y-4 p-3 pt-0">
+        {[ 
+          { label: "USDT (TRC20)", value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd" },
+          { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
+          { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
+          { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
+        ].map((item, idx) => (
+          <div key={idx}>
+            <p className="text-sm text-gray-400 font-light mb-1">{item.label}</p>
+            <div className="bg-gray-800 rounded-lg px-3 py-2 flex justify-between items-center">
+              <span className="text-sm text-white font-reddit break-all">{item.value}</span>
+              <button className="text-blue-400 text-sm font-light">Copy</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 p-3 pt-0">
+        <p className="text-sm text-gray-400 font-light mb-3">Number of recharges (USDT)</p>
+        <div className="grid grid-cols-3 gap-2">
+          {rechargeOptions.map((value) => (
+            <button
+              key={value}
+              onClick={() => setAmount(value)}
+              className={`py-3 rounded-lg text-sm transition font-light ${
+                amount === value
+                  ? "bg-blue-600 text-white font-reddit"
+                  : "bg-gray-700 text-gray-300 hover:bg-blue-500 hover:text-white font-reddit"
+              }`}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+
+        <input
+          type="number"
+          placeholder="Please enter the amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="mt-4 w-full px-3 py-3 bg-gray-800 text-white text-sm rounded-lg font-reddit outline-none placeholder-gray-400"
+        />
+      </div>
+
+      <div className="mt-6 p-3 pt-0">
+        <p className="text-sm text-gray-400 font-light mb-2">Upload recharge certificate</p>
+        <div className="w-full h-24 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400">
+          <span className="text-gray-400 text-sm font-light">Upload</span>
+        </div>
+      </div>
+
+      <div className="mt-6 p-3 pt-0">
+        <button
+          onClick={() => { alert(`Recharge request submitted: ${amount} USDT`); }}
+          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-reddit text-lg rounded-lg transition"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  );
+
+  return page === "dashboard" ? renderDashboard() : renderRecharge();
 };
 
 export default Dashboard;
