@@ -1,169 +1,147 @@
+// TradingExactRealtime.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { createChart, CrosshairMode } from "lightweight-charts";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-// ==================== ORDER MODAL ====================
+/* ---------------- Indicator helpers ---------------- */
+const emaArray = (values, period) => {
+  const res = new Array(values.length).fill(null);
+  const k = 2 / (period + 1);
+  let emaPrev = null;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    if (i < period - 1) { res[i] = null; continue; }
+    if (i === period - 1) {
+      const sum = values.slice(0, period).reduce((s, x) => s + x, 0);
+      emaPrev = sum / period;
+      res[i] = emaPrev;
+    } else {
+      emaPrev = (v - emaPrev) * k + emaPrev;
+      res[i] = emaPrev;
+    }
+  }
+  return res;
+};
+
+const calcMAseries = (closes, period, times) => {
+  const out = [];
+  for (let i = 0; i < closes.length; i++) {
+    if (i < period) continue;
+    const mean = closes.slice(i - period, i).reduce((s, x) => s + x, 0) / period;
+    out.push({ time: times[i], value: mean });
+  }
+  return out;
+};
+
+const computeMACD = (closes, times) => {
+  const fast = emaArray(closes, 12);
+  const slow = emaArray(closes, 26);
+  const macdLine = closes.map((_, i) => fast[i] !== null && slow[i] !== null ? fast[i] - slow[i] : null);
+  const compact = macdLine.filter((v) => v !== null);
+  const signalCompact = emaArray(compact, 9);
+  const signal = [];
+  let idx = 0;
+  for (let i = 0; i < macdLine.length; i++) {
+    if (macdLine[i] === null) signal.push(null);
+    else { signal.push(signalCompact[idx] ?? null); idx++; }
+  }
+  const hist = macdLine.map((m, i) => m !== null && signal[i] !== null ? m - signal[i] : null);
+
+  const difSeries = [], deaSeries = [], histSeries = [];
+  for (let i = 0; i < times.length; i++) {
+    if (macdLine[i] !== null) difSeries.push({ time: times[i], value: macdLine[i] });
+    if (signal[i] !== null) deaSeries.push({ time: times[i], value: signal[i] });
+    if (hist[i] !== null)
+      histSeries.push({ time: times[i], value: hist[i], color: hist[i] >= 0 ? "#22c55e" : "#ef4444" });
+  }
+  return { difSeries, deaSeries, histSeries };
+};
+
+/* ---------------- Order Modal ---------------- */
 const OrderModal = ({ show, onClose, price, direction, pair }) => {
   const [selectedTime, setSelectedTime] = useState("180s");
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState("");
 
   if (!show) return null;
-
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-[#0f172a] rounded-xl shadow-2xl w-[400px] text-white border border-gray-700">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-700">
-          <h2 className="text-lg font-bold">Order Confirmation</h2>
+      <div className="bg-[#0f172a] rounded-xl shadow-2xl w-[300px] text-white border border-gray-700">
+        <div className="px-3 py-2 border-b border-gray-700">
+          <h2 className="text-base font-bold">Order Confirmation</h2>
         </div>
 
-        <div className="p-6 space-y-5">
-          {/* Trading Pair */}
+        <div className="p-3 space-y-3">
           <div className="flex justify-between">
-            <span className="text-gray-400 text-sm">Trading Pair</span>
+            <span className="text-gray-400 text-xs">Trading Pair</span>
             <span className="font-semibold">{pair || "BTC/USDT"}</span>
           </div>
 
-          {/* Direction */}
           <div className="flex justify-between">
-            <span className="text-gray-400 text-sm">Direction</span>
-            <span
-              className={`font-semibold ${
-                direction === "Buy" ? "text-green-400" : "text-red-400"
-              }`}
-            >
-              {direction}
-            </span>
+            <span className="text-gray-400 text-xs">Direction</span>
+            <span className={`font-semibold ${direction === "Buy" ? "text-green-400" : "text-red-400"}`}>{direction}</span>
           </div>
 
-          {/* Current Price */}
           <div className="flex justify-between">
-            <span className="text-gray-400 text-sm">Current Price</span>
-            <span className="font-semibold">
-              {price ? price.toFixed(3) : "--"}
-            </span>
+            <span className="text-gray-400 text-xs">Current Price</span>
+            <span className="font-semibold">{price ? price.toFixed(3) : "--"}</span>
           </div>
 
-          {/* Expiration Time */}
           <div>
-            <p className="text-sm text-gray-300 mb-2">Select expiration time</p>
-            <div className="grid grid-cols-4 gap-2">
-              {[
-                { t: "180s", p: "20%" },
-                { t: "300s", p: "30%" },
-                { t: "600s", p: "40%" },
-                { t: "900s", p: "50%" },
-              ].map((opt) => (
-                <button
-                  key={opt.t}
-                  onClick={() => setSelectedTime(opt.t)}
-                  className={`flex flex-col items-center justify-center py-2 rounded-lg border text-sm transition ${
-                    selectedTime === opt.t
-                      ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30"
-                      : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
-                  }`}
-                >
+            <p className="text-xs text-gray-300 mb-1">Select expiration time</p>
+            <div className="grid grid-cols-4 gap-1">
+              {[{ t: "180s", p: "20%" }, { t: "300s", p: "30%" }, { t: "600s", p: "40%" }, { t: "900s", p: "50%" }].map((opt) => (
+                <button key={opt.t} onClick={() => setSelectedTime(opt.t)} className={`flex flex-col items-center justify-center py-1.5 rounded-lg border text-xs transition ${selectedTime === opt.t ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30" : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"}`}>
                   {opt.t}
-                  <span className="text-xs text-gray-400">{opt.p}</span>
+                  <span className="text-[10px] text-gray-400">{opt.p}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Amount */}
           <div>
-            <p className="text-sm text-gray-300 mb-2">Amount</p>
-            <div className="grid grid-cols-3 gap-2 mb-2">
+            <p className="text-xs text-gray-300 mb-1">Amount</p>
+            <div className="grid grid-cols-3 gap-1 mb-1">
               {[500, 2000, 5000, 10000, 50000, 100000, "All"].map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => {
-                    setSelectedAmount(amt);
-                    setCustomAmount("");
-                  }}
-                  className={`py-2 rounded-lg border text-sm transition ${
-                    selectedAmount === amt
-                      ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30"
-                      : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
-                  }`}
-                >
+                <button key={amt} onClick={() => { setSelectedAmount(amt); setCustomAmount(""); }} className={`py-1.5 rounded-lg border text-xs transition ${selectedAmount === amt ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30" : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"}`}>
                   {amt === "All" ? "All" : `$${amt}`}
                 </button>
               ))}
             </div>
-            <input
-              type="number"
-              placeholder="Custom Amount"
-              value={customAmount}
-              onChange={(e) => {
-                setCustomAmount(e.target.value);
-                setSelectedAmount(null);
-              }}
-              className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
+            <input type="number" placeholder="Custom Amount" value={customAmount} onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }} className="w-full px-2 py-1.5 rounded-lg bg-transparent border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs" />
           </div>
 
-          <div className="flex justify-between text-sm text-gray-400">
+          <div className="flex justify-between text-xs text-gray-400">
             <span>Balance: 887.56</span>
             <span className="text-red-400">Handling fee: 0% (0 USDT)</span>
           </div>
         </div>
 
-        {/* Footer Buttons */}
         <div className="flex border-t border-gray-700">
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 text-gray-400 bg-[#1e293b] hover:bg-[#2d3b50] rounded-bl-xl"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => {
-              const amt = customAmount || selectedAmount;
-              alert(
-                `Order confirmed:\n${direction} ${pair}\nPrice: $${price?.toFixed(
-                  2
-                )}\nTime: ${selectedTime}\nAmount: ${amt}`
-              );
-              onClose();
-            }}
-            className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 rounded-br-xl font-semibold text-white"
-          >
-            OK
-          </button>
+          <button onClick={onClose} className="flex-1 py-1.5 text-gray-400 bg-[#1e293b] hover:bg-[#2d3b50] rounded-bl-xl text-xs">Cancel</button>
+          <button onClick={() => { const amt = customAmount || selectedAmount; alert(`Order confirmed:\n${direction} ${pair}\nPrice: $${price?.toFixed(2)}\nTime: ${selectedTime}\nAmount: ${amt}`); onClose(); }} className="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-br-xl font-semibold text-white text-xs">OK</button>
         </div>
       </div>
     </div>
   );
 };
 
-// ==================== MAIN TRADING COMPONENT ====================
-const Trading = () => {
-  const chartContainerRef = useRef();
-  const chartRef = useRef();
-  const candleSeriesRef = useRef();
-  const volumeSeriesRef = useRef();
-  const ma5Ref = useRef();
-  const ma10Ref = useRef();
-  const ma30Ref = useRef();
-
-  const [price, setPrice] = useState(null);
-  const [change, setChange] = useState(null);
-  const [interval, setInterval] = useState("1m");
-  const [isBuying, setIsBuying] = useState(false);
+/* ---------------- Main component ---------------- */
+const TradingExactRealtime = () => {
+  const mainRef = useRef(); const volRef = useRef(); const macdRef = useRef();
+  const mainChartRef = useRef(null); const volChartRef = useRef(null); const macdChartRef = useRef(null);
+  const candleSeriesRef = useRef(null); const ma5Ref = useRef(null); const ma10Ref = useRef(null); const ma30Ref = useRef(null);
+  const volSeriesRef = useRef(null); const macdHistRef = useRef(null); const difRef = useRef(null); const deaRef = useRef(null);
+  const priceLineRef = useRef(null); const candlesRef = useRef([]);
 
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
-
+  const [interval, setIntervalState] = useState("1m");
+  const [price, setPrice] = useState(null);
+  const [change, setChange] = useState(null);
   const [todayHigh, setTodayHigh] = useState(null);
   const [todayLow, setTodayLow] = useState(null);
-
-  const [orderBook, setOrderBook] = useState({ bids: [], asks: [] });
-  const [trades, setTrades] = useState([]);
-  const [activeTab, setActiveTab] = useState("orderBook"); // toggle
-
+  const [maVals, setMaVals] = useState({ ma5: null, ma10: null, ma30: null });
   const [showModal, setShowModal] = useState(false);
   const [modalDirection, setModalDirection] = useState("Buy");
 
@@ -171,405 +149,273 @@ const Trading = () => {
     { symbol: "BTCUSDT", name: "Bitcoin (BTC/USDT)" },
     { symbol: "ETHUSDT", name: "Ethereum (ETH/USDT)" },
     { symbol: "LTCUSDT", name: "Litecoin (LTC/USDT)" },
-    { symbol: "BNBUSDT", name: "BNB (BNB/USDT)" },
-    { symbol: "NEOUSDT", name: "NEO (NEO/USDT)" },
-    { symbol: "QTUMUSDT", name: "Qtum (QTUM/USDT)" },
-    { symbol: "EOSUSDT", name: "EOS (EOS/USDT)" },
-    { symbol: "SNTUSDT", name: "Status (SNT/USDT)" },
-    { symbol: "BNTUSDT", name: "Bancor (BNT/USDT)" },
-    { symbol: "BCHUSDT", name: "Bitcoin Cash (BCH/USDT)" },
-    { symbol: "GASUSDT", name: "NeoGas (GAS/USDT)" },
+    { symbol: "BNBUSDT", name: "Binance Coin (BNB/USDT)" },
+    { symbol: "XRPUSDT", name: "Ripple (XRP/USDT)" },
+    { symbol: "ADAUSDT", name: "Cardano (ADA/USDT)" },
+    { symbol: "DOGEUSDT", name: "Dogecoin (DOGE/USDT)" },
+    { symbol: "SOLUSDT", name: "Solana (SOL/USDT)" },
+    { symbol: "DOTUSDT", name: "Polkadot (DOT/USDT)" },
+    { symbol: "MATICUSDT", name: "Polygon (MATIC/USDT)" },
+    { symbol: "AVAXUSDT", name: "Avalanche (AVAX/USDT)" },
+    { symbol: "SHIBUSDT", name: "Shiba Inu (SHIB/USDT)" },
+    { symbol: "TRXUSDT", name: "TRON (TRX/USDT)" },
+    { symbol: "ATOMUSDT", name: "Cosmos (ATOM/USDT)" },
+    { symbol: "LINKUSDT", name: "Chainlink (LINK/USDT)" },
   ];
 
-  const getWsUrl = (symbol, interval) =>
-    `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${interval}`;
+  const getKlineWs = (sym, intv) => `wss://stream.binance.com:9443/ws/${sym.toLowerCase()}@kline_${intv}`;
+  const getTickerWs = (sym) => `wss://stream.binance.com:9443/ws/${sym.toLowerCase()}@ticker`;
 
-  // Chart setup
+  /* ---------- create and sync charts ---------- */
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    if (!mainRef.current || !volRef.current || !macdRef.current) return;
 
-    const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth || 600,
-      height: chartContainerRef.current.clientHeight || 350,
-      layout: {
-        background: { type: "solid", color: "#0f172a" },
-        textColor: "#d1d5db",
-      },
-      grid: {
-        vertLines: { color: "rgba(255,255,255,0.15)" },
-        horzLines: { color: "rgba(255,255,255,0.15)" },
-      },
+    const mainChart = createChart(mainRef.current, {
+      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db" },
+      width: mainRef.current.clientWidth, height: 220,
+      grid: { vertLines: { color: "rgba(255,255,255,0.08)" }, horzLines: { color: "rgba(255,255,255,0.08)" } },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: "#334155" },
-      timeScale: { borderColor: "#334155", timeVisible: true },
+      rightPriceScale: { borderColor: "#334155", drawTicks: false },
+      timeScale: { borderColor: "#334155", timeVisible: false },
     });
-    chartRef.current = chart;
+    mainChartRef.current = mainChart;
 
-    candleSeriesRef.current = chart.addCandlestickSeries({
-      upColor: "#22c55e",
-      downColor: "#ef4444",
-      borderDownColor: "#ef4444",
-      borderUpColor: "#22c55e",
-      wickDownColor: "#ef4444",
-      wickUpColor: "#22c55e",
-    });
+    candleSeriesRef.current = mainChart.addCandlestickSeries({ upColor: "#22c55e", downColor: "#ef4444", borderDownColor: "#ef4444", borderUpColor: "#22c55e", wickDownColor: "#ef4444", wickUpColor: "#22c55e" });
+    ma5Ref.current = mainChart.addLineSeries({ color: "orange", lineWidth: 1 });
+    ma10Ref.current = mainChart.addLineSeries({ color: "#a78bfa", lineWidth: 1 });
+    ma30Ref.current = mainChart.addLineSeries({ color: "#3b82f6", lineWidth: 1 });
 
-    volumeSeriesRef.current = chart.addHistogramSeries({
-      priceFormat: { type: "volume" },
-      priceScaleId: "",
-    });
-    chart.priceScale("").applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
+    priceLineRef.current = candleSeriesRef.current.createPriceLine({
+      price: 0,
+      color: "#f97316",
+      lineWidth: 1,
+      axisLabelVisible: false,
+      lineStyle: 2
     });
 
-    ma5Ref.current = chart.addLineSeries({ color: "orange", lineWidth: 1 });
-    ma10Ref.current = chart.addLineSeries({ color: "purple", lineWidth: 1 });
-    ma30Ref.current = chart.addLineSeries({ color: "blue", lineWidth: 1 });
+    const volChart = createChart(volRef.current, {
+      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db" },
+      width: volRef.current.clientWidth, height: 60,
+      grid: { vertLines: { color: "rgba(255,255,255,0.06)" }, horzLines: { color: "rgba(255,255,255,0.06)" } },
+      crosshair: { mode: CrosshairMode.Normal },
+      rightPriceScale: { visible: false, borderColor: "#334155" }, timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
+    });
+    volChartRef.current = volChart;
+    volSeriesRef.current = volChart.addHistogramSeries({ priceFormat: { type: "volume" }, priceScaleId: "" });
 
-    return () => chart.remove();
+    const macdChart = createChart(macdRef.current, {
+      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db" },
+      width: macdRef.current.clientWidth, height: 70,
+      grid: { vertLines: { color: "rgba(255,255,255,0.06)" }, horzLines: { color: "rgba(255,255,255,0.06)" } },
+      crosshair: { mode: CrosshairMode.Normal },
+      rightPriceScale: { visible: false, borderColor: "#334155" }, timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
+    });
+    macdChartRef.current = macdChart;
+    macdHistRef.current = macdChart.addHistogramSeries({ color: "#22c55e", priceFormat: { type: "volume" }, priceScaleId: "" });
+    difRef.current = macdChart.addLineSeries({ color: "#f59e0b", lineWidth: 1 });
+    deaRef.current = macdChart.addLineSeries({ color: "#7c3aed", lineWidth: 1 });
+
+    const unsubVisible = mainChart.timeScale().subscribeVisibleTimeRangeChange((range) => {
+      if (!range) return;
+      try { volChart.timeScale().setVisibleRange(range); macdChart.timeScale().setVisibleRange(range); } catch (e) {}
+    });
+
+    const handleResize = () => {
+      const w = mainRef.current.clientWidth;
+      mainChart.applyOptions({ width: w }); volChart.applyOptions({ width: w }); macdChart.applyOptions({ width: w });
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      if (typeof unsubVisible === "function") { try { unsubVisible(); } catch (e) {} }
+      window.removeEventListener("resize", handleResize);
+      try { mainChart.remove(); volChart.remove(); macdChart.remove(); } catch {}
+    };
   }, []);
 
-  // Kline history + live updates
+  /* --------- fetch history + attach websockets --------- */
   useEffect(() => {
-    if (!candleSeriesRef.current) return;
-    let ws;
+    if (!candleSeriesRef.current || !volSeriesRef.current) return;
+    let wsKline = null; let wsTicker = null; let isMounted = true;
 
-    const fetchHistory = async () => {
+    const fetchAndInit = async () => {
       try {
-        const res = await fetch(
-          `https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${interval}&limit=200`
-        );
-        const data = await res.json();
-        const candles = data.map((d) => ({
-          time: d[0] / 1000,
-          open: parseFloat(d[1]),
-          high: parseFloat(d[2]),
-          low: parseFloat(d[3]),
-          close: parseFloat(d[4]),
-        }));
-        candleSeriesRef.current.setData(candles);
+        const url = `https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${interval}&limit=500`;
+        const res = await fetch(url); const data = await res.json();
+        if (!isMounted) return;
 
-        const volumes = data.map((d) => ({
-          time: d[0] / 1000,
-          value: parseFloat(d[5]),
-          color: parseFloat(d[4]) >= parseFloat(d[1]) ? "#22c55e" : "#ef4444",
-        }));
-        volumeSeriesRef.current.setData(volumes);
+        const candles = data.map((d) => ({ time: d[0]/1000, open: parseFloat(d[1]), high: parseFloat(d[2]), low: parseFloat(d[3]), close: parseFloat(d[4]), volume: parseFloat(d[5]) }));
+        candlesRef.current = candles;
+        candleSeriesRef.current.setData(candles.map((c)=>({time:c.time, open:c.open, high:c.high, low:c.low, close:c.close})));
+        volSeriesRef.current.setData(candles.map((c)=>({time:c.time, value:c.volume, color:c.close>=c.open?"#22c55e":"#ef4444"})));
 
-        // Moving averages
-        const calcMA = (period) =>
-          candles
-            .map((c, i, arr) =>
-              i < period
-                ? null
-                : {
-                    time: c.time,
-                    value:
-                      arr.slice(i - period, i).reduce((s, x) => s + x.close, 0) /
-                      period,
-                  }
-            )
-            .filter((x) => x);
-        ma5Ref.current.setData(calcMA(5));
-        ma10Ref.current.setData(calcMA(10));
-        ma30Ref.current.setData(calcMA(30));
+        const closes = candles.map((c)=>c.close); const times = candles.map((c)=>c.time);
+        const ma5Data = calcMAseries(closes,5,times);
+        const ma10Data = calcMAseries(closes,10,times);
+        const ma30Data = calcMAseries(closes,30,times);
+        ma5Ref.current.setData(ma5Data);
+        ma10Ref.current.setData(ma10Data);
+        ma30Ref.current.setData(ma30Data);
 
-        const lastCandle = candles[candles.length - 1];
-        setPrice(lastCandle.close);
-        const prevClose = candles[candles.length - 2]?.close || lastCandle.open;
-        setChange(((lastCandle.close - prevClose) / prevClose) * 100);
-      } catch (err) {
-        console.error("History fetch error:", err);
-      }
+        setMaVals({
+          ma5: ma5Data[ma5Data.length-1]?.value ?? null,
+          ma10: ma10Data[ma10Data.length-1]?.value ?? null,
+          ma30: ma30Data[ma30Data.length-1]?.value ?? null
+        });
+
+        const { difSeries, deaSeries, histSeries } = computeMACD(closes, times);
+        difRef.current.setData(difSeries); deaRef.current.setData(deaSeries); macdHistRef.current.setData(histSeries);
+
+        const last = candles[candles.length-1]; setPrice(last.close);
+        const prevClose = candles[candles.length-2]?.close ?? last.open;
+        setChange(((last.close-prevClose)/prevClose)*100);
+        if(priceLineRef.current) { try { priceLineRef.current.applyOptions({price:last.close}); } catch {} }
+      } catch(err) { console.error("history fetch error:", err); }
     };
 
-    fetchHistory();
+    fetchAndInit();
 
-    ws = new WebSocket(getWsUrl(selectedCoin, interval));
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.k) {
-        const k = msg.k;
-        const candle = {
-          time: k.t / 1000,
-          open: parseFloat(k.o),
-          high: parseFloat(k.h),
-          low: parseFloat(k.l),
-          close: parseFloat(k.c),
-        };
-        candleSeriesRef.current.update(candle);
+    try {
+      wsKline = new WebSocket(getKlineWs(selectedCoin, interval));
+      wsKline.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data); if(!msg.k) return;
+        const k = msg.k; const candle = { time:k.t/1000, open:parseFloat(k.o), high:parseFloat(k.h), low:parseFloat(k.l), close:parseFloat(k.c), volume:parseFloat(k.v) };
+        const arr = candlesRef.current;
+        if(arr.length===0) arr.push(candle);
+        else { const last=arr[arr.length-1]; if(last.time===candle.time) arr[arr.length-1]=candle; else if(candle.time>last.time){ arr.push(candle); if(arr.length>1000) arr.shift(); } }
 
-        const volume = {
-          time: k.t / 1000,
-          value: parseFloat(k.v),
-          color: parseFloat(k.c) >= parseFloat(k.o) ? "#22c55e" : "#ef4444",
-        };
-        volumeSeriesRef.current.update(volume);
+        try {
+          candleSeriesRef.current.update({time:candle.time, open:candle.open, high:candle.high, low:candle.low, close:candle.close});
+          volSeriesRef.current.update({time:candle.time, value:candle.volume, color:candle.close>=candle.open?"#22c55e":"#ef4444"});
+        } catch(e){ candleSeriesRef.current.setData(candlesRef.current.map((c)=>({time:c.time, open:c.open, high:c.high, low:c.low, close:c.close})));
+          volSeriesRef.current.setData(candlesRef.current.map((c)=>({time:c.time, value:c.volume, color:c.close>=candle.open?"#22c55e":"#ef4444"}))); }
+
+        const closes = candlesRef.current.map(c=>c.close); const times = candlesRef.current.map(c=>c.time);
+        const ma5Data = calcMAseries(closes,5,times);
+        const ma10Data = calcMAseries(closes,10,times);
+        const ma30Data = calcMAseries(closes,30,times);
+        ma5Ref.current.setData(ma5Data);
+        ma10Ref.current.setData(ma10Data);
+        ma30Ref.current.setData(ma30Data);
+        setMaVals({
+          ma5: ma5Data[ma5Data.length-1]?.value ?? null,
+          ma10: ma10Data[ma10Data.length-1]?.value ?? null,
+          ma30: ma30Data[ma30Data.length-1]?.value ?? null
+        });
+
+        const { difSeries, deaSeries, histSeries } = computeMACD(closes, times);
+        difRef.current.setData(difSeries); deaRef.current.setData(deaSeries); macdHistRef.current.setData(histSeries);
 
         setPrice(candle.close);
-      }
-    };
-
-    return () => ws && ws.close();
-  }, [interval, selectedCoin]);
-
-  // Live High/Low
-  useEffect(() => {
-    let wsTicker = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`
-    );
-    wsTicker.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setTodayHigh(parseFloat(data.h));
-      setTodayLow(parseFloat(data.l));
-    };
-    return () => wsTicker && wsTicker.close();
-  }, [selectedCoin]);
-
-  // Order Book
-  useEffect(() => {
-    const wsDepth = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@depth`
-    );
-    wsDepth.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.b && data.a) {
-        setOrderBook({
-          bids: data.b.slice(0, 10).map(([p, q]) => ({
-            price: parseFloat(p),
-            qty: parseFloat(q),
-          })),
-          asks: data.a.slice(0, 10).map(([p, q]) => ({
-            price: parseFloat(p),
-            qty: parseFloat(q),
-          })),
-        });
-      }
-    };
-    return () => wsDepth.close();
-  }, [selectedCoin]);
-
-  // Recent Trades
-  useEffect(() => {
-    const wsTrade = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@trade`
-    );
-    wsTrade.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const t = {
-        price: parseFloat(data.p),
-        qty: parseFloat(data.q),
-        isBuy: data.m === false,
-        time: new Date(data.T).toLocaleTimeString(),
+        const prevClose = candlesRef.current[candlesRef.current.length-2]?.close ?? candle.open;
+        setChange(((candle.close-prevClose)/prevClose)*100);
+        if(priceLineRef.current){ try{ priceLineRef.current.applyOptions({price:candle.close}); }catch{} }
       };
-      setTrades((prev) => [t, ...prev.slice(0, 14)]);
-    };
-    return () => wsTrade.close();
-  }, [selectedCoin]);
+    } catch(e){ console.error("kline ws failed",e); }
 
+    try {
+      wsTicker = new WebSocket(getTickerWs(selectedCoin));
+      wsTicker.onmessage = (ev) => {
+        const d = JSON.parse(ev.data);
+        if(d.h) setTodayHigh(parseFloat(d.h));
+        if(d.l) setTodayLow(parseFloat(d.l));
+        const last = parseFloat(d.c ?? d.a ?? d.b ?? NaN);
+        if(!isNaN(last)) { setPrice(last); if(priceLineRef.current){ try{ priceLineRef.current.applyOptions({price:last}); }catch{} } }
+      };
+    } catch(e){ console.error("ticker ws failed",e); }
+
+    return () => { isMounted=false; try{ if(wsKline) wsKline.close(); }catch{} try{ if(wsTicker) wsTicker.close(); }catch{} };
+  }, [selectedCoin, interval]);
+
+  /* ---------------- UI ---------------- */
   return (
-    <div className="bg-gradient-to-br from-[#0f172a] to-[#1e293b] w-full h-screen flex flex-col text-white overflow-hidden">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-gray-800 relative z-20">
-        <div
-          className="flex items-center cursor-pointer space-x-2 hover:text-yellow-400 relative"
-          onClick={() => setShowDropdown(!showDropdown)}
-        >
-          <h1 className="text-xl font-bold">
-            {selectedCoin.replace("USDT", "")}/USDT
-          </h1>
-          {showDropdown ? (
-            <ChevronUp size={18} className="text-gray-400" />
-          ) : (
-            <ChevronDown size={18} className="text-gray-400" />
+    <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col">
+      <div className="text-center text-[15px] text-white-400 py-0.000001">OptionsTransaction</div>
+
+      {/* header */}
+      <div className="flex items-start justify-between px-2 pb-2 border-b border-gray-800 relative">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1 cursor-pointer" onClick={()=>setShowDropdown(s=>!s)}>
+            <div className="text-lg font-semibold">{selectedCoin.replace("USDT","")}/USDT</div>
+            <div>{showDropdown?<ChevronUp size={14}/>:<ChevronDown size={14}/>}</div>
+          </div>
+          <div className={`text-[20px] ${change >= 0 ? "text-green-400" : "text-red-400"}`}>
+  {price ? price.toFixed(3) : "--"} {change >= 0 ? "↑" : "↓"}
+</div>
+
+
+          {showDropdown && (
+            <div className="absolute top-6 left-0 w-40 max-h-52 overflow-y-auto bg-[#0f172a] border border-gray-700 rounded shadow-lg z-50">
+              {coins.map(c => (
+                <div key={c.symbol} 
+                  onClick={() => { setSelectedCoin(c.symbol); setShowDropdown(false); }}
+                  className={`px-3 py-1 cursor-pointer hover:bg-blue-600 ${selectedCoin===c.symbol?"bg-blue-500 text-lg font-bold":"text-gray-300 text-xs"}`}>
+                  {c.name}
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        {showDropdown && (
-          <div
-            ref={dropdownRef}
-            className="absolute top-full left-0 mt-2 w-64 bg-[#111827] rounded-lg shadow-lg border border-gray-700 z-50 max-h-64 overflow-y-auto"
-          >
-            {coins.map((coin) => (
-              <div
-                key={coin.symbol}
-                onClick={() => {
-                  setSelectedCoin(coin.symbol);
-                  setShowDropdown(false);
-                }}
-                className={`px-4 py-2 cursor-pointer hover:bg-gray-700 ${
-                  selectedCoin === coin.symbol ? "bg-gray-700" : ""
-                }`}
-              >
-                {coin.name}
-              </div>
-            ))}
-          </div>
-        )}
-
         <div className="text-right">
-          <p className="text-2xl font-bold">
-            {price ? `$${price.toFixed(2)}` : "--"}
-          </p>
-          <p
-            className={`text-sm ${
-              change >= 0 ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {change ? change.toFixed(2) : "--"}%
-          </p>
-          <p className="text-xs">
-            <span className="text-green-400">
-              H: {todayHigh ? todayHigh.toFixed(2) : "--"}
-            </span>{" "}
-            |{" "}
-            <span className="text-red-400">
-              L: {todayLow ? todayLow.toFixed(2) : "--"}
-            </span>
-          </p>
+          <div className={`text-xl font-bold ${change>=0?"text-green-400":"text-red-400"}`}>{price?price.toFixed(3):"--"}</div>
+          <div className="text-xs"><span className={`${change>=0?"text-green-400":"text-red-400"} text-xs font-medium`}>{change!==null?`${(change*100).toFixed(2)}%`:"--"}</span></div>
+          <div className="text-[10px] text-gray-400 mt-1">
+            <span>High</span> <span className="ml-1 font-medium">{todayHigh?todayHigh.toFixed(2):"--"}</span>
+            <span className="mx-1">|</span>
+            <span>Low</span> <span className="ml-1 font-medium">{todayLow?todayLow.toFixed(2):"--"}</span>
+          </div>
         </div>
       </div>
 
-      {/* Timeframes */}
-      <div className="flex space-x-3 px-4 py-2 border-b border-gray-800">
-        {["1m", "5m", "15m", "1h", "4h", "1d"].map((intv) => (
-          <button
-            key={intv}
-            onClick={() => setInterval(intv)}
-            className={`px-2 py-0.5 text-sm font-sans transition ${
-              interval === intv
-                ? "text-blue-400 border-b-2 border-blue-400"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            {intv.toUpperCase()}
-          </button>
-        ))}
+      {/* timeframe + MA */}
+      <div className="flex flex-col px-2 py-1 border-b border-gray-800">
+        <div className="flex gap-1 mb-1">
+          {["1m","5m","15m","30m","1h","1d"].map(t => (
+            <button 
+              key={t} 
+              onClick={() => setIntervalState(t)} 
+              className={`px-1 py-0.5 text-[10px] ${interval===t ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-400 hover:text-white"}`}>
+              {t.toUpperCase()}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2 text-[10px] text-gray-300">
+          <div>MA5: <span className="text-orange-400 font-medium">{maVals.ma5?maVals.ma5.toFixed(3):"--"}</span></div>
+          <div>MA10: <span className="text-purple-300 font-medium">{maVals.ma10?maVals.ma10.toFixed(3):"--"}</span></div>
+          <div>MA30: <span className="text-blue-400 font-medium">{maVals.ma30?maVals.ma30.toFixed(3):"--"}</span></div>
+        </div>
       </div>
 
-      {/* Chart */}
-      <div className="flex justify-center mt-4">
-        <div
-          ref={chartContainerRef}
-          className="rounded-lg border border-gray-700 h-[350px] w-[95%]"
-        />
+      {/* chart stack */}
+      <div className="px-2 pt-2">
+        <div className="rounded-lg border border-gray-700 bg-[#0f172a]" style={{ padding: 8 }}>
+          <div ref={mainRef} className="w-full" style={{ height: 220 }} />
+          <div ref={volRef} className="w-full mt-1" style={{ height: 60 }} />
+          <div ref={macdRef} className="w-full mt-1" style={{ height: 70 }} />
+        </div>
       </div>
 
-      {/* Buy/Sell */}
-      <div className="grid grid-cols-2 gap-4 p-4 border-t border-gray-800 bg-[#111827]">
-        <button
-          onClick={() => {
-            setModalDirection("Buy");
-            setShowModal(true);
-          }}
-          className="bg-green-500 hover:bg-green-600 py-2 rounded-md font-semibold transition"
-        >
-          Buy
+      {/* bottom buttons (slim red/green) */}
+      <div className="mt-2 px-2 pb-3 flex gap-2">
+        <button 
+          onClick={()=>{setModalDirection("Buy"); setShowModal(true);}} 
+          className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5">
+          <span className="text-[8px] text-red-200">{price?`$${price.toFixed(3)}`:"--"}</span>
+          <span className="text-[10px] font-bold mt-0.25">Buy more</span>
         </button>
-        <button
-          onClick={() => {
-            setModalDirection("Sell");
-            setShowModal(true);
-          }}
-          className="bg-red-500 hover:bg-red-600 py-2 rounded-md font-semibold transition"
-        >
-          Sell
+
+        <button 
+          onClick={()=>{setModalDirection("Sell"); setShowModal(true);}} 
+          className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5">
+          <span className="text-[8px] text-green-200">{price?`$${price.toFixed(3)}`:"--"}</span>
+          <span className="text-[10px] font-bold mt-0.25">Sell less</span>
         </button>
       </div>
 
-      {/* Tabs: OrderBook / Trades */}
-      <div className="flex border-t border-gray-800 bg-[#0f172a]">
-        <button
-          className={`flex-1 py-2 text-sm font-semibold ${
-            activeTab === "orderBook"
-              ? "text-blue-400 border-b-2 border-blue-400"
-              : "text-gray-400"
-          }`}
-          onClick={() => setActiveTab("orderBook")}
-        >
-          Order Book
-        </button>
-        <button
-          className={`flex-1 py-2 text-sm font-semibold ${
-            activeTab === "trades"
-              ? "text-blue-400 border-b-2 border-blue-400"
-              : "text-gray-400"
-          }`}
-          onClick={() => setActiveTab("trades")}
-        >
-          Recent Trades
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 bg-[#0f172a]">
-        {activeTab === "orderBook" ? (
-          <div>
-            <h2 className="text-sm font-semibold mb-2">Order Book</h2>
-            <div className="grid grid-cols-3 text-xs text-gray-400 mb-1">
-              <span>Price</span>
-              <span>Amount</span>
-              <span>Total</span>
-            </div>
-            <div className="space-y-1 max-h-[200px] overflow-y-auto">
-              {orderBook.asks.map((ask, i) => (
-                <div
-                  key={`ask-${i}`}
-                  className="grid grid-cols-3 text-xs text-red-400"
-                >
-                  <span>{ask.price.toFixed(2)}</span>
-                  <span>{ask.qty.toFixed(4)}</span>
-                  <span>{(ask.price * ask.qty).toFixed(2)}</span>
-                </div>
-              ))}
-              {orderBook.bids.map((bid, i) => (
-                <div
-                  key={`bid-${i}`}
-                  className="grid grid-cols-3 text-xs text-green-400"
-                >
-                  <span>{bid.price.toFixed(2)}</span>
-                  <span>{bid.qty.toFixed(4)}</span>
-                  <span>{(bid.price * bid.qty).toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div>
-            <h2 className="text-sm font-semibold mb-2">Recent Trades</h2>
-            <div className="grid grid-cols-3 text-xs text-gray-400 mb-1">
-              <span>Price</span>
-              <span>Amount</span>
-              <span>Time</span>
-            </div>
-            <div className="space-y-1 max-h-[200px] overflow-y-auto">
-              {trades.map((t, i) => (
-                <div
-                  key={i}
-                  className={`grid grid-cols-3 text-xs ${
-                    t.isBuy ? "text-green-400" : "text-red-400"
-                  }`}
-                >
-                  <span>{t.price.toFixed(2)}</span>
-                  <span>{t.qty.toFixed(4)}</span>
-                  <span>{t.time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Modal */}
-      <OrderModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        price={price}
-        direction={modalDirection}
-        pair={selectedCoin.replace("USDT", "/USDT")}
-      />
+      <OrderModal show={showModal} onClose={()=>setShowModal(false)} price={price} direction={modalDirection} pair={selectedCoin.replace("USDT","/USDT")} />
     </div>
   );
 };
 
-export default Trading;
+export default TradingExactRealtime;
