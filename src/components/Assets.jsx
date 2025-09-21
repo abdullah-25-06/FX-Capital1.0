@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Wallet, ArrowDownUp, BarChart3, FileText, ArrowLeft } from "lucide-react";
+import { Wallet, ArrowDownUp, BarChart3, FileText, ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 const Assets = () => {
   const [activeTab, setActiveTab] = useState("position");
   const [page, setPage] = useState("assets");
   const [amount, setAmount] = useState("");
+  const [showAssets, setShowAssets] = useState(true);
 
   const rechargeOptions = [500, 2000, 5000, 10000, 50000];
 
-  // ✅ Recharge Page
+  // Recharge Page
   const renderRecharge = () => (
-    <div className="bg-[#0A1A2F] min-h-screen text-white font-trading">
+    <div className="bg-[#0A1A2F] min-h-screen text-white font-sans px-4">
       {/* Header */}
       <div className="flex items-center mb-6 py-4">
         <button
@@ -91,17 +92,23 @@ const Assets = () => {
     </div>
   );
 
-  // ✅ Assets Main Page
+  // Assets Main Page
   const renderAssets = () => (
-    <div className="w-full min-h-screen bg-[#0a1a2f] flex flex-col">
+    <div className="w-full min-h-screen bg-[#0a1a2f] flex flex-col font-sans px-4">
       {/* Top Section */}
       <div className="py-6">
+        {/* Heading */}
+        <h2 className="text-white text-xl font-semibold mb-4">Available Assets</h2>
+
         {/* Card */}
         <div className="bg-gradient-to-b from-[#fbe9d7] to-[#f7d6ad] w-full rounded-xl shadow p-4 text-black">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <p className="text-xs flex items-center gap-1">
-              Convert total assets <span className="text-sm">👁</span>
+              Convert total assets 
+              <span className="cursor-pointer" onClick={() => setShowAssets(!showAssets)}>
+                {showAssets ? <Eye size={16} /> : <EyeOff size={16} />}
+              </span>
             </p>
             <button className="bg-[#6b4c1f] text-white text-[11px] px-3 py-1 rounded-full">
               Account change record &rarr;
@@ -109,23 +116,24 @@ const Assets = () => {
           </div>
 
           {/* Total Assets */}
-          <p className="text-lg font-numbers font-bold mb-4">
-            887.56 <span className="text-sm font-normal">USDT</span>
+          <p className="text-2xl font-bold mb-4 flex items-center gap-2">
+            {showAssets ? "887.56" : "****"}
+            <span className="text-sm font-normal">USDT</span>
           </p>
 
           {/* Asset Stats */}
           <div className="grid grid-cols-3 text-xs">
             <div>
               <p className="text-gray-600">Yesterday&apos;s income(USDT)</p>
-              <p className="font-numbers font-semibold text-base">42.56</p>
+              <p className="font-semibold text-base">42.56</p>
             </div>
             <div>
               <p className="text-gray-600">Current earnings(USDT)</p>
-              <p className="font-numbers font-semibold text-base">0.00</p>
+              <p className="font-semibold text-base">0.00</p>
             </div>
             <div>
               <p className="text-gray-600">Total revenue(USDT)</p>
-              <p className="font-numbers font-semibold text-base">42.56</p>
+              <p className="font-semibold text-base">42.56</p>
             </div>
           </div>
         </div>

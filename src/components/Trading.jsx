@@ -170,14 +170,26 @@ const TradingExactRealtime = () => {
   useEffect(() => {
     if (!mainRef.current || !volRef.current || !macdRef.current) return;
 
-    const mainChart = createChart(mainRef.current, {
-      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db" },
-      width: mainRef.current.clientWidth, height: 220,
-      grid: { vertLines: { color: "rgba(255,255,255,0.08)" }, horzLines: { color: "rgba(255,255,255,0.08)" } },
-      crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: "#334155", drawTicks: false },
-      timeScale: { borderColor: "#334155", timeVisible: false },
-    });
+const mainChart = createChart(mainRef.current, {
+  layout: {
+    background: { type: "solid", color: "#0f172a" },
+    textColor: "#d1d5db",
+    fontSize: 6
+  },
+  width: mainRef.current.clientWidth,
+  height: 220,
+  grid: {
+    vertLines: { color: "rgba(255,255,255,0.08)" },
+    horzLines: { color: "rgba(255,255,255,0.08)" }
+  },
+  crosshair: { mode: CrosshairMode.Normal },
+  rightPriceScale: {
+    borderColor: "#334155",
+    drawTicks: false,
+  },
+  timeScale: { borderColor: "#334155", timeVisible: false },
+});
+
     mainChartRef.current = mainChart;
 
     candleSeriesRef.current = mainChart.addCandlestickSeries({ upColor: "#22c55e", downColor: "#ef4444", borderDownColor: "#ef4444", borderUpColor: "#22c55e", wickDownColor: "#ef4444", wickUpColor: "#22c55e" });
@@ -409,7 +421,7 @@ const TradingExactRealtime = () => {
           onClick={()=>{setModalDirection("Sell"); setShowModal(true);}} 
           className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5">
           <span className="text-[8px] text-green-200">{price?`$${price.toFixed(3)}`:"--"}</span>
-          <span className="text-[10px] font-bold mt-0.25">Sell less</span>
+          <span className="text-[10px] font-bold mt-0.25">Buy less</span>
         </button>
       </div>
 

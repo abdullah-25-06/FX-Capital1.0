@@ -27,8 +27,7 @@ module.exports = {
         marquee: "marquee 15s linear infinite",
       },
       fontFamily: {
-        roboto: ["Roboto", "sans-serif"],
-        reddit: ["'Reddit Sans'", "sans-serif"],
+        sans: ["'IBM Plex Sans'", "sans-serif"],
       },
     },
   },

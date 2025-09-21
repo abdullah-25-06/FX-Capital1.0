@@ -61,7 +61,7 @@ const Dashboard = () => {
 
   // Dashboard Page
   const renderDashboard = () => (
-    <div className="bg-[#0F172A] min-h-screen font-roboto">
+    <div className="bg-[#0F172A] min-h-screen font-sans">
       <div className="relative border-b border-gray-800 overflow-hidden">
         {/* Animated coins background */}
         <div className="absolute inset-0 opacity-10 flex justify-around items-center -top-6">
@@ -73,7 +73,7 @@ const Dashboard = () => {
         {/* Foreground */}
         <div className="relative z-10 p-2 pt-2">
           <h2 className="text-xs text-gray-400 font-light mb-1">Total assets equivalent (USDT)</h2>
-          <p className="text-3xl font-reddit text-white tracking-tight mb-3">944.32</p>
+          <p className="text-3xl font-sans text-white tracking-tight mb-3">944.32</p>
 
           {/* Buttons */}
           <div className="grid grid-cols-4 gap-4 mt-2">
@@ -88,10 +88,7 @@ const Dashboard = () => {
                 onClick={btn.action}
                 className="flex flex-col items-center justify-center py-3 transition"
               >
-                {/* Icon solid gold */}
                 <span className="text-yellow-400">{btn.icon}</span>
-
-                {/* Text with gradient */}
                 <span className="text-xs font-light mt-1 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   {btn.label}
                 </span>
@@ -109,13 +106,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Horizontal Scroller */}
-      <div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
-        <div className="inline-block animate-marquee text-white font-light">
-          🔥 In your payment, please feel free to contact our representatives 🔥 &nbsp;
-          🔥 In your payment, please feel free to contact our representatives 🔥
-        </div>
-      </div>
+{/* Horizontal Scroller */}
+<div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
+  <div className="inline-block animate-marquee text-white font-light text-xs">
+    🔥 In your payment, please feel free to contact our representatives 🔥 &nbsp;
+    🔥 In your payment, please feel free to contact our representatives 🔥
+  </div>
+</div>
+
 
       {/* Trading Pairs */}
       <div>
@@ -139,7 +137,7 @@ const Dashboard = () => {
                   <td className={`py-3 text-sm w-1/3 text-center font-light ${status[coin.symbol]==="In transaction"?"text-green-400":"text-red-400"}`}>
                     {status[coin.symbol] || "--"}
                   </td>
-                  <td className="py-3 text-sm w-1/3 text-right text-white font-reddit">
+                  <td className="py-3 text-sm w-1/3 text-right text-white font-sans">
                     {prices[coin.symbol] || "--"}
                   </td>
                 </tr>
@@ -153,7 +151,7 @@ const Dashboard = () => {
 
   // Recharge Page
   const renderRecharge = () => (
-    <div className="bg-[#0A1A2F] min-h-screen text-white font-roboto">
+    <div className="bg-[#0A1A2F] min-h-screen text-white font-sans">
       <div className="flex items-center mb-6 p-3 pt-0">
         <button onClick={() => setPage("dashboard")} className="text-gray-300 hover:text-blue-400">
           <ArrowLeft size={28} />
@@ -171,7 +169,7 @@ const Dashboard = () => {
           <div key={idx}>
             <p className="text-sm text-gray-400 font-light mb-1">{item.label}</p>
             <div className="bg-gray-800 rounded-lg px-3 py-2 flex justify-between items-center">
-              <span className="text-sm text-white font-reddit break-all">{item.value}</span>
+              <span className="text-sm text-white font-sans break-all">{item.value}</span>
               <button className="text-blue-400 text-sm font-light">Copy</button>
             </div>
           </div>
@@ -185,10 +183,10 @@ const Dashboard = () => {
             <button
               key={value}
               onClick={() => setAmount(value)}
-              className={`py-3 rounded-lg text-sm transition font-light ${
+              className={`py-3 rounded-lg text-sm transition font-sans ${
                 amount === value
-                  ? "bg-blue-600 text-white font-reddit"
-                  : "bg-gray-700 text-gray-300 hover:bg-blue-500 hover:text-white font-reddit"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-700 text-gray-300 hover:bg-blue-500 hover:text-white"
               }`}
             >
               {value}
@@ -201,7 +199,7 @@ const Dashboard = () => {
           placeholder="Please enter the amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="mt-4 w-full px-3 py-3 bg-gray-800 text-white text-sm rounded-lg font-reddit outline-none placeholder-gray-400"
+          className="mt-4 w-full px-3 py-3 bg-gray-800 text-white text-sm rounded-lg font-sans outline-none placeholder-gray-400"
         />
       </div>
 
@@ -215,7 +213,7 @@ const Dashboard = () => {
       <div className="mt-6 p-3 pt-0">
         <button
           onClick={() => { alert(`Recharge request submitted: ${amount} USDT`); }}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-reddit text-lg rounded-lg transition"
+          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-sans text-lg rounded-lg transition"
         >
           Submit
         </button>
