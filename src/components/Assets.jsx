@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Wallet, ArrowDownUp, BarChart3, FileText, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import {
+  Wallet,
+  ArrowDownUp,
+  BarChart3,
+  FileText,
+  ArrowLeft,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 const Assets = () => {
   const [activeTab, setActiveTab] = useState("position");
@@ -26,7 +34,10 @@ const Assets = () => {
       {/* Wallet Addresses */}
       <div className="space-y-4">
         {[
-          { label: "USDT (TRC20)", value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd" },
+          {
+            label: "USDT (TRC20)",
+            value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd",
+          },
           { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
           { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
           { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
@@ -43,7 +54,9 @@ const Assets = () => {
 
       {/* Recharge Options */}
       <div className="mt-6">
-        <p className="text-sm text-gray-300 mb-3">Number of recharges (USDT)</p>
+        <p className="text-sm text-gray-300 mb-3">
+          Number of recharges (USDT)
+        </p>
         <div className="grid grid-cols-3 gap-2">
           {rechargeOptions.map((value) => (
             <button
@@ -94,19 +107,23 @@ const Assets = () => {
 
   // Assets Main Page
   const renderAssets = () => (
-    <div className="w-full min-h-screen bg-[#0a1a2f] flex flex-col font-sans px-4">
-      {/* Top Section */}
-      <div className="py-6">
+    <div className="w-full min-h-screen bg-[#0a1a2f] flex flex-col font-sans">
+      <div className="w-full max-w-md mx-auto">
         {/* Heading */}
-        <h2 className="text-white text-xl font-semibold mb-4">Available Assets</h2>
+        <h2 className="text-white text-base font-medium text-center mb-3">
+          Available Assets
+        </h2>
 
         {/* Card */}
-        <div className="bg-gradient-to-b from-[#fbe9d7] to-[#f7d6ad] w-full rounded-xl shadow p-4 text-black">
+        <div className="bg-gradient-to-b from-[#fbe9d7] to-[#f7d6ad] w-full rounded-xl shadow p-4 text-black mb-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <p className="text-xs flex items-center gap-1">
-              Convert total assets 
-              <span className="cursor-pointer" onClick={() => setShowAssets(!showAssets)}>
+              Convert total assets
+              <span
+                className="cursor-pointer"
+                onClick={() => setShowAssets(!showAssets)}
+              >
                 {showAssets ? <Eye size={16} /> : <EyeOff size={16} />}
               </span>
             </p>
@@ -139,7 +156,7 @@ const Assets = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-around text-center text-xs text-white mt-6 mb-6">
+        <div className="flex justify-around text-center text-xs text-white mb-8">
           <div
             className="flex flex-col items-center cursor-pointer"
             onClick={() => setPage("recharge")}
