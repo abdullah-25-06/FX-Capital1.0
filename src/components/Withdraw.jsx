@@ -13,9 +13,9 @@ const Withdraw = ({ onClose }) => {
   const [newWalletAddress, setNewWalletAddress] = useState("");
 
   // 🔹 Bank states
-  const [showBankForm, setShowBankForm] = useState(false);
   const [bankCards, setBankCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [showBankForm, setShowBankForm] = useState(false);
   const [accountHolder, setAccountHolder] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -47,10 +47,7 @@ const Withdraw = ({ onClose }) => {
       alert("Please enter a wallet address!");
       return;
     }
-    const newAddress = {
-      id: Date.now(),
-      address: newWalletAddress,
-    };
+    const newAddress = { id: Date.now(), address: newWalletAddress };
     setWalletAddresses([...walletAddresses, newAddress]);
     setSelectedWallet(newAddress.id);
     setNewWalletAddress("");
@@ -76,10 +73,10 @@ const Withdraw = ({ onClose }) => {
     };
     setBankCards([...bankCards, newCard]);
     setSelectedCard(newCard.id);
-    setShowBankForm(false);
     setAccountHolder("");
     setBankName("");
     setAccountNumber("");
+    setShowBankForm(false);
   };
 
   const handleDeleteCard = (id) => {
@@ -135,7 +132,7 @@ const Withdraw = ({ onClose }) => {
             <ArrowLeft size={20} />
           </button>
           <h1 className="flex-1 text-center text-base font-medium">
-            Add bank card
+            Add Bank Card
           </h1>
           <div className="w-6" />
         </div>
@@ -219,7 +216,7 @@ const Withdraw = ({ onClose }) => {
       <div className="px-4 mt-6 space-y-4 text-sm">
         {activeTab === "wallet" ? (
           <>
-            {/* Wallet Address List */}
+            {/* Wallet List */}
             <div>
               <p className="mb-1 text-gray-400 text-xs">Wallet Addresses</p>
               {walletAddresses.length === 0 ? (
@@ -263,48 +260,10 @@ const Withdraw = ({ onClose }) => {
                 </div>
               )}
             </div>
-
-            {/* Withdrawal Amount */}
-            <div>
-              <p className="mb-1 text-gray-400 text-xs">withdrawal amount</p>
-              <div className="flex items-center justify-between p-2 rounded border border-blue-900 bg-[#121c30]">
-                <input
-                  type="number"
-                  className="bg-transparent outline-none flex-1 text-white text-sm"
-                  placeholder="0.00"
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)}
-                />
-                <div className="flex flex-col items-end text-right text-xs">
-                  <span className="text-gray-400">
-                    available {availableAmount.toFixed(2)} INR
-                  </span>
-                  <button className="text-blue-400 text-xs">all</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Handling Fee */}
-            <div>
-              <p className="mb-1 text-gray-400 text-xs">handling fee</p>
-              <div className="p-2 rounded border border-blue-900 bg-[#121c30] text-xs text-gray-200">
-                {handlingFee}%
-              </div>
-            </div>
-
-            {/* Number of Accounts */}
-            <div>
-              <p className="mb-1 text-gray-400 text-xs">
-                Number of accounts received
-              </p>
-              <div className="p-2 rounded border border-blue-900 bg-[#121c30] text-xs text-gray-200">
-                {withdrawAmount ? withdrawAmount : availableAmount}
-              </div>
-            </div>
           </>
         ) : (
           <>
-            {/* Bank withdrawal section stays same as before */}
+            {/* Bank List */}
             <div>
               <p className="mb-1 text-gray-400 text-xs">Bank Cards</p>
               {bankCards.length === 0 ? (
@@ -312,7 +271,7 @@ const Withdraw = ({ onClose }) => {
                   onClick={() => setShowBankForm(true)}
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 rounded text-sm font-medium"
                 >
-                  Add bank card
+                  Add Bank Card
                 </button>
               ) : (
                 <div className="space-y-2">
@@ -355,6 +314,44 @@ const Withdraw = ({ onClose }) => {
             </div>
           </>
         )}
+
+        {/* Withdrawal Amount */}
+        <div>
+          <p className="mb-1 text-gray-400 text-xs">withdrawal amount</p>
+          <div className="flex items-center justify-between p-2 rounded border border-blue-900 bg-[#121c30]">
+            <input
+              type="number"
+              className="bg-transparent outline-none flex-1 text-white text-sm"
+              placeholder="0.00"
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+            />
+            <div className="flex flex-col items-end text-right text-xs">
+              <span className="text-gray-400">
+                available {availableAmount.toFixed(2)} INR
+              </span>
+              <button className="text-blue-400 text-xs">all</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Handling Fee */}
+        <div>
+          <p className="mb-1 text-gray-400 text-xs">handling fee</p>
+          <div className="p-2 rounded border border-blue-900 bg-[#121c30] text-xs text-gray-200">
+            {handlingFee}%
+          </div>
+        </div>
+
+        {/* Number of Accounts */}
+        <div>
+          <p className="mb-1 text-gray-400 text-xs">
+            Number of accounts received
+          </p>
+          <div className="p-2 rounded border border-blue-900 bg-[#121c30] text-xs text-gray-200">
+            {withdrawAmount ? withdrawAmount : availableAmount}
+          </div>
+        </div>
 
         {/* Payment Password */}
         <div>
