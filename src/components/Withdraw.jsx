@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, Clock } from "lucide-react";
+import Record from "./Record"; // ✅ Record page import
 
 const Withdraw = ({ onClose }) => {
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -20,6 +21,10 @@ const Withdraw = ({ onClose }) => {
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
 
+  // 🔹 Record states
+  const [records, setRecords] = useState([]);
+  const [showRecord, setShowRecord] = useState(false);
+
   const availableAmount = 485.07;
   const handlingFee = 0;
 
@@ -37,8 +42,20 @@ const Withdraw = ({ onClose }) => {
       alert("Please select a bank card!");
       return;
     }
-    alert("Withdrawal Success!");
-    onClose();
+
+    // ✅ Add record
+    const newRecord = {
+      id: Date.now(),
+      amount: withdrawAmount,
+      fee: handlingFee,
+      status: "Under review",
+      remark: "undefined",
+      date: new Date().toISOString().slice(0, 19).replace("T", " "),
+    };
+    setRecords([newRecord, ...records]);
+
+    // ✅ Show record page directly
+    setShowRecord(true);
   };
 
   // 🔹 Wallet functions
@@ -83,6 +100,11 @@ const Withdraw = ({ onClose }) => {
     setBankCards(bankCards.filter((card) => card.id !== id));
     if (selectedCard === id) setSelectedCard(null);
   };
+
+  // 🔹 Show Record Page
+  if (showRecord) {
+    return <Record onClose={() => setShowRecord(false)} records={records} />;
+  }
 
   // 🔹 Wallet Form
   if (showWalletForm) {
@@ -179,7 +201,14 @@ const Withdraw = ({ onClose }) => {
           <ArrowLeft size={20} />
         </button>
         <h1 className="flex-1 text-center text-base font-medium">Withdrawal</h1>
-        <div className="w-6" />
+
+        {/* 🔹 Record Icon Button */}
+        <button
+          onClick={() => setShowRecord(true)}
+          className="text-gray-300 hover:text-white"
+        >
+          <Clock size={20} />
+        </button>
       </div>
 
       {/* Tabs */}
@@ -330,7 +359,12 @@ const Withdraw = ({ onClose }) => {
               <span className="text-gray-400">
                 available {availableAmount.toFixed(2)} INR
               </span>
-              <button className="text-blue-400 text-xs">all</button>
+              <button
+                onClick={() => setWithdrawAmount(availableAmount)}
+                className="text-blue-400 text-xs"
+              >
+                all
+              </button>
             </div>
           </div>
         </div>
