@@ -357,7 +357,7 @@ const Withdraw = ({ onClose }) => {
             />
             <div className="flex flex-col items-end text-right text-xs">
               <span className="text-gray-400">
-                available {availableAmount.toFixed(2)} INR
+                available {availableAmount.toFixed(2)} USDT
               </span>
               <button
                 onClick={() => setWithdrawAmount(availableAmount)}
