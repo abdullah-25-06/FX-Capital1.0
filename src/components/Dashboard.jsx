@@ -6,6 +6,7 @@ import {
   CandlestickChart,
   ArrowLeft,
 } from "lucide-react";
+import Withdraw from "./Withdraw"; // Import Withdraw component
 
 const Dashboard = () => {
   const [page, setPage] = useState("dashboard");
@@ -79,7 +80,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-4 gap-4 mt-2">
             {[
               { icon: <Banknote size={28} />, label: "Recharge", action: () => setPage("recharge") },
-              { icon: <ArrowUpRight size={28} />, label: "Withdrawal" },
+              { icon: <ArrowUpRight size={28} />, label: "Withdrawal", action: () => setPage("withdrawal") },
               { icon: <ReceiptText size={28} />, label: "Transaction" },
               { icon: <CandlestickChart size={28} />, label: "Future Market" },
             ].map((btn, i) => (
@@ -106,14 +107,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-{/* Horizontal Scroller */}
-<div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
-  <div className="inline-block animate-marquee text-white font-light text-xs">
-    🔥 In your payment, please feel free to contact our representatives 🔥 &nbsp;
-    🔥 In your payment, please feel free to contact our representatives 🔥
-  </div>
-</div>
-
+      {/* Horizontal Scroller */}
+      <div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
+        <div className="inline-block animate-marquee text-white font-light text-xs">
+          🔥 In your payment, please feel free to contact our representatives 🔥 &nbsp;
+          🔥 In your payment, please feel free to contact our representatives 🔥
+        </div>
+      </div>
 
       {/* Trading Pairs */}
       <div>
@@ -221,7 +221,12 @@ const Dashboard = () => {
     </div>
   );
 
-  return page === "dashboard" ? renderDashboard() : renderRecharge();
+  // Conditional rendering including Withdraw page
+  return page === "dashboard"
+    ? renderDashboard()
+    : page === "recharge"
+    ? renderRecharge()
+    : <Withdraw onClose={() => setPage("dashboard")} />;
 };
 
 export default Dashboard;

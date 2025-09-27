@@ -29,7 +29,7 @@ const coinIcons = {
 };
 
 const Markets = () => {
-  const [activeTab, setActiveTab] = useState("coin"); // "optional" | "coin"
+  const [activeTab, setActiveTab] = useState("coin");
   const [tradingPairs, setTradingPairs] = useState(
     coins.map((coin) => ({
       ...coin,
@@ -68,17 +68,23 @@ const Markets = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt-0 pb-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt-0 pb-4 font-sans">
+      
+      {/* Page Heading */}
+      <h1 className="text-base md:text-xl font-bold text-white mb-2">
+        TransactionQuote
+      </h1>
+
       <div className="w-full max-w-3xl space-y-3">
         {/* Slim Wide Toggle Tabs */}
-        <div className="flex bg-gray-800 rounded-full p-1 w-full max-w-lg mx-auto shadow-inner mt-2">
+        <div className="flex bg-gray-800 rounded-full p-1 w-full max-w-lg mx-auto shadow-inner">
           <button
             onClick={() => setActiveTab("optional")}
             className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
               activeTab === "optional"
                 ? "bg-gradient-to-r from-amber-200 to-amber-300 text-black"
                 : "text-gray-400 hover:text-white"
-            }`}
+            } font-sans`}
           >
             Optional
           </button>
@@ -88,7 +94,7 @@ const Markets = () => {
               activeTab === "coin"
                 ? "bg-gradient-to-r from-amber-200 to-amber-300 text-black"
                 : "text-gray-400 hover:text-white"
-            }`}
+            } font-sans`}
           >
             Coin
           </button>
@@ -98,7 +104,7 @@ const Markets = () => {
         {activeTab === "coin" && (
           <>
             {/* Heading */}
-            <div className="grid grid-cols-3 text-gray-400 text-sm font-semibold pl-3 pr-6 py-2 border-b border-gray-800">
+            <div className="grid grid-cols-3 text-gray-400 text-sm font-semibold pl-3 pr-6 py-2 border-b border-gray-800 font-sans">
               <div>Trading Pair</div>
               <div className="text-center">Status</div>
               <div className="text-right">Latest Price</div>
@@ -108,21 +114,19 @@ const Markets = () => {
             {tradingPairs.map((coin, index) => (
               <div
                 key={index}
-                className="grid grid-cols-3 items-center pl-3 pr-6 py-3 border-b border-gray-800 hover:bg-slate-800/30 transition"
+                className="grid grid-cols-3 items-center pl-3 pr-6 py-2 border-b border-gray-800 hover:bg-slate-800/30 transition font-sans"
               >
-                {/* Trading Pair + Icon (left) */}
-                <div className="flex items-center space-x-3">
+                {/* Trading Pair + Icon */}
+                <div className="flex items-center space-x-2">
                   <img
                     src={coin.image}
                     alt={coin.symbol}
-                    className="w-6 h-6 rounded-full"
+                    className="w-5 h-5 rounded-full"
                   />
-                  <span className="text-white text-sm font-semibold">
-                    {coin.display}
-                  </span>
+                  <span className="text-white text-xs font-semibold">{coin.display}</span>
                 </div>
 
-                {/* Status (center) */}
+                {/* Status */}
                 <div className="flex justify-center">
                   <span
                     className={`px-2 py-1 rounded-md text-xs font-medium ${
@@ -135,12 +139,10 @@ const Markets = () => {
                   </span>
                 </div>
 
-                {/* Latest Price (right) */}
+                {/* Latest Price */}
                 <div
                   className={`text-sm font-bold text-right ${
-                    coin.status === "in transaction"
-                      ? "text-green-400"
-                      : "text-red-400"
+                    coin.status === "in transaction" ? "text-green-400" : "text-red-400"
                   }`}
                 >
                   {coin.price}
@@ -151,7 +153,7 @@ const Markets = () => {
         )}
 
         {activeTab === "optional" && (
-          <div className="text-center text-gray-400 py-6">
+          <div className="text-center text-gray-400 py-6 font-sans">
             No optional data yet.
           </div>
         )}

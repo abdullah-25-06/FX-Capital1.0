@@ -492,7 +492,7 @@ useEffect(()=>{ if(priceLineRef.current && price){ priceLineRef.current.applyOpt
 /* ---------------- UI ---------------- */
 return (
   <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col">
-    <div className="text-center text-[15px] text-white-400 py-0.000001">OptionsTransaction</div>
+    <div className="text-center text-[15px] text-white-400 py-0.000001 font-sans">OptionsTransaction</div>
 
     {/* header */}
     <div className="flex items-start justify-between px-2 pb-2 border-b border-gray-800 relative">
