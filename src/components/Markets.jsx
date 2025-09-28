@@ -68,7 +68,7 @@ const Markets = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt-0 pb-4 font-sans">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt- pb-4 font-sans">
       
       {/* Page Heading */}
       <h1 className="text-base md:text-xl font-bold text-white mb-2">
@@ -78,26 +78,27 @@ const Markets = () => {
       <div className="w-full max-w-3xl space-y-3">
         {/* Slim Wide Toggle Tabs */}
         <div className="flex bg-gray-800 rounded-full p-1 w-full max-w-lg mx-auto shadow-inner">
-          <button
-            onClick={() => setActiveTab("optional")}
-            className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
-              activeTab === "optional"
-                ? "bg-gradient-to-r from-amber-200 to-amber-300 text-black"
-                : "text-gray-400 hover:text-white"
-            } font-sans`}
-          >
-            Optional
-          </button>
-          <button
-            onClick={() => setActiveTab("coin")}
-            className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
-              activeTab === "coin"
-                ? "bg-gradient-to-r from-amber-200 to-amber-300 text-black"
-                : "text-gray-400 hover:text-white"
-            } font-sans`}
-          >
-            Coin
-          </button>
+<button
+  onClick={() => setActiveTab("optional")}
+  className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
+    activeTab === "optional"
+      ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white"
+      : "text-gray-400 hover:text-white"
+  } font-sans`}
+>
+  Optional
+</button>
+<button
+  onClick={() => setActiveTab("coin")}
+  className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
+    activeTab === "coin"
+      ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white"
+      : "text-gray-400 hover:text-white"
+  } font-sans`}
+>
+  Coin
+</button>
+
         </div>
 
         {/* Table */}
