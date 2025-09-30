@@ -286,7 +286,7 @@ useEffect(() => {
     layout: {
       background: { type: "solid", color: "#0f172a" },
       textColor: "#d1d5db",
-      fontSize: 10
+      fontSize: 7
     },
     width: mainRef.current.clientWidth,
     height: 220,
@@ -317,23 +317,41 @@ useEffect(() => {
     lineStyle: 2
   });
 
-  const volChart = createChart(volRef.current, {
-    layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db" },
-    width: volRef.current.clientWidth, height: 60,
-    grid: { vertLines: { color: "rgba(255,255,255,0.06)" }, horzLines: { color: "rgba(255,255,255,0.06)" } },
-    crosshair: { mode: CrosshairMode.Normal },
-    rightPriceScale: { visible: false, borderColor: "#334155" }, timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
-  });
+const volChart = createChart(volRef.current, {
+  layout: { 
+    background: { type: "solid", color: "#0f172a" }, 
+    textColor: "#d1d5db",
+    fontSize: 8   // 👈 yahan font size set karo (default ~11 hota hai)
+  },
+  width: volRef.current.clientWidth,
+  height: 60,
+  grid: { 
+    vertLines: { color: "rgba(255,255,255,0.06)" }, 
+    horzLines: { color: "rgba(255,255,255,0.06)" } 
+  },
+  crosshair: { mode: CrosshairMode.Normal },
+  rightPriceScale: { visible: true, borderColor: "#334155" },
+  timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
+});
   volChartRef.current = volChart;
   volSeriesRef.current = volChart.addHistogramSeries({ priceFormat: { type: "volume" }, priceScaleId: "" });
 
-  const macdChart = createChart(macdRef.current, {
-    layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db" },
-    width: macdRef.current.clientWidth, height: 70,
-    grid: { vertLines: { color: "rgba(255,255,255,0.06)" }, horzLines: { color: "rgba(255,255,255,0.06)" } },
-    crosshair: { mode: CrosshairMode.Normal },
-    rightPriceScale: { visible: false, borderColor: "#334155" }, timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
-  });
+const macdChart = createChart(macdRef.current, {
+  layout: { 
+    background: { type: "solid", color: "#0f172a" }, 
+    textColor: "#d1d5db",
+    fontSize: 8   // 👈 yahan font size set karo
+  },
+  width: macdRef.current.clientWidth, 
+  height: 70,
+  grid: { 
+    vertLines: { color: "rgba(255,255,255,0.06)" }, 
+    horzLines: { color: "rgba(255,255,255,0.06)" } 
+  },
+  crosshair: { mode: CrosshairMode.Normal },
+  rightPriceScale: { visible: true, borderColor: "#334155" },
+  timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
+});
   macdChartRef.current = macdChart;
   macdHistRef.current = macdChart.addHistogramSeries({ color: "#22c55e", priceFormat: { type: "volume" }, priceScaleId: "" });
   difRef.current = macdChart.addLineSeries({ color: "#f59e0b", lineWidth: 1 });
