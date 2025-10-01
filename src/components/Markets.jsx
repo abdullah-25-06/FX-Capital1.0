@@ -71,9 +71,9 @@ const Markets = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt- pb-4 font-sans">
       
       {/* Page Heading */}
-      <h1 className="text-base md:text-xl font-bold text-white mb-2">
-        TransactionQuote
-      </h1>
+<h2 className="text-white text-base font-medium text-center mb-2">
+  TransactionQuote
+</h2>
 
       <div className="w-full max-w-3xl space-y-3">
         {/* Slim Wide Toggle Tabs */}

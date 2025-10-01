@@ -321,7 +321,7 @@ const volChart = createChart(volRef.current, {
   layout: { 
     background: { type: "solid", color: "#0f172a" }, 
     textColor: "#d1d5db",
-    fontSize: 8   // 👈 yahan font size set karo (default ~11 hota hai)
+    fontSize: 8
   },
   width: volRef.current.clientWidth,
   height: 60,
@@ -510,9 +510,9 @@ useEffect(()=>{ if(priceLineRef.current && price){ priceLineRef.current.applyOpt
 /* ---------------- UI ---------------- */
 return (
   <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col">
-    <div className="text-center text-[15px] text-white-400 font-sans mb-2">
+    <h2 className="text-white text-base font-medium text-center mb-2">
   OptionsTransaction
-</div>
+</h2>
 
 
     {/* header */}

@@ -4,112 +4,25 @@ import {
   ArrowDownUp,
   BarChart3,
   FileText,
-  ArrowLeft,
   Eye,
   EyeOff,
 } from "lucide-react";
-import Withdraw from "./Withdraw"; // Import Withdraw page
+import Withdraw from "./Withdraw"; 
+import Recharge from "./Recharge";  // ✅ Import Recharge page
 
 const Assets = () => {
-  // States
   const [activeTab, setActiveTab] = useState("position");
-  const [amount, setAmount] = useState("");
   const [showAssets, setShowAssets] = useState(true);
-  const [page, setPage] = useState("assets"); // Controls which page to render
-
-  const rechargeOptions = [500, 2000, 5000, 10000, 50000];
-
-  // Recharge Page
-  const renderRecharge = () => (
-    <div className="bg-[#0A1A2F] min-h-screen text-white font-sans px-4">
-      {/* Header */}
-      <div className="flex items-center mb-6 py-4">
-        <button
-          onClick={() => setPage("assets")}
-          className="text-gray-300 hover:text-blue-400"
-        >
-          <ArrowLeft size={22} />
-        </button>
-        <h1 className="ml-3 text-lg font-semibold">Recharge</h1>
-      </div>
-
-      {/* Wallet Addresses */}
-      <div className="space-y-4">
-        {[
-          {
-            label: "USDT (TRC20)",
-            value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd",
-          },
-          { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
-          { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
-          { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
-        ].map((item, idx) => (
-          <div key={idx}>
-            <p className="text-sm text-gray-300 mb-1">{item.label}</p>
-            <div className="bg-gray-800 rounded-lg px-3 py-2 flex justify-between items-center">
-              <span className="text-xs break-all">{item.value}</span>
-              <button className="text-blue-400 text-xs">Copy</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Recharge Options */}
-      <div className="mt-6">
-        <p className="text-sm text-gray-300 mb-3">
-          Number of recharges (USDT)
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          {rechargeOptions.map((value) => (
-            <button
-              key={value}
-              onClick={() => setAmount(value)}
-              className={`py-2 rounded-lg text-sm font-medium transition ${
-                amount === value
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700 text-gray-300 hover:bg-blue-500 hover:text-white"
-              }`}
-            >
-              {value}
-            </button>
-          ))}
-        </div>
-
-        <input
-          type="number"
-          placeholder="Please enter the amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="mt-4 w-full px-3 py-2 bg-gray-800 text-sm rounded-lg outline-none text-white placeholder-gray-400"
-        />
-      </div>
-
-      {/* Upload Proof */}
-      <div className="mt-6">
-        <p className="text-sm text-gray-300 mb-2">Upload recharge certificate</p>
-        <div className="w-full h-24 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400">
-          <span className="text-gray-400 text-sm">Upload</span>
-        </div>
-      </div>
-
-      {/* Submit Button */}
-      <div className="mt-6">
-        <button
-          onClick={() => {
-            console.log("Recharge submitted with amount:", amount);
-            alert(`Recharge request submitted: ${amount} USDT`);
-          }}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
-        >
-          Submit
-        </button>
-      </div>
-    </div>
-  );
+  const [page, setPage] = useState("assets"); 
 
   // Withdraw Page
   const renderWithdraw = () => (
     <Withdraw onClose={() => setPage("assets")} />
+  );
+
+  // ✅ Recharge Page
+  const renderRecharge = () => (
+    <Recharge onBack={() => setPage("assets")} />
   );
 
   // Assets Main Page
@@ -123,7 +36,6 @@ const Assets = () => {
 
         {/* Card */}
         <div className="bg-gradient-to-b from-[#fbe9d7] to-[#f7d6ad] w-full rounded-xl shadow p-4 text-black mb-8">
-          {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <p className="text-xs flex items-center gap-1">
               Convert total assets
@@ -135,7 +47,7 @@ const Assets = () => {
               </span>
             </p>
             <button className="bg-[#6b4c1f] text-white text-[11px] px-3 py-1 rounded-full">
-              Account change record &rarr;
+              Account change record →
             </button>
           </div>
 
@@ -148,7 +60,7 @@ const Assets = () => {
           {/* Asset Stats */}
           <div className="grid grid-cols-3 text-xs">
             <div>
-              <p className="text-gray-600">Yesterday&apos;s income(USDT)</p>
+              <p className="text-gray-600">Yesterday's income(USDT)</p>
               <p className="font-semibold text-base">42.56</p>
             </div>
             <div>
@@ -166,7 +78,7 @@ const Assets = () => {
         <div className="flex justify-around text-center text-xs text-white mb-8">
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => setPage("recharge")}
+            onClick={() => setPage("recharge")}   // ✅ Recharge page call
           >
             <Wallet className="w-6 h-6 mb-1 text-[#c49a6c]" />
             <span>Recharge</span>
@@ -174,7 +86,7 @@ const Assets = () => {
 
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => setPage("withdraw")}
+            onClick={() => setPage("withdraw")}   // ✅ Withdraw page call
           >
             <ArrowDownUp className="w-6 h-6 mb-1 text-[#c49a6c]" />
             <span>Withdrawal/Transfer</span>
@@ -227,4 +139,4 @@ const Assets = () => {
     : renderWithdraw();
 };
 
-export default Assets; 
+export default Assets;
