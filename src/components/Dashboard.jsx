@@ -215,11 +215,11 @@ const Dashboard = () => {
                     className="border-b border-gray-800 hover:bg-gray-800/40 transition"
                   >
                     <td className="py-3 flex items-center space-x-3 text-white text-sm w-1/3 font-light">
-                      <img src={coin.logo} alt={coin.pair} className="w-6 h-6" />
+                      <img src={coin.logo} alt={coin.pair} className="w-5 h-5" />
                       <span>{coin.pair}</span>
                     </td>
                     <td
-                      className={`py-3 text-sm w-1/3 text-center font-light ${
+                      className={`py-2 text-sm w-1/3 text-center font-light ${
                         status[coin.symbol] === "In transaction"
                           ? "text-green-400"
                           : "text-red-400"
