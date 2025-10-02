@@ -1,77 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  FiHome,
-  FiTrendingUp,
-  FiDollarSign,
-  FiPieChart,
-  FiBriefcase,
-  FiSettings,
-  FiX,
   FiUser,
-  FiBell,
-  FiHelpCircle,
-  FiLogIn,
-  FiUserPlus,
+  FiShield,
+  FiInfo,
+  FiGlobe,
+  FiDollarSign,
   FiLogOut,
 } from "react-icons/fi";
+import PersonalInfoModal from "./PersonalInfoModal"; 
+import AuthenticationModal from "./AuthenticationModal"; // 👈 Import Authentication Modal
 
-const Sidebar = ({
-  activeTab,
-  onNavigate,
-  onClose,
-  isAuthenticated,
-  user,
-  onLogin,
-  onLogout,
-  onSignup,
-}) => {
-  const mainMenuItems = [
-    { id: "dashboard", label: "Dashboard", icon: <FiHome size={20} /> },
-    { id: "markets", label: "Markets", icon: <FiTrendingUp size={20} /> },
-    { id: "trade", label: "Trade", icon: <FiDollarSign size={20} /> },
-    { id: "finance", label: "Finance", icon: <FiPieChart size={20} /> },
-    { id: "assets", label: "Assets", icon: <FiBriefcase size={20} /> },
-    { id: "settings", label: "Settings", icon: <FiSettings size={20} /> },
-  ];
-
-  const authMenuItems = isAuthenticated
-    ? [
-        { id: "profile", label: "Profile", icon: <FiUser size={20} /> },
-        {
-          id: "logout",
-          label: "Logout",
-          icon: <FiLogOut size={20} />,
-          action: onLogout,
-        },
-      ]
-    : [
-        {
-          id: "login",
-          label: "Login",
-          icon: <FiLogIn size={20} />,
-          action: onLogin,
-        },
-        {
-          id: "signup",
-          label: "Sign Up",
-          icon: <FiUserPlus size={20} />,
-          action: onSignup,
-        },
-      ];
-
-  const getCurrentTime = () => {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const handleItemClick = (item) => {
-    if (item.action) {
-      item.action();
-      onClose();
-    } else if (item.id !== "logout") {
-      onNavigate(item.id);
-    }
-  };
+const Sidebar = ({ onClose, user, onLogout }) => {
+  const [showPersonalInfo, setShowPersonalInfo] = useState(false);
+  const [showAuth, setShowAuth] = useState(false); // 👈 New state for Authentication
 
   // ✅ Disable background scroll when sidebar is open
   useEffect(() => {
@@ -82,161 +23,88 @@ const Sidebar = ({
   }, []);
 
   return (
-    <div className='fixed inset-0 z-50'>
+    <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div
-        className='absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm'
+        className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
       {/* Sidebar */}
-      <div className='absolute left-0 top-0 h-full w-72 bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl border-r border-gray-700 transform transition-transform duration-300 overflow-y-auto'>
-        {/* Header */}
-        <div className='p-5 border-b border-gray-700 bg-gray-850'>
-          <div className='flex items-center justify-between mb-5'>
-            <div className='flex items-center space-x-3'>
-              <div className='bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg p-2 flex items-center justify-center shadow-md'>
-                <svg
-                  className='w-6 h-6 text-white'
-                  viewBox='0 0 24 24'
-                  fill='currentColor'
-                >
-                  <path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5' />
-                </svg>
-              </div>
-              <h2 className='text-xl font-bold text-white tracking-wide'>
-                FX CAPITAL
-              </h2>
-            </div>
-            <button
-              onClick={onClose}
-              className='text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition'
-            >
-              <FiX size={22} />
-            </button>
+      <div className="absolute left-0 top-0 h-full w-80 bg-gray-900 shadow-2xl transform transition-transform duration-300 overflow-y-auto">
+        {/* Header / Profile */}
+        <div className="p-6 border-b border-gray-700 flex flex-col items-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
+            {user?.name ? user.name.charAt(0) : "U"}
           </div>
-
-          {/* User Quick Profile */}
-          <div className='flex items-center space-x-3 p-3 bg-gray-800 rounded-xl shadow'>
-            <div
-              className={`rounded-full p-2 ${
-                isAuthenticated
-                  ? "bg-green-500 shadow-md"
-                  : "bg-blue-500 shadow-md"
-              }`}
-            >
-              <FiUser size={16} className='text-white' />
-            </div>
-            <div className='flex-1'>
-              <p className='text-white text-sm font-medium'>
-                {isAuthenticated
-                  ? user?.name || "User Account"
-                  : "Guest Account"}
-              </p>
-              <p
-                className={`text-xs ${
-                  isAuthenticated ? "text-green-400" : "text-gray-400"
-                }`}
-              >
-                {isAuthenticated ? "Verified" : "Not logged in"}
-              </p>
-            </div>
-            <button className='text-gray-400 hover:text-white'>
-              <FiBell size={18} />
-            </button>
-          </div>
+          <h2 className="text-white mt-3 font-semibold text-lg">
+            {user?.name || "Guest User"}
+          </h2>
+          <p className="text-gray-400 text-sm mt-1">
+            Balance: {user?.balance || 0}
+          </p>
         </div>
 
-        {/* Main Menu */}
-        <nav className='p-4 flex-1'>
-          <h3 className='text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3 pl-4'>
-            Main Menu
-          </h3>
-          <ul className='space-y-2 mb-6'>
-            {mainMenuItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => handleItemClick(item)}
-                  className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-all duration-200 ${
-                    activeTab === item.id
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                  }`}
-                >
-                  <span
-                    className={`${
-                      activeTab === item.id ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    {item.icon}
-                  </span>
-                  <span className='font-medium'>{item.label}</span>
-                  {activeTab === item.id && (
-                    <div className='ml-auto w-2 h-2 bg-white rounded-full'></div>
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
+        {/* Menu Items */}
+        <nav className="p-4 space-y-2">
+          {/* 👇 Authentication button opens modal */}
+          <button
+            onClick={() => setShowAuth(true)}
+            className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition"
+          >
+            <FiShield size={18} />
+            <span>Authentication</span>
+          </button>
 
-          {/* Auth Section */}
-          <h3 className='text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3 pl-4'>
-            Account
-          </h3>
-          <ul className='space-y-2'>
-            {authMenuItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => handleItemClick(item)}
-                  className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-all duration-200 ${
-                    item.id === "logout"
-                      ? "text-red-300 hover:bg-red-900 hover:text-red-100"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                  }`}
-                >
-                  <span
-                    className={
-                      item.id === "logout" ? "text-red-400" : "text-gray-400"
-                    }
-                  >
-                    {item.icon}
-                  </span>
-                  <span className='font-medium'>{item.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          {/* 👇 Personal Info button opens modal */}
+          <button
+            onClick={() => setShowPersonalInfo(true)}
+            className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition"
+          >
+            <FiUser size={18} />
+            <span>Personal Information</span>
+          </button>
+
+          <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
+            <FiDollarSign size={18} />
+            <span>Default Fiat Currency</span>
+            <span className="ml-auto text-gray-400 text-sm">INR</span>
+          </button>
+
+          <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
+            <FiGlobe size={18} />
+            <span>Select Language</span>
+            <span className="ml-auto text-gray-400 text-sm">English</span>
+          </button>
+
+          <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
+            <FiInfo size={18} />
+            <span>About Us</span>
+          </button>
         </nav>
 
-        {/* Support */}
-        <div className='p-4 border-t border-gray-700'>
-          <button className='w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition'>
-            <FiHelpCircle size={20} />
-            <span className='font-medium'>Help & Support</span>
+        {/* Footer / Exit */}
+        <div className="mt-auto p-4 border-t border-gray-700">
+          <button
+            onClick={onLogout}
+            className="w-full bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold py-3 rounded-lg hover:opacity-90 transition flex items-center justify-center space-x-2"
+          >
+            <FiLogOut size={18} />
+            <span>Exit</span>
           </button>
         </div>
-
-        {/* Footer */}
-        <div className='w-full p-4 border-t border-gray-700 bg-gray-850'>
-          <div className='text-center'>
-            <p className='text-gray-400 text-sm'>2-6 poloniextrade.online</p>
-            <div className='flex items-center justify-center mt-2 space-x-4'>
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  isAuthenticated ? "bg-green-500" : "bg-yellow-500"
-                }`}
-              ></div>
-              <p
-                className={`text-sm font-medium ${
-                  isAuthenticated ? "text-green-500" : "text-yellow-500"
-                }`}
-              >
-                {getCurrentTime()}
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
+
+      {/* ✅ Modals */}
+      <AuthenticationModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+      />
+      <PersonalInfoModal
+        isOpen={showPersonalInfo}
+        onClose={() => setShowPersonalInfo(false)}
+        user={user}
+      />
     </div>
   );
 };

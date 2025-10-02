@@ -165,7 +165,7 @@ const Dashboard = () => {
                 onClick={btn.action}
                 className="flex flex-col items-center justify-center py-3 transition"
               >
-                <span className="text-yellow-400">{btn.icon}</span>
+                <span className="text-blue-400">{btn.icon}</span>
                 <span className="text-xs font-light mt-1 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   {btn.label}
                 </span>
