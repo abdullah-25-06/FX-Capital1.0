@@ -68,7 +68,7 @@ const Sidebar = ({ onClose, user, onLogout }) => {
           <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
             <FiDollarSign size={18} />
             <span>Default Fiat Currency</span>
-            <span className="ml-auto text-gray-400 text-sm">INR</span>
+            <span className="ml-auto text-gray-400 text-sm">USDT</span>
           </button>
 
           <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
