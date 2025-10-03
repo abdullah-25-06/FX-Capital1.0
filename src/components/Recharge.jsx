@@ -22,7 +22,7 @@ const Recharge = ({ onBack }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0A1A2F] min-h-screen w-full flex flex-col text-white font-sans px-5 py-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#0A1A2F] h-screen w-full overflow-y-auto text-white font-sans px-5 py-4">
       {/* Header */}
       <div className="relative flex items-center border-b border-gray-700 pb-3 mb-5">
         <button
@@ -129,7 +129,7 @@ const Recharge = ({ onBack }) => {
       </div>
 
       {/* Submit Button */}
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-center pb-10">
         <button
           onClick={() => {
             if (!amount || !selectedFile) {
@@ -140,7 +140,7 @@ const Recharge = ({ onBack }) => {
             console.log("Uploaded file:", selectedFile);
             alert(`Recharge request submitted: ${amount} USDT`);
           }}
-          className="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-2 rounded shadow-lg transition"
+          className="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded shadow-lg transition"
         >
           Submit
         </button>
