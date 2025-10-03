@@ -129,7 +129,7 @@ const Recharge = ({ onBack }) => {
       </div>
 
       {/* Submit Button */}
-      <div className="mt-8 flex justify-center pb-10">
+      <div className="mt-8 flex justify-center pb-18">
         <button
           onClick={() => {
             if (!amount || !selectedFile) {
