@@ -22,7 +22,7 @@ const Recharge = ({ onBack }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0A1A2F] min-h-screen w-full flex flex-col text-white font-sans px-5 py-4">
+    <div className="fixed inset-0 z-50 bg-[#0A1A2F] min-h-screen w-full flex flex-col text-white font-sans px-5 py-4 overflow-y-auto">
       {/* Header */}
       <div className="relative flex items-center border-b border-gray-700 pb-3 mb-5">
         <button
