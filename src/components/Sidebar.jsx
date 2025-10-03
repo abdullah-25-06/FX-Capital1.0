@@ -14,7 +14,7 @@ const Sidebar = ({ onClose, user, onLogout }) => {
   const [showPersonalInfo, setShowPersonalInfo] = useState(false);
   const [showAuth, setShowAuth] = useState(false); // 👈 New state for Authentication
 
-  // ✅ Disable background scroll when sidebar is open
+  // Disable background scroll when sidebar is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -95,7 +95,7 @@ const Sidebar = ({ onClose, user, onLogout }) => {
         </div>
       </div>
 
-      {/* ✅ Modals */}
+      {/*Modals */}
       <AuthenticationModal
         isOpen={showAuth}
         onClose={() => setShowAuth(false)}

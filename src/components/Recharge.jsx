@@ -4,7 +4,8 @@ import { ArrowLeft, X } from "lucide-react";
 
 const Recharge = ({ onBack }) => {
   const [amount, setAmount] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null); // for image upload
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const rechargeOptions = [500, 2000, 5000, 10000, 50000];
 
   const handleFileChange = (e) => {
@@ -21,20 +22,20 @@ const Recharge = ({ onBack }) => {
   };
 
   return (
-    <div className="bg-[#0A1A2F] min-h-screen text-white font-sans px-4">
+    <div className="fixed inset-0 z-50 bg-[#0A1A2F] min-h-screen w-full flex flex-col text-white font-sans px-5 py-4">
       {/* Header */}
-      <div className="flex items-center mb-6 py-4">
+      <div className="relative flex items-center border-b border-gray-700 pb-3 mb-5">
         <button
           onClick={onBack}
-          className="text-gray-300 hover:text-blue-400"
+          className="absolute left-0 text-gray-300 hover:text-blue-400 transition"
         >
           <ArrowLeft size={22} />
         </button>
-        <h1 className="ml-3 text-lg font-semibold">Recharge</h1>
+        <h1 className="mx-auto text-lg font-semibold">Recharge</h1>
       </div>
 
       {/* Wallet Addresses */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {[
           {
             label: "USDT (TRC20)",
@@ -44,33 +45,36 @@ const Recharge = ({ onBack }) => {
           { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
           { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
         ].map((item, idx) => (
-          <div key={idx}>
-            <p className="text-sm text-gray-300 mb-1">{item.label}</p>
-            <div className="bg-gray-800 rounded-lg px-3 py-2 flex justify-between items-center">
-              <span className="text-xs break-all">{item.value}</span>
-              <button
-                className="text-blue-400 text-xs"
-                onClick={() => {
-                  navigator.clipboard.writeText(item.value);
-                  alert("Copied to clipboard!");
-                }}
-              >
-                Copy
-              </button>
+          <div
+            key={idx}
+            className="bg-gray-800/70 rounded-md px-3 py-2 flex justify-between items-center shadow-sm"
+          >
+            <div>
+              <p className="text-xs text-gray-400">{item.label}</p>
+              <p className="text-xs break-all">{item.value}</p>
             </div>
+            <button
+              className="text-blue-400 text-xs px-2 py-1 rounded hover:bg-blue-500/20"
+              onClick={() => {
+                navigator.clipboard.writeText(item.value);
+                alert("Copied to clipboard!");
+              }}
+            >
+              Copy
+            </button>
           </div>
         ))}
       </div>
 
       {/* Recharge Options */}
       <div className="mt-6">
-        <p className="text-sm text-gray-300 mb-3">Number of recharges (USDT)</p>
+        <p className="text-sm text-gray-300 mb-2">Recharge Amount (USDT)</p>
         <div className="grid grid-cols-3 gap-2">
           {rechargeOptions.map((value) => (
             <button
               key={value}
               onClick={() => setAmount(value)}
-              className={`py-2 rounded-lg text-sm font-medium transition ${
+              className={`py-2 rounded-full text-sm font-medium transition shadow-sm ${
                 amount === value
                   ? "bg-blue-600 text-white"
                   : "bg-gray-700 text-gray-300 hover:bg-blue-500 hover:text-white"
@@ -83,23 +87,23 @@ const Recharge = ({ onBack }) => {
 
         <input
           type="number"
-          placeholder="Please enter the amount"
+          placeholder="Or enter custom amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="mt-4 w-full px-3 py-2 bg-gray-800 text-sm rounded-lg outline-none text-white placeholder-gray-400"
+          className="mt-3 w-full px-3 py-2 bg-gray-800 text-sm rounded-md outline-none text-white placeholder-gray-400"
         />
       </div>
 
       {/* Upload Proof */}
       <div className="mt-6">
-        <p className="text-sm text-gray-300 mb-2">Upload recharge certificate</p>
-        <label className="w-full h-24 border-2 border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 relative">
+        <p className="text-sm text-gray-300 mb-2">Upload Proof</p>
+        <label className="w-full h-28 border-2 border-dashed border-gray-600 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 relative bg-gray-800/40">
           {selectedFile ? (
             <>
               <img
                 src={URL.createObjectURL(selectedFile)}
                 alt="Preview"
-                className="w-full h-full object-contain rounded-lg"
+                className="w-full h-full object-contain rounded-md"
               />
               <button
                 type="button"
@@ -120,13 +124,12 @@ const Recharge = ({ onBack }) => {
             accept="image/*"
             onChange={handleFileChange}
             className="hidden"
-            multiple={false} // sirf ek file
           />
         </label>
       </div>
 
       {/* Submit Button */}
-      <div className="mt-6">
+      <div className="mt-8 flex justify-center">
         <button
           onClick={() => {
             if (!amount || !selectedFile) {
@@ -137,7 +140,7 @@ const Recharge = ({ onBack }) => {
             console.log("Uploaded file:", selectedFile);
             alert(`Recharge request submitted: ${amount} USDT`);
           }}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+          className="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-2 rounded shadow-lg transition"
         >
           Submit
         </button>
