@@ -65,8 +65,8 @@ function AppContent() {
 
   return (
     <div className="App min-h-screen bg-poloniex-section text-poloniex-text">
-      {/* ✅ Hide header on Finance & Dashboard-triggered Trading */}
-      {!(activeTab === "finance" || activeTab === "tradeFromDashboard") && (
+      {/* ✅ Show Header ONLY on Dashboard */}
+      {activeTab === "dashboard" && (
         <Header
           setShowSidebar={setShowSidebar}
           isAuthenticated={isAuthenticated}
