@@ -11,6 +11,8 @@ import Settings from "./components/Settings";
 import AboutUs from "./components/AboutUs";
 import AuthModal from "./components/AuthModal";
 import Sidebar from "./components/Sidebar";
+import BackgroundAnimation from "./components/BackgroundAnimation";
+
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -21,19 +23,23 @@ function AppContent() {
 
   const { isAuthenticated, user, logout } = useAuth();
 
-  // --- FORCE LOGIN BEFORE SHOWING APP ---
-  if (!isAuthenticated) {
-    return (
-      <div className="App flex items-center justify-center min-h-screen bg-poloniex-section text-poloniex-text">
+// --- FORCE LOGIN WITH CRYPTO BACKGROUND ---
+if (!isAuthenticated) {
+  return (
+    <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-poloniex-dark">
+      <BackgroundAnimation /> {/* particles behind */}
+      <div className="relative z-10">
         <AuthModal
           mode="login"
           onClose={() => {}}
           onSuccess={() => setActiveTab("dashboard")}
-          alwaysOpen={true} // prevent closing until login
+          alwaysOpen={true} // modal cannot be closed until login
         />
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   // Handle tab navigation
   const handleNavigation = (tab) => {
