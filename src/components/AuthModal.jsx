@@ -61,7 +61,8 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      {/* Overlay removed bg-black to show coin animation behind */}
+      <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
         <AnimatePresence>
           <motion.div
             key="auth-modal"
@@ -71,6 +72,7 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
             transition={{ duration: 0.3 }}
             className="bg-[#1a1a1a] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-[#00ffea]"
           >
+            {/* Header */}
             <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-[#0f172a]">
               <h2 className="text-xl font-bold text-white">{isLoginMode ? "Login" : "Sign Up"}</h2>
               {!alwaysOpen && (
@@ -80,6 +82,7 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
               )}
             </div>
 
+            {/* Form */}
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               {errors.submit && (
                 <div className="p-3 bg-red-900 bg-opacity-50 text-red-200 rounded-lg text-sm">{errors.submit}</div>

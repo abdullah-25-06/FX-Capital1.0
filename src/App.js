@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Header from "./components/Header";
@@ -13,7 +14,6 @@ import AuthModal from "./components/AuthModal";
 import Sidebar from "./components/Sidebar";
 import BackgroundAnimation from "./components/BackgroundAnimation";
 
-
 function AppContent() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showSidebar, setShowSidebar] = useState(false);
@@ -23,71 +23,61 @@ function AppContent() {
 
   const { isAuthenticated, user, logout } = useAuth();
 
-// --- FORCE LOGIN WITH CRYPTO BACKGROUND ---
-if (!isAuthenticated) {
-  return (
-    <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-poloniex-dark">
-      <BackgroundAnimation /> {/* particles behind */}
-      <div className="relative z-10">
-        <AuthModal
-          mode="login"
-          onClose={() => {}}
-          onSuccess={() => setActiveTab("dashboard")}
-          alwaysOpen={true} // modal cannot be closed until login
-        />
+  // --- LOGIN SCREEN WITH ANIMATION ---
+  if (!isAuthenticated) {
+    return (
+      <div className="relative min-h-screen bg-poloniex-dark overflow-hidden">
+        {/* Animated coins background */}
+        <BackgroundAnimation />
+
+        {/* Auth modal on top */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+          <AuthModal
+            mode="login"
+            onClose={() => {}}
+            onSuccess={() => setActiveTab("dashboard")}
+            alwaysOpen={true} // cannot close until login
+          />
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-
-  // Handle tab navigation
+  // --- Handle tab navigation ---
   const handleNavigation = (tab) => {
     if (tab === "dashboard") setDashboardReset((prev) => !prev);
     setActiveTab(tab);
     setShowSidebar(false);
   };
 
-  // Handle auth modal success
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
     setActiveTab("dashboard");
   };
 
-  // Open login/signup modal manually
   const handleAuthAction = (mode) => {
     setAuthMode(mode);
     setShowAuthModal(true);
   };
 
-  // Render the main content based on active tab
   const renderContent = () => {
     const commonProps = { setShowSidebar, onNavigate: handleNavigation };
 
     switch (activeTab) {
-      case "dashboard":
-        return <Dashboard {...commonProps} resetSignal={dashboardReset} />;
-      case "markets":
-        return <Markets {...commonProps} />;
+      case "dashboard": return <Dashboard {...commonProps} resetSignal={dashboardReset} />;
+      case "markets": return <Markets {...commonProps} />;
       case "trade":
-      case "tradeFromDashboard":
-        return <Trading {...commonProps} />;
-      case "finance":
-        return <Finance {...commonProps} />;
-      case "assets":
-        return <Assets {...commonProps} />;
-      case "settings":
-        return <Settings {...commonProps} />;
-      case "aboutus":
-        return <AboutUs onBack={() => handleNavigation("dashboard")} />;
-      default:
-        return <Dashboard {...commonProps} />;
+      case "tradeFromDashboard": return <Trading {...commonProps} />;
+      case "finance": return <Finance {...commonProps} />;
+      case "assets": return <Assets {...commonProps} />;
+      case "settings": return <Settings {...commonProps} />;
+      case "aboutus": return <AboutUs onBack={() => handleNavigation("dashboard")} />;
+      default: return <Dashboard {...commonProps} />;
     }
   };
 
   return (
-    <div className="App min-h-screen bg-poloniex-section text-poloniex-text">
-      {/* Header only on Dashboard */}
+    <div className="App min-h-screen bg-poloniex-dark text-white">
       {activeTab === "dashboard" && (
         <Header
           setShowSidebar={setShowSidebar}
@@ -99,17 +89,14 @@ if (!isAuthenticated) {
         />
       )}
 
-      {/* Main content */}
       <div className="container mx-auto px-4 py-6 pb-20">
         {renderContent()}
       </div>
 
-      {/* Bottom navigation (hide on AboutUs) */}
       {activeTab !== "aboutus" && (
         <Navigation activeTab={activeTab} setActiveTab={handleNavigation} />
       )}
 
-      {/* Auth modal */}
       {showAuthModal && (
         <AuthModal
           mode={authMode}
@@ -118,7 +105,6 @@ if (!isAuthenticated) {
         />
       )}
 
-      {/* Sidebar */}
       {showSidebar && (
         <Sidebar
           activeTab={activeTab}
