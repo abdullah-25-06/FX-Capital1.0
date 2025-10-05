@@ -29,7 +29,7 @@ const Recharge = ({ onBack }) => {
   return (
     <div className="fixed inset-0 z-50 bg-[#0A1A2F] min-h-screen text-white font-sans overflow-y-auto pb-[calc(6rem+env(safe-area-inset-bottom))]">
       {/* Header */}
-      <div className="relative flex items-center border-b border-blue-500 pb-3 mb-6 px-4 pt-5">
+      <div className="relative flex items-center border-b border-blue-500 pb-3 mb-6 px-4 pt-4">
         <button
           onClick={onBack}
           className="absolute left-4 text-gray-300 hover:text-blue-400 transition"
@@ -44,10 +44,10 @@ const Recharge = ({ onBack }) => {
       {/* Wallet Addresses */}
       <div className="space-y-3 px-4">
         {[
-          { label: "USDT (TRC20)", value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd" },
-          { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
-          { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
-          { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
+          { label: "USDT (TRC20)", value: "TEGTTcWuEwqc39b3RFZJVNbQnT5oNygXJa" },
+          { label: "USDT (ERC20)", value: "0x84323b0a2809e939e97db9d0fd2f75946ee0cd75" },
+          { label: "BTC", value: "bc1qedmwyztw28ddyhxkfqtrv0mxrekca98mc0zjve" },
+          { label: "ETH", value: "0x4756328b26EC04F6bFa0B9f249D297FC9dE5b40b" },
         ].map((item, idx) => (
           <div
             key={idx}
