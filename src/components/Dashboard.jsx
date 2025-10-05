@@ -30,7 +30,7 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
     {
       id: 3,
       title: "🎁 Referral Bonus",
-      content: "Earn 50% commission on every friend you refer to POLONIEX",
+      content: "Earn 50% commission on every friend you refer to FX Capital",
       bgColor: "bg-gradient-to-r from-green-800 to-green-600",
     },
   ];
