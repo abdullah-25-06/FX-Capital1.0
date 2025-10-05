@@ -7,13 +7,14 @@ import {
 } from "lucide-react";
 import Withdraw from "./Withdraw";
 import Recharge from "./Recharge";
+import Trading from "./Trading";
+import Finance from "./Finance"; // ✅ Future Market page
 
-const Dashboard = () => {
+const Dashboard = ({ resetSignal }) => {
   const [page, setPage] = useState("dashboard");
   const [currentAd, setCurrentAd] = useState(0);
   const [prices, setPrices] = useState({});
   const [status, setStatus] = useState({});
-  const [amount, setAmount] = useState("");
 
   const ads = [
     {
@@ -37,78 +38,34 @@ const Dashboard = () => {
   ];
 
   const coinList = [
-    {
-      symbol: "BTCUSDT",
-      pair: "BTC/USDT",
-      logo: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
-    },
-    {
-      symbol: "ETHUSDT",
-      pair: "ETH/USDT",
-      logo: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
-    },
-    {
-      symbol: "LTCUSDT",
-      pair: "LTC/USDT",
-      logo: "https://assets.coingecko.com/coins/images/2/large/litecoin.png",
-    },
-    {
-      symbol: "BNBUSDT",
-      pair: "BNB/USDT",
-      logo: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png",
-    },
-    {
-      symbol: "NEOUSDT",
-      pair: "NEO/USDT",
-      logo: "https://assets.coingecko.com/coins/images/480/large/NEO_512_512.png",
-    },
-    {
-      symbol: "QTUMUSDT",
-      pair: "QTUM/USDT",
-      logo: "https://assets.coingecko.com/coins/images/684/large/qtum.png",
-    },
-    {
-      symbol: "EOSUSDT",
-      pair: "EOS/USDT",
-      logo: "https://assets.coingecko.com/coins/images/738/large/eos-eos-logo.png",
-    },
-    {
-      symbol: "SNTUSDT",
-      pair: "SNT/USDT",
-      logo: "https://assets.coingecko.com/coins/images/779/large/status.png",
-    },
-    {
-      symbol: "BNTUSDT",
-      pair: "BNT/USDT",
-      logo: "https://assets.coingecko.com/coins/images/736/large/bancor.png",
-    },
-    {
-      symbol: "BCHUSDT",
-      pair: "BCH/USDT",
-      logo: "https://assets.coingecko.com/coins/images/780/large/bitcoin-cash-circle.png",
-    },
-    {
-      symbol: "GASUSDT",
-      pair: "GAS/USDT",
-      logo: "https://assets.coingecko.com/coins/images/858/large/gas.png",
-    },
+    { symbol: "BTCUSDT", pair: "BTC/USDT", logo: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
+    { symbol: "ETHUSDT", pair: "ETH/USDT", logo: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
+    { symbol: "LTCUSDT", pair: "LTC/USDT", logo: "https://assets.coingecko.com/coins/images/2/large/litecoin.png" },
+    { symbol: "BNBUSDT", pair: "BNB/USDT", logo: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
+    { symbol: "NEOUSDT", pair: "NEO/USDT", logo: "https://assets.coingecko.com/coins/images/480/large/NEO_512_512.png" },
+    { symbol: "QTUMUSDT", pair: "QTUM/USDT", logo: "https://assets.coingecko.com/coins/images/684/large/qtum.png" },
+    { symbol: "EOSUSDT", pair: "EOS/USDT", logo: "https://assets.coingecko.com/coins/images/738/large/eos-eos-logo.png" },
+    { symbol: "SNTUSDT", pair: "SNT/USDT", logo: "https://assets.coingecko.com/coins/images/779/large/status.png" },
+    { symbol: "BNTUSDT", pair: "BNT/USDT", logo: "https://assets.coingecko.com/coins/images/736/large/bancor.png" },
+    { symbol: "BCHUSDT", pair: "BCH/USDT", logo: "https://assets.coingecko.com/coins/images/780/large/bitcoin-cash-circle.png" },
+    { symbol: "GASUSDT", pair: "GAS/USDT", logo: "https://assets.coingecko.com/coins/images/858/large/gas.png" },
   ];
 
-  const rechargeOptions = [500, 2000, 5000, 10000, 50000];
-
+  // ⏱ Rotate ads every 5 seconds
   useEffect(() => {
-    const interval = setInterval(
-      () => setCurrentAd((prev) => (prev + 1) % ads.length),
-      5000
-    );
+    const interval = setInterval(() => {
+      setCurrentAd((prev) => (prev + 1) % ads.length);
+    }, 5000);
     return () => clearInterval(interval);
   }, [ads.length]);
 
+  // 🔄 Binance live prices
   useEffect(() => {
     const streamUrl =
       "wss://stream.binance.com:9443/stream?streams=" +
       coinList.map((c) => `${c.symbol.toLowerCase()}@ticker`).join("/");
     const ws = new WebSocket(streamUrl);
+
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
       if (message?.data?.s) {
@@ -124,9 +81,17 @@ const Dashboard = () => {
     return () => ws.close();
   }, []);
 
+  // 🧠 Reset Dashboard when Home button pressed
+  useEffect(() => {
+    if (resetSignal) setPage("dashboard");
+  }, [resetSignal]);
+
+  // 🏠 Dashboard Main Page
   const renderDashboard = () => (
     <div className="bg-[#0F172A] min-h-screen font-sans">
+      {/* Header section */}
       <div className="relative border-b border-gray-800 overflow-hidden">
+        {/* Background coins animation */}
         <div className="absolute inset-0 opacity-10 flex justify-around items-center -top-6">
           <img
             src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png"
@@ -153,12 +118,29 @@ const Dashboard = () => {
             944.32
           </p>
 
+          {/* Main Buttons */}
           <div className="grid grid-cols-4 gap-4 mt-2">
             {[
-              { icon: <Banknote size={24} />, label: "Recharge", action: () => setPage("recharge") },
-              { icon: <ArrowUpRight size={24} />, label: "Withdrawal", action: () => setPage("withdrawal") },
-              { icon: <ReceiptText size={24} />, label: "Transaction" },
-              { icon: <CandlestickChart size={24} />, label: "Future Market" },
+              {
+                icon: <Banknote size={24} />,
+                label: "Recharge",
+                action: () => setPage("recharge"),
+              },
+              {
+                icon: <ArrowUpRight size={24} />,
+                label: "Withdrawal",
+                action: () => setPage("withdrawal"),
+              },
+              {
+                icon: <ReceiptText size={24} />,
+                label: "Transaction",
+                action: () => setPage("transaction"),
+              },
+              {
+                icon: <CandlestickChart size={24} />,
+                label: "Future Market",
+                action: () => setPage("finance"), // ✅ Opens Finance.jsx
+              },
             ].map((btn, i) => (
               <button
                 key={i}
@@ -175,6 +157,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Rotating Ad Banner */}
       <div className="relative overflow-hidden border-b border-gray-800">
         <div
           className={`${ads[currentAd].bgColor} rounded-lg p-4 text-white transition-all duration-700`}
@@ -186,6 +169,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Scrolling Message */}
       <div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
         <div className="inline-block animate-marquee text-white font-light text-xs">
           🔥 In your payment, please feel free to contact our representatives 🔥
@@ -194,59 +178,63 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {page !== "withdrawal" && (
-        <div>
-          <h3 className="text-lg font-light mb-3 text-white p-2">
-            Trade these coins with FX Capital
-          </h3>
-          <div className="overflow-x-auto p-3">
-            <table className="min-w-full border-collapse table-fixed">
-              <thead>
-                <tr className="text-gray-400 text-[11px] font-light">
-                  <th className="py-2 text-left w-1/3">Pair</th>
-                  <th className="py-2 text-center w-1/3">Status</th>
-                  <th className="py-2 text-right w-1/3">Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {coinList.map((coin, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-gray-800 hover:bg-gray-800/40 transition"
+      {/* Live Prices */}
+      <div>
+        <h3 className="text-lg font-light mb-3 text-white p-2">
+          Trade these coins with FX Capital
+        </h3>
+        <div className="overflow-x-auto p-3">
+          <table className="min-w-full border-collapse table-fixed">
+            <thead>
+              <tr className="text-gray-400 text-[11px] font-light">
+                <th className="py-2 text-left w-1/3">Pair</th>
+                <th className="py-2 text-center w-1/3">Status</th>
+                <th className="py-2 text-right w-1/3">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {coinList.map((coin, i) => (
+                <tr
+                  key={i}
+                  className="border-b border-gray-800 hover:bg-gray-800/40 transition"
+                >
+                  <td className="py-3 flex items-center space-x-3 text-white text-sm w-1/3 font-light">
+                    <img src={coin.logo} alt={coin.pair} className="w-5 h-5" />
+                    <span>{coin.pair}</span>
+                  </td>
+                  <td
+                    className={`py-2 text-sm w-1/3 text-center font-light ${
+                      status[coin.symbol] === "In transaction"
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
                   >
-                    <td className="py-3 flex items-center space-x-3 text-white text-sm w-1/3 font-light">
-                      <img src={coin.logo} alt={coin.pair} className="w-5 h-5" />
-                      <span>{coin.pair}</span>
-                    </td>
-                    <td
-                      className={`py-2 text-sm w-1/3 text-center font-light ${
-                        status[coin.symbol] === "In transaction"
-                          ? "text-green-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {status[coin.symbol] || "--"}
-                    </td>
-                    <td className="py-3 text-sm w-1/3 text-right text-white font-sans">
-                      {prices[coin.symbol] || "--"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    {status[coin.symbol] || "--"}
+                  </td>
+                  <td className="py-3 text-sm w-1/3 text-right text-white font-sans">
+                    {prices[coin.symbol] || "--"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
 
+  // 🔁 Conditional Rendering of Pages
   return page === "dashboard" ? (
     renderDashboard()
   ) : page === "recharge" ? (
     <Recharge onBack={() => setPage("dashboard")} />
-  ) : (
+  ) : page === "withdrawal" ? (
     <Withdraw onClose={() => setPage("dashboard")} />
-  );
+  ) : page === "transaction" ? (
+    <Trading />
+  ) : page === "finance" ? (
+    <Finance />
+  ) : null;
 };
 
 export default Dashboard;

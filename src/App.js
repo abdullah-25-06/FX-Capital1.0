@@ -16,14 +16,41 @@ function AppContent() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
+  const [dashboardReset, setDashboardReset] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
 
+  // ✅ Handle tab navigation, trigger reset when going home
+  const handleNavigation = (tab) => {
+    if (tab === "dashboard") {
+      setDashboardReset((prev) => !prev); // toggle reset signal
+    }
+    setActiveTab(tab);
+    setShowSidebar(false);
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    setActiveTab("dashboard");
+  };
+
+  const handleAuthAction = (mode) => {
+    setAuthMode(mode);
+    setShowAuthModal(true);
+  };
+
+  // ✅ Page rendering logic
   const renderContent = () => {
     const commonProps = { setShowSidebar };
 
     switch (activeTab) {
       case "dashboard":
-        return <Dashboard {...commonProps} />;
+        return (
+          <Dashboard
+            {...commonProps}
+            onNavigate={handleNavigation}
+            resetSignal={dashboardReset}
+          />
+        );
       case "markets":
         return <Markets {...commonProps} />;
       case "trade":
@@ -39,24 +66,8 @@ function AppContent() {
     }
   };
 
-  const handleNavigation = (tab) => {
-    setActiveTab(tab);
-    setShowSidebar(false);
-  };
-
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false);
-    setActiveTab("dashboard");
-  };
-
-  const handleAuthAction = (mode) => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
-  };
-
   return (
     <div className="App min-h-screen bg-poloniex-section text-poloniex-text">
-      {/* ✅ Header only for dashboard */}
       {activeTab === "dashboard" && (
         <Header
           setShowSidebar={setShowSidebar}
@@ -70,7 +81,7 @@ function AppContent() {
 
       <div className="container mx-auto px-4 py-6 pb-20">{renderContent()}</div>
 
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Navigation activeTab={activeTab} setActiveTab={handleNavigation} />
 
       {showAuthModal && (
         <AuthModal
