@@ -4,8 +4,8 @@ const FundsCard = () => {
   return (
     <div className="fixed inset-0 z-50 bg-[#0a1a2f] min-h-screen text-white font-sans overflow-y-auto">
       {/* Header — same as Withdraw (no back arrow) */}
-      <div className="flex items-center justify-center px-4 py-3 border-b border-blue-900">
-        <h1 className="text-base font-medium">Futures Market</h1>
+      <div className="flex items-center justify-center px-4 py-2 border-b border-blue-900">
+        <h1 className="text-base font-medium m-0">Futures Market</h1>
       </div>
 
       {/* Main Content */}

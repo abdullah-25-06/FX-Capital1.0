@@ -10,7 +10,7 @@ import {
 import Withdraw from "./Withdraw";
 import Recharge from "./Recharge";
 
-const Assets = () => {
+const Assets = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState("position");
   const [showAssets, setShowAssets] = useState(true);
   const [page, setPage] = useState("assets");
@@ -25,10 +25,10 @@ const Assets = () => {
   const renderAssets = () => (
     <div className="fixed inset-0 z-50 bg-[#0a1a2f] min-h-screen text-white font-sans overflow-y-auto">
       {/* Header — no back arrow */}
-      <div className="flex items-center justify-center px-4 py-3 border-b border-blue-900">
-        <h1 className="text-base font-medium">Available Assets</h1>
+      <div className="flex items-center justify-center px-5 py-2 border-b border-blue-900">
+        <h1 className="text-base font-medium m-0">Available Assets</h1>
       </div>
-
+ 
       {/* Assets Card Section */}
       <div className="w-full px-5 py-5">
         {/* Card */}
@@ -89,7 +89,13 @@ const Assets = () => {
             <span>Withdrawal/Transfer</span>
           </div>
 
-          <div className="flex flex-col items-center cursor-pointer">
+          <div
+            className="flex flex-col items-center cursor-pointer"
+            onClick={() => {
+              if (onNavigate) onNavigate("finance"); // Navigate to Finance tab
+              setPage(null); // Close Assets overlay
+            }}
+          >
             <BarChart3 className="w-6 h-6 mb-1 text-[#c49a6c]" />
             <span>Futures Market</span>
           </div>

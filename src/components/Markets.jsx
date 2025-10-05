@@ -70,7 +70,7 @@ const Markets = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 text-white font-sans">
       {/* Header — same style as Withdraw (no back arrow) */}
-      <div className="flex items-center justify-center px-4 py-1 -mt-4 border-b border-blue-900">
+      <div className="flex items-center justify-center px-4 py-3 -mt-6 border-b border-blue-900">
         <h1 className="text-base font-medium">Transaction Quote</h1>
       </div>
 

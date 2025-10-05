@@ -8,7 +8,7 @@ import Trading from "./components/Trading";
 import Finance from "./components/Finance";
 import Assets from "./components/Assets";
 import Settings from "./components/Settings";
-import AboutUs from "./components/AboutUs"; // 👈 New component
+import AboutUs from "./components/AboutUs";
 import AuthModal from "./components/AuthModal";
 import Sidebar from "./components/Sidebar";
 
@@ -21,35 +21,32 @@ function AppContent() {
 
   const { isAuthenticated, user, logout } = useAuth();
 
-  // ✅ Handle tab change from bottom navigation or sidebar
+  // Handle global navigation
   const handleNavigation = (tab) => {
     if (tab === "dashboard") setDashboardReset((prev) => !prev);
     setActiveTab(tab);
     setShowSidebar(false);
   };
 
-  // ✅ On successful login/signup
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
     setActiveTab("dashboard");
   };
 
-  // ✅ Open login/signup modal
   const handleAuthAction = (mode) => {
     setAuthMode(mode);
     setShowAuthModal(true);
   };
 
-  // ✅ Main content render logic
+  // Render main content
   const renderContent = () => {
-    const commonProps = { setShowSidebar };
+    const commonProps = { setShowSidebar, onNavigate: handleNavigation };
 
     switch (activeTab) {
       case "dashboard":
         return (
           <Dashboard
             {...commonProps}
-            onNavigate={handleNavigation}
             resetSignal={dashboardReset}
           />
         );
@@ -64,7 +61,7 @@ function AppContent() {
         return <Assets {...commonProps} />;
       case "settings":
         return <Settings {...commonProps} />;
-      case "aboutus": // 👈 Added About Us tab
+      case "aboutus":
         return <AboutUs onBack={() => handleNavigation("dashboard")} />;
       default:
         return <Dashboard {...commonProps} />;
@@ -73,7 +70,7 @@ function AppContent() {
 
   return (
     <div className="App min-h-screen bg-poloniex-section text-poloniex-text">
-      {/* ✅ Show Header ONLY on Dashboard */}
+      {/* Header only on Dashboard */}
       {activeTab === "dashboard" && (
         <Header
           setShowSidebar={setShowSidebar}
@@ -85,17 +82,17 @@ function AppContent() {
         />
       )}
 
-      {/* ✅ Main content area */}
+      {/* Main content */}
       <div className="container mx-auto px-4 py-6 pb-20">
         {renderContent()}
       </div>
 
-      {/* ✅ Bottom Navigation (hidden on About Us for cleaner layout) */}
+      {/* Bottom navigation (hide on AboutUs) */}
       {activeTab !== "aboutus" && (
         <Navigation activeTab={activeTab} setActiveTab={handleNavigation} />
       )}
 
-      {/* ✅ Auth Modal */}
+      {/* Auth modal */}
       {showAuthModal && (
         <AuthModal
           mode={authMode}
@@ -104,7 +101,7 @@ function AppContent() {
         />
       )}
 
-      {/* ✅ Sidebar */}
+      {/* Sidebar */}
       {showSidebar && (
         <Sidebar
           activeTab={activeTab}

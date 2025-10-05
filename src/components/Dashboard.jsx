@@ -3,12 +3,10 @@ import {
   Banknote,
   ArrowUpRight,
   ReceiptText,
-  CandlestickChart,
+  BarChart3,
 } from "lucide-react";
 import Withdraw from "./Withdraw";
 import Recharge from "./Recharge";
-import Trading from "./Trading";
-import Finance from "./Finance";
 
 const Dashboard = ({ resetSignal, onNavigate }) => {
   const [page, setPage] = useState("dashboard");
@@ -106,23 +104,16 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
             {[
               { icon: <Banknote size={24} />, label: "Recharge", action: () => setPage("recharge") },
               { icon: <ArrowUpRight size={24} />, label: "Withdrawal", action: () => setPage("withdrawal") },
-              {
-                icon: <ReceiptText size={24} />,
-                label: "Transaction",
-                action: () => onNavigate && onNavigate("tradeFromDashboard"), // ✅ no Header Trading
-              },
-              {
-                icon: <CandlestickChart size={24} />,
-                label: "Future Market",
-                action: () => onNavigate && onNavigate("finance"), // ✅ no Header Finance
-              },
+              { icon: <ReceiptText size={24} />, label: "Transaction", action: () => onNavigate && onNavigate("tradeFromDashboard") },
+              { icon: <BarChart3 size={24} />, label: "Future Market", action: () => onNavigate && onNavigate("finance") },
             ].map((btn, i) => (
               <button
                 key={i}
                 onClick={btn.action}
                 className="flex flex-col items-center justify-center py-3 transition"
               >
-                <span className="text-blue-400">{btn.icon}</span>
+                {/* ✅ Updated icon color */}
+                <span className="text-[#c49a6c]">{btn.icon}</span>
                 <span className="text-xs font-light mt-1 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                   {btn.label}
                 </span>
