@@ -22,6 +22,7 @@ const Sidebar = ({ onClose, user, onLogout, onNavigate }) => {
   const [showAuth, setShowAuth] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const languageRef = useRef(null);
 
@@ -157,9 +158,9 @@ const Sidebar = ({ onClose, user, onLogout, onNavigate }) => {
 
         {/* Footer */}
         <div className="mt-auto p-4 border-t border-gray-700">
-          {/* Exit button: logs out without closing sidebar */}
+          {/* Exit button: shows confirmation modal */}
           <button
-            onClick={() => onLogout()}  // logout only
+            onClick={() => setShowLogoutConfirm(true)}
             className="w-full bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold py-3 rounded-lg hover:opacity-90 transition flex items-center justify-center space-x-2"
           >
             <FiLogOut size={18} />
@@ -167,6 +168,42 @@ const Sidebar = ({ onClose, user, onLogout, onNavigate }) => {
           </button>
         </div>
       </div>
+
+{/* Logout Confirmation Modal */}
+{showLogoutConfirm && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+    <div className="bg-gray-900 rounded-3xl shadow-2xl border border-gray-700 w-80 p-6 flex flex-col items-center animate-scale-up">
+      {/* Icon (optional) */}
+      <div className="w-14 h-14 mb-4 flex items-center justify-center bg-red-600 rounded-full text-white text-2xl font-bold shadow-lg">
+        !
+      </div>
+
+      {/* Heading */}
+      <h2 className="text-white text-xl font-bold mb-6 text-center">
+        Are you sure you want to logout?
+      </h2>
+
+      {/* Buttons */}
+      <div className="flex w-full justify-between gap-3">
+        <button
+          onClick={() => setShowLogoutConfirm(false)}
+          className="flex-1 py-2 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            onLogout();
+            setShowLogoutConfirm(false);
+          }}
+          className="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold shadow-lg hover:scale-105 transition transform"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Modals */}
       <AuthenticationModal
