@@ -509,14 +509,17 @@ useEffect(() => {
 useEffect(()=>{ if(priceLineRef.current && price){ priceLineRef.current.applyOptions({price}); } },[price]);
 /* ---------------- UI ---------------- */
 return (
-  <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col">
-<div className="flex items-center justify-center px-4 py-3   border-b border-blue-900 mb-4">
-  <h1 className="text-base font-medium text-white">OptionTransactions</h1>
+  <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col px-0">
+<div className="w-full border-b border-blue-900 mb-4">
+  <div className="flex items-center justify-center -mt-6 py-3">
+    <h1 className="text-base font-medium">Option Transactions</h1>
+  </div>
 </div>
 
 
+
     {/* header */}
-    <div className="flex items-start justify-between px-2 pb-2 border-b border-gray-800 relative">
+    <div className="flex items-start justify-between pb-2 border-b border-gray-800 relative">
       <div className="flex flex-col relative">
         <div className="flex items-center gap-2">
           <button onClick={()=>setShowDropdown(s=>!s)} className="flex items-center gap-2 px-2 py-1 bg-[#1e293b] rounded-md text-sm font-semibold hover:bg-[#2d3b50] transition">
@@ -576,7 +579,7 @@ return (
     </div>
 
     {/* timeframe + MA */}
-    <div className="flex flex-col px-2 py-1 border-b border-gray-800">
+    <div className="flex flex-col px-0 py-1 border-b border-gray-800">
       <div className="flex gap-1 mb-1">
         {["1m","5m","15m","30m","1h","1d"].map(t => (
           <button
@@ -595,7 +598,7 @@ return (
     </div>
 
     {/* chart stack */}
-    <div className="px-2 pt-2">
+    <div className="px-0 pt-2">
       <div className="rounded-lg border border-gray-700 bg-[#0f172a]" style={{ padding: 8 }}>
         <div ref={mainRef} className="w-full" style={{ height: 220 }} />
         <div ref={volRef} className="w-full mt-1" style={{ height: 60 }} />
@@ -604,7 +607,7 @@ return (
     </div>
 
     {/* bottom buttons (slim red/green) */}
-    <div className="mt-2 px-2 pb-3 flex gap-2">
+    <div className="mt-2 px-0 pb-3 flex gap-2">
       <button
         onClick={()=>{setModalDirection("Buy"); setShowModal(true);}}
         className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5">
