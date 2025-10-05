@@ -21,35 +21,46 @@ function AppContent() {
 
   const { isAuthenticated, user, logout } = useAuth();
 
-  // Handle global navigation
+  // --- FORCE LOGIN BEFORE SHOWING APP ---
+  if (!isAuthenticated) {
+    return (
+      <div className="App flex items-center justify-center min-h-screen bg-poloniex-section text-poloniex-text">
+        <AuthModal
+          mode="login"
+          onClose={() => {}}
+          onSuccess={() => setActiveTab("dashboard")}
+          alwaysOpen={true} // prevent closing until login
+        />
+      </div>
+    );
+  }
+
+  // Handle tab navigation
   const handleNavigation = (tab) => {
     if (tab === "dashboard") setDashboardReset((prev) => !prev);
     setActiveTab(tab);
     setShowSidebar(false);
   };
 
+  // Handle auth modal success
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
     setActiveTab("dashboard");
   };
 
+  // Open login/signup modal manually
   const handleAuthAction = (mode) => {
     setAuthMode(mode);
     setShowAuthModal(true);
   };
 
-  // Render main content
+  // Render the main content based on active tab
   const renderContent = () => {
     const commonProps = { setShowSidebar, onNavigate: handleNavigation };
 
     switch (activeTab) {
       case "dashboard":
-        return (
-          <Dashboard
-            {...commonProps}
-            resetSignal={dashboardReset}
-          />
-        );
+        return <Dashboard {...commonProps} resetSignal={dashboardReset} />;
       case "markets":
         return <Markets {...commonProps} />;
       case "trade":
