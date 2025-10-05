@@ -8,9 +8,9 @@ import {
 import Withdraw from "./Withdraw";
 import Recharge from "./Recharge";
 import Trading from "./Trading";
-import Finance from "./Finance"; // ✅ Future Market page
+import Finance from "./Finance";
 
-const Dashboard = ({ resetSignal }) => {
+const Dashboard = ({ resetSignal, onNavigate }) => {
   const [page, setPage] = useState("dashboard");
   const [currentAd, setCurrentAd] = useState(0);
   const [prices, setPrices] = useState({});
@@ -51,7 +51,7 @@ const Dashboard = ({ resetSignal }) => {
     { symbol: "GASUSDT", pair: "GAS/USDT", logo: "https://assets.coingecko.com/coins/images/858/large/gas.png" },
   ];
 
-  // ⏱ Rotate ads every 5 seconds
+  // 🔁 Rotate ads every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentAd((prev) => (prev + 1) % ads.length);
@@ -59,7 +59,7 @@ const Dashboard = ({ resetSignal }) => {
     return () => clearInterval(interval);
   }, [ads.length]);
 
-  // 🔄 Binance live prices
+  // 📊 Binance live prices
   useEffect(() => {
     const streamUrl =
       "wss://stream.binance.com:9443/stream?streams=" +
@@ -86,60 +86,31 @@ const Dashboard = ({ resetSignal }) => {
     if (resetSignal) setPage("dashboard");
   }, [resetSignal]);
 
-  // 🏠 Dashboard Main Page
+  // 🏠 Dashboard main content
   const renderDashboard = () => (
     <div className="bg-[#0F172A] min-h-screen font-sans">
-      {/* Header section */}
+      {/* Header Section */}
       <div className="relative border-b border-gray-800 overflow-hidden">
-        {/* Background coins animation */}
         <div className="absolute inset-0 opacity-10 flex justify-around items-center -top-6">
-          <img
-            src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png"
-            alt="btc"
-            className="w-20 h-20 animate-slowspin"
-          />
-          <img
-            src="https://assets.coingecko.com/coins/images/279/large/ethereum.png"
-            alt="eth"
-            className="w-16 h-16 animate-float"
-          />
-          <img
-            src="https://assets.coingecko.com/coins/images/325/large/Tether-logo.png"
-            alt="usdt"
-            className="w-14 h-14 animate-slowspin"
-          />
+          <img src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png" alt="btc" className="w-20 h-20 animate-slowspin" />
+          <img src="https://assets.coingecko.com/coins/images/279/large/ethereum.png" alt="eth" className="w-16 h-16 animate-float" />
+          <img src="https://assets.coingecko.com/coins/images/325/large/Tether-logo.png" alt="usdt" className="w-14 h-14 animate-slowspin" />
         </div>
 
         <div className="relative z-10 p-2 pt-2">
-          <h2 className="text-xs text-gray-400 font-light mb-1">
-            Total assets equivalent (USDT)
-          </h2>
-          <p className="text-3xl font-sans text-white tracking-tight mb-3">
-            944.32
-          </p>
+          <h2 className="text-xs text-gray-400 font-light mb-1">Total assets equivalent (USDT)</h2>
+          <p className="text-3xl font-sans text-white tracking-tight mb-3">944.32</p>
 
-          {/* Main Buttons */}
+          {/* Buttons */}
           <div className="grid grid-cols-4 gap-4 mt-2">
             {[
-              {
-                icon: <Banknote size={24} />,
-                label: "Recharge",
-                action: () => setPage("recharge"),
-              },
-              {
-                icon: <ArrowUpRight size={24} />,
-                label: "Withdrawal",
-                action: () => setPage("withdrawal"),
-              },
-              {
-                icon: <ReceiptText size={24} />,
-                label: "Transaction",
-                action: () => setPage("transaction"),
-              },
+              { icon: <Banknote size={24} />, label: "Recharge", action: () => setPage("recharge") },
+              { icon: <ArrowUpRight size={24} />, label: "Withdrawal", action: () => setPage("withdrawal") },
+              { icon: <ReceiptText size={24} />, label: "Transaction", action: () => setPage("transaction") },
               {
                 icon: <CandlestickChart size={24} />,
                 label: "Future Market",
-                action: () => setPage("finance"), // ✅ Opens Finance.jsx
+                action: () => onNavigate && onNavigate("finance"), // go to finance tab globally
               },
             ].map((btn, i) => (
               <button
@@ -157,15 +128,11 @@ const Dashboard = ({ resetSignal }) => {
         </div>
       </div>
 
-      {/* Rotating Ad Banner */}
+      {/* Ad Banner */}
       <div className="relative overflow-hidden border-b border-gray-800">
-        <div
-          className={`${ads[currentAd].bgColor} rounded-lg p-4 text-white transition-all duration-700`}
-        >
+        <div className={`${ads[currentAd].bgColor} rounded-lg p-4 text-white transition-all duration-700`}>
           <h3 className="text-sm font-light mb-1">{ads[currentAd].title}</h3>
-          <p className="text-xs font-light opacity-90">
-            {ads[currentAd].content}
-          </p>
+          <p className="text-xs font-light opacity-90">{ads[currentAd].content}</p>
         </div>
       </div>
 
@@ -173,12 +140,11 @@ const Dashboard = ({ resetSignal }) => {
       <div className="overflow-hidden whitespace-nowrap py-1 px-3 bg-gray-800 rounded-lg mt-2">
         <div className="inline-block animate-marquee text-white font-light text-xs">
           🔥 In your payment, please feel free to contact our representatives 🔥
-          &nbsp; 🔥 In your payment, please feel free to contact our
-          representatives 🔥
+          &nbsp; 🔥 In your payment, please feel free to contact our representatives 🔥
         </div>
       </div>
 
-      {/* Live Prices */}
+      {/* Coin Table */}
       <div>
         <h3 className="text-lg font-light mb-3 text-white p-2">
           Trade these coins with FX Capital
@@ -194,19 +160,14 @@ const Dashboard = ({ resetSignal }) => {
             </thead>
             <tbody>
               {coinList.map((coin, i) => (
-                <tr
-                  key={i}
-                  className="border-b border-gray-800 hover:bg-gray-800/40 transition"
-                >
+                <tr key={i} className="border-b border-gray-800 hover:bg-gray-800/40 transition">
                   <td className="py-3 flex items-center space-x-3 text-white text-sm w-1/3 font-light">
                     <img src={coin.logo} alt={coin.pair} className="w-5 h-5" />
                     <span>{coin.pair}</span>
                   </td>
                   <td
                     className={`py-2 text-sm w-1/3 text-center font-light ${
-                      status[coin.symbol] === "In transaction"
-                        ? "text-green-400"
-                        : "text-red-400"
+                      status[coin.symbol] === "In transaction" ? "text-green-400" : "text-red-400"
                     }`}
                   >
                     {status[coin.symbol] || "--"}
@@ -223,7 +184,7 @@ const Dashboard = ({ resetSignal }) => {
     </div>
   );
 
-  // 🔁 Conditional Rendering of Pages
+  // 🔁 Page switch logic
   return page === "dashboard" ? (
     renderDashboard()
   ) : page === "recharge" ? (
