@@ -19,11 +19,8 @@ function AppContent() {
   const [dashboardReset, setDashboardReset] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
 
-  // ✅ Handle tab navigation, trigger reset when going home
   const handleNavigation = (tab) => {
-    if (tab === "dashboard") {
-      setDashboardReset((prev) => !prev); // toggle reset signal
-    }
+    if (tab === "dashboard") setDashboardReset((prev) => !prev);
     setActiveTab(tab);
     setShowSidebar(false);
   };
@@ -38,7 +35,6 @@ function AppContent() {
     setShowAuthModal(true);
   };
 
-  // ✅ Page rendering logic
   const renderContent = () => {
     const commonProps = { setShowSidebar };
 
@@ -54,6 +50,7 @@ function AppContent() {
       case "markets":
         return <Markets {...commonProps} />;
       case "trade":
+      case "tradeFromDashboard":
         return <Trading {...commonProps} />;
       case "finance":
         return <Finance {...commonProps} />;
@@ -68,7 +65,8 @@ function AppContent() {
 
   return (
     <div className="App min-h-screen bg-poloniex-section text-poloniex-text">
-      {activeTab === "dashboard" && (
+      {/* ✅ Hide header on Finance & Dashboard-triggered Trading */}
+      {!(activeTab === "finance" || activeTab === "tradeFromDashboard") && (
         <Header
           setShowSidebar={setShowSidebar}
           isAuthenticated={isAuthenticated}

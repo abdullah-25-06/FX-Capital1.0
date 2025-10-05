@@ -106,11 +106,15 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
             {[
               { icon: <Banknote size={24} />, label: "Recharge", action: () => setPage("recharge") },
               { icon: <ArrowUpRight size={24} />, label: "Withdrawal", action: () => setPage("withdrawal") },
-              { icon: <ReceiptText size={24} />, label: "Transaction", action: () => setPage("transaction") },
+              {
+                icon: <ReceiptText size={24} />,
+                label: "Transaction",
+                action: () => onNavigate && onNavigate("tradeFromDashboard"), // ✅ no Header Trading
+              },
               {
                 icon: <CandlestickChart size={24} />,
                 label: "Future Market",
-                action: () => onNavigate && onNavigate("finance"), // go to finance tab globally
+                action: () => onNavigate && onNavigate("finance"), // ✅ no Header Finance
               },
             ].map((btn, i) => (
               <button
@@ -191,10 +195,6 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
     <Recharge onBack={() => setPage("dashboard")} />
   ) : page === "withdrawal" ? (
     <Withdraw onClose={() => setPage("dashboard")} />
-  ) : page === "transaction" ? (
-    <Trading />
-  ) : page === "finance" ? (
-    <Finance />
   ) : null;
 };
 
