@@ -8,57 +8,54 @@ const Recharge = ({ onBack }) => {
 
   const rechargeOptions = [500, 2000, 5000, 10000, 50000];
 
-  const walletAddresses = [
-    { label: "USDT (TRC20)", value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd" },
-    { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
-    { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
-    { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
-  ];
-
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
       setSelectedFile(file);
-      console.log("Uploaded file:", file);
       alert(`Uploaded: ${file.name}`);
     }
   };
 
-  const removeFile = () => {
-    setSelectedFile(null);
-  };
+  const removeFile = () => setSelectedFile(null);
 
   const handleSubmit = () => {
     if (!amount || !selectedFile) {
       alert("Please select amount and upload an image!");
       return;
     }
-    console.log("Recharge submitted with amount:", amount);
-    console.log("Uploaded file:", selectedFile);
     alert(`Recharge request submitted: ${amount} USDT`);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0b1220] min-h-screen text-white font-sans overflow-y-auto pb-[calc(2rem+env(safe-area-inset-bottom))]">
+    <div className="fixed inset-0 z-50 bg-[#0A1A2F] min-h-screen text-white font-sans overflow-y-auto pb-[calc(6rem+env(safe-area-inset-bottom))]">
       {/* Header */}
-      <div className="flex items-center px-4 py-3 border-b border-blue-900">
-        <button onClick={onBack} className="text-gray-300 hover:text-white">
-          <ArrowLeft size={20} />
+      <div className="relative flex items-center border-b border-blue-500 pb-3 mb-6 px-4 pt-5">
+        <button
+          onClick={onBack}
+          className="absolute left-4 text-gray-300 hover:text-blue-400 transition"
+        >
+          <ArrowLeft size={22} />
         </button>
-        <h1 className="flex-1 text-center text-base font-medium">Recharge</h1>
-        <div className="w-6" /> {/* spacing */}
+        <h1 className="mx-auto text-lg font-semibold text-white tracking-wide">
+          Recharge
+        </h1>
       </div>
 
       {/* Wallet Addresses */}
-      <div className="px-4 mt-4 space-y-3">
-        {walletAddresses.map((item, idx) => (
+      <div className="space-y-3 px-4">
+        {[
+          { label: "USDT (TRC20)", value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd" },
+          { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
+          { label: "BTC", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
+          { label: "ETH", value: "0x05610e0d2b1dd573a367e358fd137fadc305caa4" },
+        ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-[#121c30] rounded-md px-3 py-2 flex justify-between items-center shadow-sm"
+            className="bg-[#10243D]/70 rounded-md px-3 py-2 flex justify-between items-center shadow-sm border border-blue-900/30"
           >
             <div>
               <p className="text-xs text-gray-400">{item.label}</p>
-              <p className="text-xs break-all">{item.value}</p>
+              <p className="text-xs break-all text-gray-200">{item.value}</p>
             </div>
             <button
               className="text-blue-400 text-xs px-2 py-1 rounded hover:bg-blue-500/20"
@@ -73,37 +70,38 @@ const Recharge = ({ onBack }) => {
         ))}
       </div>
 
-      {/* Recharge Amount */}
-      <div className="px-4 mt-6 space-y-2">
-        <p className="text-gray-400 text-xs">Recharge Amount (USDT)</p>
+      {/* Recharge Options */}
+      <div className="mt-6 px-4">
+        <p className="text-sm text-gray-300 mb-2">Recharge Amount (USDT)</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {rechargeOptions.map((value) => (
             <button
               key={value}
               onClick={() => setAmount(value)}
-              className={`py-2 rounded-md text-sm font-medium transition shadow-sm ${
+              className={`py-2 rounded-md text-sm font-medium transition shadow-md ${
                 amount === value
-                  ? "bg-blue-500 text-white"
-                  : "bg-[#121c30] text-gray-300 hover:bg-blue-500 hover:text-white"
+                  ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/30"
+                  : "bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white"
               }`}
             >
               {value}
             </button>
           ))}
         </div>
+
         <input
           type="number"
           placeholder="Or enter custom amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full p-2 mt-3 rounded border border-blue-900 bg-[#121c30] text-white text-sm placeholder-gray-400"
+          className="mt-3 w-full px-3 py-2 bg-gray-800 text-base rounded-md outline-none text-white placeholder-gray-400 border border-blue-900/40 focus:ring-1 focus:ring-blue-500"
         />
       </div>
 
       {/* Upload Proof */}
-      <div className="px-4 mt-6 space-y-2">
-        <p className="text-gray-400 text-xs">Upload Proof</p>
-        <label className="w-full max-h-52 sm:h-32 border-2 border-dashed border-blue-900 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 relative bg-[#121c30] transition-all duration-200">
+      <div className="mt-6 px-4">
+        <p className="text-sm text-gray-300 mb-2">Upload Proof</p>
+        <label className="w-full max-h-52 sm:h-32 border-2 border-dashed border-blue-700/60 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 relative bg-gray-900/40 transition-all duration-200">
           {selectedFile ? (
             <>
               <img
@@ -117,16 +115,16 @@ const Recharge = ({ onBack }) => {
                   e.stopPropagation();
                   removeFile();
                 }}
-                className="absolute top-1 right-1 bg-[#0b1220] text-white rounded-full p-1 hover:bg-red-500"
+                className="absolute top-1 right-1 bg-gray-800 text-white rounded-full p-1 hover:bg-red-500"
               >
                 <X size={16} />
               </button>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-2">
-              <UploadCloud size={32} className="text-gray-400" />
-              <span className="text-gray-400 text-sm text-center">
-                Click to upload
+            <div className="flex flex-col items-center justify-center gap-2 py-6">
+              <UploadCloud size={32} className="text-blue-400" />
+              <span className="text-blue-300 text-sm text-center">
+                Click to upload image
               </span>
             </div>
           )}
@@ -140,14 +138,16 @@ const Recharge = ({ onBack }) => {
       </div>
 
       {/* Submit Button */}
-      <div className="px-4 mt-6">
+      <div className="mt-8 px-4 flex justify-center">
         <button
           onClick={handleSubmit}
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white py-2 rounded text-sm font-medium"
+          className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-800/40 transition"
         >
           Submit
         </button>
       </div>
+
+      <div className="h-24"></div>
     </div>
   );
 };
