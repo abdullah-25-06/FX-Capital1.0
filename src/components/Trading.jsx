@@ -510,9 +510,9 @@ useEffect(()=>{ if(priceLineRef.current && price){ priceLineRef.current.applyOpt
 /* ---------------- UI ---------------- */
 return (
   <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col">
-    <h2 className="text-white text-base font-medium text-center mb-2">
-  OptionsTransaction
-</h2>
+<div className="flex items-center justify-center px-4 py-3   border-b border-blue-900 mb-4">
+  <h1 className="text-base font-medium text-white">OptionTransactions</h1>
+</div>
 
 
     {/* header */}

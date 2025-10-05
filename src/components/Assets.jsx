@@ -7,33 +7,30 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import Withdraw from "./Withdraw"; 
-import Recharge from "./Recharge";  // ✅ Import Recharge page
+import Withdraw from "./Withdraw";
+import Recharge from "./Recharge";
 
 const Assets = () => {
   const [activeTab, setActiveTab] = useState("position");
   const [showAssets, setShowAssets] = useState(true);
-  const [page, setPage] = useState("assets"); 
+  const [page, setPage] = useState("assets");
 
   // Withdraw Page
-  const renderWithdraw = () => (
-    <Withdraw onClose={() => setPage("assets")} />
-  );
+  const renderWithdraw = () => <Withdraw onClose={() => setPage("assets")} />;
 
-  // ✅ Recharge Page
-  const renderRecharge = () => (
-    <Recharge onBack={() => setPage("assets")} />
-  );
+  // Recharge Page
+  const renderRecharge = () => <Recharge onBack={() => setPage("assets")} />;
 
   // Assets Main Page
   const renderAssets = () => (
-    <div className="w-full min-h-screen bg-[#0a1a2f] flex flex-col font-sans">
-      <div className="w-full max-w-md mx-auto">
-        {/* Heading */}
-        <h2 className="text-white text-base font-medium text-center mb-2">
-          Available Assets
-        </h2>
+    <div className="fixed inset-0 z-50 bg-[#0a1a2f] min-h-screen text-white font-sans overflow-y-auto">
+      {/* Header — no back arrow */}
+      <div className="flex items-center justify-center px-4 py-3 border-b border-blue-900">
+        <h1 className="text-base font-medium">Available Assets</h1>
+      </div>
 
+      {/* Assets Card Section */}
+      <div className="w-full px-5 py-5">
         {/* Card */}
         <div className="bg-gradient-to-b from-[#fbe9d7] to-[#f7d6ad] w-full rounded-xl shadow p-4 text-black mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -78,7 +75,7 @@ const Assets = () => {
         <div className="flex justify-around text-center text-xs text-white mb-8">
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => setPage("recharge")}   // ✅ Recharge page call
+            onClick={() => setPage("recharge")}
           >
             <Wallet className="w-6 h-6 mb-1 text-[#c49a6c]" />
             <span>Recharge</span>
@@ -86,13 +83,13 @@ const Assets = () => {
 
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => setPage("withdraw")}   // ✅ Withdraw page call
+            onClick={() => setPage("withdraw")}
           >
             <ArrowDownUp className="w-6 h-6 mb-1 text-[#c49a6c]" />
             <span>Withdrawal/Transfer</span>
           </div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center cursor-pointer">
             <BarChart3 className="w-6 h-6 mb-1 text-[#c49a6c]" />
             <span>Futures Market</span>
           </div>
@@ -102,21 +99,21 @@ const Assets = () => {
         <div className="flex bg-[#2a2a2a] rounded-full p-1 mb-8">
           <button
             onClick={() => setActiveTab("position")}
-            className={`flex-1 py-2 rounded-full text-sm font-medium transition 
-              ${activeTab === "position"
+            className={`flex-1 py-2 rounded-full text-sm font-medium transition ${
+              activeTab === "position"
                 ? "bg-gradient-to-r from-[#fbe9d7] to-[#f7d6ad] text-black"
                 : "text-white"
-              }`}
+            }`}
           >
             Position
           </button>
           <button
             onClick={() => setActiveTab("history")}
-            className={`flex-1 py-2 rounded-full text-sm font-medium transition 
-              ${activeTab === "history"
+            className={`flex-1 py-2 rounded-full text-sm font-medium transition ${
+              activeTab === "history"
                 ? "bg-gradient-to-r from-[#fbe9d7] to-[#f7d6ad] text-black"
                 : "text-white"
-              }`}
+            }`}
           >
             History
           </button>

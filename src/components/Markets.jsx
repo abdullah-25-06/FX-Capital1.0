@@ -68,96 +68,88 @@ const Markets = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center pt- pb-4 font-sans">
-      
-      {/* Page Heading */}
-<h2 className="text-white text-base font-medium text-center mb-2">
-  TransactionQuote
-</h2>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 text-white font-sans">
+      {/* Header — same style as Withdraw (no back arrow) */}
+      <div className="flex items-center justify-center px-4 py-1 border-b border-blue-900">
+        <h1 className="text-base font-medium">Transaction Quote</h1>
+      </div>
 
-      <div className="w-full max-w-3xl space-y-3">
-        {/* Slim Wide Toggle Tabs */}
-        <div className="flex bg-gray-800 rounded-full p-1 w-full max-w-lg mx-auto shadow-inner">
-<button
-  onClick={() => setActiveTab("optional")}
-  className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
-    activeTab === "optional"
-      ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white"
-      : "text-gray-400 hover:text-white"
-  } font-sans`}
->
-  Optional
-</button>
-<button
-  onClick={() => setActiveTab("coin")}
-  className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
-    activeTab === "coin"
-      ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white"
-      : "text-gray-400 hover:text-white"
-  } font-sans`}
->
-  Coin
-</button>
+      {/* Main Content (reduced top padding) */}
+      <div className="flex flex-col items-center pt-2 pb-2">
+        <div className="w-full max-w-3xl space-y-3">
+          {/* Tabs */}
+          <div className="flex bg-gray-800 rounded-full p-1 w-full max-w-lg mx-auto shadow-inner">
+            <button
+              onClick={() => setActiveTab("optional")}
+              className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
+                activeTab === "optional"
+                  ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Optional
+            </button>
+            <button
+              onClick={() => setActiveTab("coin")}
+              className={`flex-1 px-8 py-1 rounded-full text-sm font-medium transition ${
+                activeTab === "coin"
+                  ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Coin
+            </button>
+          </div>
 
-        </div>
+          {/* Table */}
+          {activeTab === "coin" && (
+            <>
+              <div className="grid grid-cols-3 text-gray-400 text-sm font-semibold pl-3 pr-6 py-2 border-b border-gray-800">
+                <div>Trading Pair</div>
+                <div className="text-center">Status</div>
+                <div className="text-right">Latest Price</div>
+              </div>
 
-        {/* Table */}
-        {activeTab === "coin" && (
-          <>
-            {/* Heading */}
-            <div className="grid grid-cols-3 text-gray-400 text-sm font-semibold pl-3 pr-6 py-2 border-b border-gray-800 font-sans">
-              <div>Trading Pair</div>
-              <div className="text-center">Status</div>
-              <div className="text-right">Latest Price</div>
-            </div>
+              {tradingPairs.map((coin, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-3 items-center pl-3 pr-6 py-2 border-b border-gray-800 hover:bg-slate-800/30 transition"
+                >
+                  <div className="flex items-center space-x-2">
+                    <img src={coin.image} alt={coin.symbol} className="w-5 h-5 rounded-full" />
+                    <span className="text-white text-xs font-semibold">{coin.display}</span>
+                  </div>
 
-            {/* Rows */}
-            {tradingPairs.map((coin, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-3 items-center pl-3 pr-6 py-2 border-b border-gray-800 hover:bg-slate-800/30 transition font-sans"
-              >
-                {/* Trading Pair + Icon */}
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={coin.image}
-                    alt={coin.symbol}
-                    className="w-5 h-5 rounded-full"
-                  />
-                  <span className="text-white text-xs font-semibold">{coin.display}</span>
-                </div>
+                  <div className="flex justify-center">
+                    <span
+                      className={`px-2 py-1 rounded-md text-xs font-medium ${
+                        coin.status === "in transaction"
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-red-500/20 text-red-400"
+                      }`}
+                    >
+                      {coin.status}
+                    </span>
+                  </div>
 
-                {/* Status */}
-                <div className="flex justify-center">
-                  <span
-                    className={`px-2 py-1 rounded-md text-xs font-medium ${
-                      coin.status === "in transaction"
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-red-500/20 text-red-400"
+                  <div
+                    className={`text-sm font-bold text-right ${
+                      coin.status === "in transaction" ? "text-green-400" : "text-red-400"
                     }`}
                   >
-                    {coin.status}
-                  </span>
+                    {coin.price}
+                  </div>
                 </div>
+              ))}
+            </>
+          )}
 
-                {/* Latest Price */}
-                <div
-                  className={`text-sm font-bold text-right ${
-                    coin.status === "in transaction" ? "text-green-400" : "text-red-400"
-                  }`}
-                >
-                  {coin.price}
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-
-        {activeTab === "optional" && (
-          <div className="text-center text-gray-400 py-6 font-sans">
-            No optional data yet.
-          </div>
-        )}
+          {activeTab === "optional" && (
+            <div className="text-center text-gray-400 py-6">
+              No optional data yet.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
