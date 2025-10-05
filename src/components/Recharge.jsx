@@ -22,20 +22,20 @@ const Recharge = ({ onBack }) => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0A1A2F] w-full overflow-y-auto text-white font-sans px-4 py-4">
+    <div className="fixed inset-0 bg-[#0A1A2F] w-full overflow-y-auto text-white font-sans z-50">
       {/* Header */}
-      <div className="relative flex items-center border-b border-gray-700 pb-3 mb-5">
+      <div className="relative flex items-center border-b border-gray-700 pb-3 mb-6 px-4">
         <button
           onClick={onBack}
-          className="absolute left-0 text-gray-300 hover:text-blue-400 transition"
+          className="absolute left-0 text-gray-300 hover:text-blue-400 transition mt-4"
         >
           <ArrowLeft size={22} />
         </button>
-        <h1 className="mx-auto text-lg font-semibold">Recharge</h1>
+        <h1 className="mx-auto text-lg font-semibold mt-4">Recharge</h1>
       </div>
 
       {/* Wallet Addresses */}
-      <div className="space-y-3">
+      <div className="space-y-3 px-4">
         {[
           { label: "USDT (TRC20)", value: "bc1qk4jqh72lt9qslyafqfm804gpj5nl80emayvrzd" },
           { label: "USDT (ERC20)", value: "TUDyTymd4Zbv1fJs4VKcbbLLBNYhq6fy2k" },
@@ -64,7 +64,7 @@ const Recharge = ({ onBack }) => {
       </div>
 
       {/* Recharge Options */}
-      <div className="mt-6">
+      <div className="mt-6 px-4">
         <p className="text-sm text-gray-300 mb-2">Recharge Amount (USDT)</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {rechargeOptions.map((value) => (
@@ -92,7 +92,7 @@ const Recharge = ({ onBack }) => {
       </div>
 
       {/* Upload Proof */}
-      <div className="mt-6">
+      <div className="mt-6 px-4">
         <p className="text-sm text-gray-300 mb-2">Upload Proof</p>
         <label className="w-full max-h-52 sm:h-32 border-2 border-dashed border-gray-600 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 relative bg-gray-800/30 transition-all duration-200">
           {selectedFile ? (
@@ -131,7 +131,7 @@ const Recharge = ({ onBack }) => {
       </div>
 
       {/* Submit Button */}
-      <div className="mt-8 flex justify-center pb-8 sm:pb-18">
+      <div className="mt-8 px-4 flex justify-center pb-8 sm:pb-18">
         <button
           onClick={() => {
             if (!amount || !selectedFile) {
