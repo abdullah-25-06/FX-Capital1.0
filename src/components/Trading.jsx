@@ -534,7 +534,7 @@ return (
 
         {/* Dropdown list (professional with icon, status, and real-time price) */}
         {showDropdown && (
-          <div className="absolute top-16 left-0 w-[360px] max-h-72 overflow-y-auto bg-[#0b1220] border border-gray-700 rounded-lg shadow-xl z-50">
+          <div className="absolute top-16 left-0 w-[340px] max-h-72 overflow-y-auto bg-[#0b1220] border border-gray-700 rounded-lg shadow-xl z-50">
             {coins.map(c => {
               const lastPrice = coinPrices[c.symbol];
               const isSelected = selectedCoin === c.symbol;
