@@ -1,56 +1,42 @@
-// src/components/BackgroundAnimation.jsx
 import React from "react";
-import Particles from "react-tsparticles";
 
-const BackgroundAnimation = () => {
-  const coinImages = [
-    "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", // Bitcoin
-    "https://assets.coingecko.com/coins/images/279/large/ethereum.png", // Ethereum
-    "https://assets.coingecko.com/coins/images/325/large/Tether-logo.png", // USDT
-    "https://assets.coingecko.com/coins/images/271/large/cardano.png", // ADA
-    "https://assets.coingecko.com/coins/images/2/large/litecoin.png", // Litecoin
-  ];
+const coinImages = [
+  "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+  "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+  "https://assets.coingecko.com/coins/images/325/large/Tether-logo.png",
+  "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png",
+  "https://assets.coingecko.com/coins/images/5/large/dogecoin.png",
+];
 
-  const particleImages = coinImages.map((src) => ({
-    src,
-    width: 32,
-    height: 32,
-  }));
+export default function BackgroundAnimation() {
+  const coins = Array.from({ length: 15 }).map((_, i) => {
+    const img = coinImages[i % coinImages.length];
+    const left = Math.random() * 100;
+    const delay = Math.random() * 10;
+    const duration = 18 + Math.random() * 10;
+    const size = 45 + Math.random() * 35; // 👈 slightly bigger coins
+
+    return (
+      <img
+        key={i}
+        src={img}
+        alt="coin"
+        className="absolute opacity-80 animate-float rounded-full filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+        style={{
+          left: `${left}%`,
+          width: `${size}px`,
+          height: `${size}px`,
+          animationDelay: `${delay}s`,
+          animationDuration: `${duration}s`,
+          transformOrigin: "center",
+        }}
+      />
+    );
+  });
 
   return (
-    <Particles
-      className="absolute inset-0 z-0"
-      options={{
-        fullScreen: { enable: false }, // render inside parent div
-        fpsLimit: 60,
-        background: { color: "#0f0f1a" },
-        particles: {
-          number: { value: 50, density: { enable: true, area: 800 } },
-          shape: {
-            type: ["image", "circle"], // fallback circle if image fails
-            image: particleImages,
-          },
-          color: { value: ["#f2a900", "#3c3c3d", "#00d1ff"] },
-          opacity: { value: 0.8 },
-          size: { value: { min: 20, max: 40 } },
-          move: {
-            enable: true,
-            speed: 3,
-            direction: "bottom",
-            outModes: "out",
-          },
-        },
-        interactivity: {
-          events: {
-            onHover: { enable: true, mode: "repulse" },
-            onClick: { enable: true, mode: "push" },
-          },
-          modes: { repulse: { distance: 100 }, push: { quantity: 4 } },
-        },
-        detectRetina: true,
-      }}
-    />
+    <div className="absolute inset-0 overflow-hidden z-0 perspective-[800px]">
+      {coins}
+    </div>
   );
-};
-
-export default BackgroundAnimation;
+}
