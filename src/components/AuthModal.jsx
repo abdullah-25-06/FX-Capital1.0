@@ -43,6 +43,7 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
     setIsSubmitting(true);
     setErrors({});
     try {
+
       if (isLoginMode) await login(formData.email, formData.password);
       else await signup(formData.name, formData.email, formData.password);
       onSuccess();

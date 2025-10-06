@@ -1,29 +1,61 @@
 // Recharge.jsx
 import React, { useState } from "react";
 import { ArrowLeft, X, UploadCloud } from "lucide-react";
+import axios from "axios";
 
 const Recharge = ({ onBack }) => {
   const [amount, setAmount] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fileUrl, setFileURL] = useState(null)
 
   const rechargeOptions = [500, 2000, 5000, 10000, 50000];
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
-      setSelectedFile(file);
+      console.log("here")
+      try {
+        const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/image-upload`, { image: file }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        setSelectedFile(file);
+        setFileURL(res.data.data.url)
+        console.log("✅ Upload success:", res.data);
+      } catch (error) {
+        console.error("❌ Upload failed:", error);
+      }
       alert(`Uploaded: ${file.name}`);
     }
   };
 
   const removeFile = () => setSelectedFile(null);
 
-  const handleSubmit = () => {
-    if (!amount || !selectedFile) {
-      alert("Please select amount and upload an image!");
-      return;
+  const handleSubmit = async () => {
+    try {
+      if (!amount || !selectedFile) {
+        alert("Please select amount and upload an image!");
+        return;
+      }
+
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/wallet/recharge`, {
+        amountRecharged: amount, paymentUrl: fileUrl
+      }, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      alert(`Recharge request submitted: ${amount} USDT`);
+      setAmount(0)
+      setFileURL(null)
+      setSelectedFile(null)
+    } catch (error) {
+      alert("Recharge Failed")
     }
-    alert(`Recharge request submitted: ${amount} USDT`);
+
   };
 
   return (
@@ -82,11 +114,10 @@ const Recharge = ({ onBack }) => {
             <button
               key={value}
               onClick={() => setAmount(value)}
-              className={`py-2 rounded-md text-sm font-medium transition shadow-md ${
-                amount === value
-                  ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/30"
-                  : "bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white"
-              }`}
+              className={`py-2 rounded-md text-sm font-medium transition shadow-md ${amount === value
+                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/30"
+                : "bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white"
+                }`}
             >
               {value}
             </button>

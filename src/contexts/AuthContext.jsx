@@ -1,4 +1,5 @@
 // src/contexts/AuthContext.jsx
+import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Create context
@@ -14,13 +15,25 @@ export function AuthProvider({ children }) {
     if (saved) setUser(JSON.parse(saved));
   }, []);
 
-  const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+  const login = async (email, password) => {
+    try {
+      const data = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, {
+        email: email,
+        password: password
+      })
+      console.log(data)
+      localStorage.setItem("user", JSON.stringify(data.data));
+      localStorage.setItem("token",data.data.accessToken)
+      setUser(email);
+
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
   };
 
