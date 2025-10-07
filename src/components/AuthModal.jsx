@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
 import { FiX, FiMail, FiLock, FiUser } from "react-icons/fi";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import axios from "axios";
 
 const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) => {
   const [isLoginMode, setIsLoginMode] = useState(mode === "login");
@@ -11,7 +12,6 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
-
   const { login, signup } = useAuth();
 
   const validateForm = () => {
@@ -31,9 +31,8 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -43,11 +42,12 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
     setIsSubmitting(true);
     setErrors({});
     try {
+
       if (isLoginMode) await login(formData.email, formData.password);
       else await signup(formData.name, formData.email, formData.password);
       onSuccess();
     } catch (err) {
-      setErrors({ submit: err.message || "Something went wrong" });
+      setErrors({ submit: err.response?.data?.error || "Something went wrong" });
     } finally {
       setIsSubmitting(false);
     }
@@ -99,9 +99,8 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Enter full name"
-                      className={`w-full pl-10 bg-gray-800 border ${
-                        errors.name ? "border-red-500" : "border-gray-700"
-                      } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
+                      className={`w-full pl-10 bg-gray-800 border ${errors.name ? "border-red-500" : "border-gray-700"
+                        } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
                     />
                   </div>
                   {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
@@ -118,9 +117,8 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter email"
-                    className={`w-full pl-10 bg-gray-800 border ${
-                      errors.email ? "border-red-500" : "border-gray-700"
-                    } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
+                    className={`w-full pl-10 bg-gray-800 border ${errors.email ? "border-red-500" : "border-gray-700"
+                      } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
                   />
                 </div>
                 {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
@@ -136,9 +134,8 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Enter password"
-                    className={`w-full pl-10 bg-gray-800 border ${
-                      errors.password ? "border-red-500" : "border-gray-700"
-                    } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
+                    className={`w-full pl-10 bg-gray-800 border ${errors.password ? "border-red-500" : "border-gray-700"
+                      } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
                   />
                 </div>
                 {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
@@ -155,9 +152,8 @@ const AuthModal = ({ mode = "login", onClose, onSuccess, alwaysOpen = false }) =
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Confirm password"
-                      className={`w-full pl-10 bg-gray-800 border ${
-                        errors.confirmPassword ? "border-red-500" : "border-gray-700"
-                      } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
+                      className={`w-full pl-10 bg-gray-800 border ${errors.confirmPassword ? "border-red-500" : "border-gray-700"
+                        } text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ffea]`}
                     />
                   </div>
                   {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>}

@@ -7,12 +7,15 @@ import {
 } from "lucide-react";
 import Withdraw from "./Withdraw";
 import Recharge from "./Recharge";
+import axios from "axios";
 
 const Dashboard = ({ resetSignal, onNavigate }) => {
   const [page, setPage] = useState("dashboard");
   const [currentAd, setCurrentAd] = useState(0);
   const [prices, setPrices] = useState({});
   const [status, setStatus] = useState({});
+  const [amount, setAmount] = useState(0);
+
 
   const ads = [
     {
@@ -84,6 +87,20 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
     if (resetSignal) setPage("dashboard");
   }, [resetSignal]);
 
+  useEffect(() => {
+    async function getDetail() {
+      let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      setAmount(data.data.message.balance)
+      localStorage.setItem("balance", data.data.message.balance)
+
+    }
+    getDetail()
+  }, [])
+
   // 🏠 Dashboard main content
   const renderDashboard = () => (
     <div className="bg-[#0F172A] min-h-screen font-sans">
@@ -97,7 +114,7 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
 
         <div className="relative z-10 p-2 pt-2">
           <h2 className="text-xs text-gray-400 font-light mb-1">Total assets equivalent (USDT)</h2>
-          <p className="text-3xl font-sans text-white tracking-tight mb-3">944.32</p>
+          <p className="text-3xl font-sans text-white tracking-tight mb-3">{amount}</p>
 
           {/* Buttons */}
           <div className="grid grid-cols-4 gap-4 mt-2">
@@ -161,9 +178,8 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
                     <span>{coin.pair}</span>
                   </td>
                   <td
-                    className={`py-2 text-sm w-1/3 text-center font-light ${
-                      status[coin.symbol] === "In transaction" ? "text-green-400" : "text-red-400"
-                    }`}
+                    className={`py-2 text-sm w-1/3 text-center font-light ${status[coin.symbol] === "In transaction" ? "text-green-400" : "text-red-400"
+                      }`}
                   >
                     {status[coin.symbol] || "--"}
                   </td>
