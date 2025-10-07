@@ -64,9 +64,9 @@ const Header = ({ setShowSidebar }) => {
           </button>
         </div>
 
-        {/* Center: FX CAPITAL */}
+        {/* Center: CryptoNexia */}
         <h1 className="text-xl md:text-2xl font-extrabold tracking-wider text-white uppercase font-[Playfair_Display] z-30 relative">
-          FX <span className="text-gold">CAPITAL</span>
+          <span className="text-gold">CryptoGeniux</span>
         </h1>
 
         {/* Right: Language Selector */}
