@@ -33,7 +33,7 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
     {
       id: 3,
       title: "🎁 Referral Bonus",
-      content: "Earn 50% commission on every friend you refer to FX Capital",
+      content: "Earn 50% commission on every friend you refer to CryptoGeniux",
       bgColor: "bg-gradient-to-r from-green-800 to-green-600",
     },
   ];
@@ -157,7 +157,7 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
       {/* Coin Table */}
       <div>
         <h3 className="text-lg font-light mb-3 text-white p-2">
-          Trade these coins with FX Capital
+          Trade these coins with CryptoGeniux
         </h3>
         <div className="overflow-x-auto p-3">
           <table className="min-w-full border-collapse table-fixed">
