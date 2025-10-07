@@ -21,24 +21,54 @@ export function AuthProvider({ children }) {
         email: email,
         password: password
       })
-      console.log(data)
       localStorage.setItem("user", JSON.stringify(data.data));
-      localStorage.setItem("token",data.data.accessToken)
+      localStorage.setItem("token", data.data.accessToken)
       setUser(email);
 
     } catch (error) {
       console.log(error)
+      throw error;
+
     }
   };
 
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("balance");
     setUser(null);
   };
 
+  const signup = async (name, email, password) => {
+    try {
+      console.log(name, email, password)
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/user/create-user`,
+        {
+          email: email,
+          password: password,
+          userName: name
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("token", response.data.accessToken)
+      setUser(email);
+
+
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error.response?.data?.error || error.message);
+      throw error;
+    }
+
+  }
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, signup }}>
       {children}
     </AuthContext.Provider>
   );

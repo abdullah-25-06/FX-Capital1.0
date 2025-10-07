@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Wallet,
   ArrowDownUp,
@@ -9,11 +9,31 @@ import {
 } from "lucide-react";
 import Withdraw from "./Withdraw";
 import Recharge from "./Recharge";
+import axios from "axios";
 
 const Assets = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState("position");
   const [showAssets, setShowAssets] = useState(true);
   const [page, setPage] = useState("assets");
+  const [balance, setBalance] = useState(0)
+  const [revenue, setRevenue] = useState(0)
+  const [todayEarning, setTodayEarning] = useState(0)
+
+  useEffect(() => {
+    async function getDetail() {
+      let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      setBalance(data.data.message.balance)
+      setRevenue(data.data.message.revenue)
+      setTodayEarning(data.data.message.todayEarnings)
+      localStorage.setItem("balance", data.data.message.balance)
+      console.log(data)
+    }
+    getDetail()
+  }, [])
 
   // Withdraw Page
   const renderWithdraw = () => <Withdraw onClose={() => setPage("assets")} />;
@@ -28,7 +48,7 @@ const Assets = ({ onNavigate }) => {
       <div className="flex items-center justify-center px-5 py-2 border-b border-blue-900">
         <h1 className="text-base font-medium m-0">Available Assets</h1>
       </div>
- 
+
       {/* Assets Card Section */}
       <div className="w-full px-5 py-5">
         {/* Card */}
@@ -50,23 +70,19 @@ const Assets = ({ onNavigate }) => {
 
           {/* Total Assets */}
           <p className="text-2xl font-bold mb-4 flex items-center gap-2">
-            {showAssets ? "887.56" : "****"}
+            {showAssets ? balance : "****"}
             <span className="text-sm font-normal">USDT</span>
           </p>
 
           {/* Asset Stats */}
           <div className="grid grid-cols-3 text-xs">
             <div>
-              <p className="text-gray-600">Yesterday's income(USDT)</p>
-              <p className="font-semibold text-base">42.56</p>
-            </div>
-            <div>
-              <p className="text-gray-600">Current earnings(USDT)</p>
-              <p className="font-semibold text-base">0.00</p>
+              <p className="text-gray-600">Today's income(USDT)</p>
+              <p className="font-semibold text-base">{todayEarning}</p>
             </div>
             <div>
               <p className="text-gray-600">Total revenue(USDT)</p>
-              <p className="font-semibold text-base">42.56</p>
+              <p className="font-semibold text-base">{revenue}</p>
             </div>
           </div>
         </div>
@@ -105,21 +121,19 @@ const Assets = ({ onNavigate }) => {
         <div className="flex bg-[#2a2a2a] rounded-full p-1 mb-8">
           <button
             onClick={() => setActiveTab("position")}
-            className={`flex-1 py-2 rounded-full text-sm font-medium transition ${
-              activeTab === "position"
-                ? "bg-gradient-to-r from-[#fbe9d7] to-[#f7d6ad] text-black"
-                : "text-white"
-            }`}
+            className={`flex-1 py-2 rounded-full text-sm font-medium transition ${activeTab === "position"
+              ? "bg-gradient-to-r from-[#fbe9d7] to-[#f7d6ad] text-black"
+              : "text-white"
+              }`}
           >
             Position
           </button>
           <button
             onClick={() => setActiveTab("history")}
-            className={`flex-1 py-2 rounded-full text-sm font-medium transition ${
-              activeTab === "history"
-                ? "bg-gradient-to-r from-[#fbe9d7] to-[#f7d6ad] text-black"
-                : "text-white"
-            }`}
+            className={`flex-1 py-2 rounded-full text-sm font-medium transition ${activeTab === "history"
+              ? "bg-gradient-to-r from-[#fbe9d7] to-[#f7d6ad] text-black"
+              : "text-white"
+              }`}
           >
             History
           </button>
@@ -138,8 +152,8 @@ const Assets = ({ onNavigate }) => {
   return page === "assets"
     ? renderAssets()
     : page === "recharge"
-    ? renderRecharge()
-    : renderWithdraw();
+      ? renderRecharge()
+      : renderWithdraw();
 };
 
 export default Assets;

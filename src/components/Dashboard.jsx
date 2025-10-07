@@ -95,6 +95,8 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
         }
       })
       setAmount(data.data.message.balance)
+      localStorage.setItem("balance", data.data.message.balance)
+
     }
     getDetail()
   }, [])

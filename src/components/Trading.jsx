@@ -152,7 +152,7 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
           </div>
 
           <div className="flex justify-between text-xs text-gray-400">
-            <span>Balance: 887.56</span>
+            <span>Balance: {localStorage.getItem("balance")}</span>
             <span className="text-red-400">Handling fee: 0% (0 USDT)</span>
           </div>
         </div>
