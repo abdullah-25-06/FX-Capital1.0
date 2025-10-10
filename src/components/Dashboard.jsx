@@ -95,7 +95,7 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
         }
       })
       setAmount(data.data.message.balance)
-      localStorage.setItem("balance", data.data.message.balance)
+      localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
 
     }
     getDetail()
