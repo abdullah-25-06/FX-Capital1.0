@@ -94,7 +94,7 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
           Authorization: "Bearer " + localStorage.getItem("token")
         }
       })
-      setAmount(data.data.message.balance)
+      setAmount(Number(data.data.message.balance || 0).toFixed(2))
       localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
 
     }
