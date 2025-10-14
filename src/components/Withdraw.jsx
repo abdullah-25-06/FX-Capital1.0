@@ -290,7 +290,6 @@ const Withdraw = ({ onClose }) => {
           }
         }
       )])
-      console.log(walletResponse, cardResponse)
       const newAddr = walletResponse.data.message.bankDetails.map(elem => ({
         id: elem._id,
         address: elem.wallet_address
