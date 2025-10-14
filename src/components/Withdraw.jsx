@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, Trash2, Clock } from "lucide-react";
 import Record from "./Record"; // ✅ Record page import
+import axios from "axios";
 
 const Withdraw = ({ onClose }) => {
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [paymentPassword, setPaymentPassword] = useState("");
   const [activeTab, setActiveTab] = useState("wallet"); // "wallet" or "bank"
-
   // 🔹 Wallet states
   const [walletAddresses, setWalletAddresses] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState(null);
@@ -25,12 +25,21 @@ const Withdraw = ({ onClose }) => {
   const [records, setRecords] = useState([]);
   const [showRecord, setShowRecord] = useState(false);
 
+  const [fetchAgain, setFetchAgain] = useState(true)
+
   const availableAmount = 485.07;
   const handlingFee = 0;
 
+  useEffect(() => {
+    getWalletsAndBankCards()
+  }, [fetchAgain])
+
+
   // 🔹 Withdraw function
-  const handleWithdraw = () => {
-    if (!withdrawAmount || !paymentPassword) {
+  const handleWithdraw = async () => {
+    if (!withdrawAmount
+      // || !paymentPassword
+    ) {
       alert("Please fill in all fields!");
       return;
     }
@@ -42,58 +51,131 @@ const Withdraw = ({ onClose }) => {
       alert("Please select a bank card!");
       return;
     }
+    // /with-drawal/with-drawal-request
 
-    // ✅ Add record
-    const newRecord = {
-      id: Date.now(),
-      amount: withdrawAmount,
-      fee: handlingFee,
-      status: "Under review",
-      remark: "undefined",
-      date: new Date().toISOString().slice(0, 19).replace("T", " "),
-    };
-    setRecords([newRecord, ...records]);
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/with-drawal/with-drawal-request`, {
+        amount: withdrawAmount,
+        tokenId: activeTab === "wallet" ? selectedWallet : selectedCard,
+      }, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        }
+      })
+      alert(response.data.message.note)
+      await getDetail()
 
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401 || error.response.status === 403) {
+          localStorage.clear()
+          navigate("/login");
+        } else {
+          alert("Error fetching orders:")
+        }
+      } else {
+        console.error("Network or server error:", error.message);
+      }
+    }
     // ✅ Show record page directly
     setShowRecord(true);
   };
+  async function getDetail() {
+    let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    })
+    localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
 
+  }
   // 🔹 Wallet functions
-  const handleAddWalletAddress = () => {
+  const handleAddWalletAddress = async () => {
     if (!newWalletAddress) {
       alert("Please enter a wallet address!");
       return;
     }
-    const newAddress = { id: Date.now(), address: newWalletAddress };
-    setWalletAddresses([...walletAddresses, newAddress]);
-    setSelectedWallet(newAddress.id);
-    setNewWalletAddress("");
-    setShowWalletForm(false);
+    try {
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/with-drawal/save-wallet`, { walletAddress: newWalletAddress }, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+      setNewWalletAddress("");
+      setShowWalletForm(false);
+      setFetchAgain(prev => !prev)
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401 || error.response.status === 403) {
+          localStorage.clear()
+          navigate("/login");
+        } else {
+          alert("Error fetching orders:")
+        }
+      } else {
+        console.error("Network or server error:", error.message);
+      }
+    }
   };
 
-  const handleDeleteWallet = (id) => {
-    setWalletAddresses(walletAddresses.filter((w) => w.id !== id));
-    if (selectedWallet === id) setSelectedWallet(null);
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}/with-drawal/delete/${id}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
+      setFetchAgain(prev => !prev)
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401 || error.response.status === 403) {
+          localStorage.clear()
+          navigate("/login");
+        } else {
+          alert("Error fetching orders:")
+        }
+      } else {
+        console.error("Network or server error:", error.message);
+      }
+    }
+    return
   };
 
   // 🔹 Bank functions
-  const handleAddBankCard = () => {
+  const handleAddBankCard = async () => {
     if (!accountHolder || !bankName || !accountNumber) {
       alert("Please fill in all bank details!");
       return;
     }
-    const newCard = {
-      id: Date.now(),
-      accountHolder,
-      bankName,
-      accountNumber,
-    };
-    setBankCards([...bankCards, newCard]);
-    setSelectedCard(newCard.id);
-    setAccountHolder("");
-    setBankName("");
-    setAccountNumber("");
-    setShowBankForm(false);
+    try {
+      const cardPayload = {
+        "accountHolderName": accountHolder,
+        "bankName": bankName,
+        "accountNumber": accountNumber
+      }
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/with-drawal/save-card`, { ...cardPayload }, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+
+      setAccountHolder("");
+      setBankName("");
+      setAccountNumber("");
+      setShowBankForm(false);
+      setFetchAgain(prev => !prev)
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401 || error.response.status === 403) {
+          localStorage.clear()
+          navigate("/login");
+        } else {
+          alert("Error fetching orders:")
+        }
+      } else {
+        console.error("Network or server error:", error.message);
+      }
+    }
   };
 
   const handleDeleteCard = (id) => {
@@ -191,7 +273,41 @@ const Withdraw = ({ onClose }) => {
       </div>
     );
   }
+  const getWalletsAndBankCards = async () => {
+    try {
+      const [walletResponse, cardResponse] = await Promise.all([axios.get(
+        `${process.env.REACT_APP_BASE_URL}/with-drawal/get-wallet`,
+        {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        }
+      ), axios.get(
+        `${process.env.REACT_APP_BASE_URL}/with-drawal/get-card`,
+        {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        }
+      )])
+      const newAddr = walletResponse.data.message.bankDetails.map(elem => ({
+        id: elem._id,
+        address: elem.wallet_address
+      }));
 
+      const newCards = cardResponse.data.message.bankDetails.map(elem => ({
+        id: elem._id,
+        bankName: elem.bank_name,
+        accountHolder: elem.account_holder_name,
+        accountNumber: elem.account_number
+      }))
+
+      setWalletAddresses(newAddr);
+      setBankCards(newCards)
+    } catch (error) {
+      console.error("Failed to fetch wallets:", error);
+    }
+  };
   // 🔹 Main Page
   return (
     <div className="fixed inset-0 z-50 bg-[#0b1220] min-h-screen text-white font-sans">
@@ -224,17 +340,15 @@ const Withdraw = ({ onClose }) => {
 
           <button
             onClick={() => setActiveTab("wallet")}
-            className={`flex-1 z-10 text-[11px] font-medium flex items-center justify-center transition-colors ${
-              activeTab === "wallet" ? "text-white" : "text-gray-300"
-            }`}
+            className={`flex-1 z-10 text-[11px] font-medium flex items-center justify-center transition-colors ${activeTab === "wallet" ? "text-white" : "text-gray-300"
+              }`}
           >
             mentioned wallet address
           </button>
           <button
             onClick={() => setActiveTab("bank")}
-            className={`flex-1 z-10 text-[11px] font-medium flex items-center justify-center transition-colors ${
-              activeTab === "bank" ? "text-white" : "text-gray-300"
-            }`}
+            className={`flex-1 z-10 text-[11px] font-medium flex items-center justify-center transition-colors ${activeTab === "bank" ? "text-white" : "text-gray-300"
+              }`}
           >
             mentioned bank card
           </button>
@@ -260,11 +374,10 @@ const Withdraw = ({ onClose }) => {
                   {walletAddresses.map((wallet) => (
                     <div
                       key={wallet.id}
-                      className={`flex items-center justify-between p-2 rounded border cursor-pointer ${
-                        selectedWallet === wallet.id
-                          ? "border-blue-500 bg-[#1a2438]"
-                          : "border-blue-900 bg-[#121c30]"
-                      }`}
+                      className={`flex items-center justify-between p-2 rounded border cursor-pointer ${selectedWallet === wallet.id
+                        ? "border-blue-500 bg-[#1a2438]"
+                        : "border-blue-900 bg-[#121c30]"
+                        }`}
                     >
                       <div
                         onClick={() => setSelectedWallet(wallet.id)}
@@ -273,7 +386,7 @@ const Withdraw = ({ onClose }) => {
                         {wallet.address}
                       </div>
                       <button
-                        onClick={() => handleDeleteWallet(wallet.id)}
+                        onClick={() => handleDelete(wallet.id)}
                         className="ml-2 text-red-400 hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -307,11 +420,10 @@ const Withdraw = ({ onClose }) => {
                   {bankCards.map((card) => (
                     <div
                       key={card.id}
-                      className={`flex items-center justify-between p-2 rounded border cursor-pointer ${
-                        selectedCard === card.id
-                          ? "border-blue-500 bg-[#1a2438]"
-                          : "border-blue-900 bg-[#121c30]"
-                      }`}
+                      className={`flex items-center justify-between p-2 rounded border cursor-pointer ${selectedCard === card.id
+                        ? "border-blue-500 bg-[#1a2438]"
+                        : "border-blue-900 bg-[#121c30]"
+                        }`}
                     >
                       <div
                         onClick={() => setSelectedCard(card.id)}
@@ -325,7 +437,7 @@ const Withdraw = ({ onClose }) => {
                         </p>
                       </div>
                       <button
-                        onClick={() => handleDeleteCard(card.id)}
+                        onClick={() => handleDelete(card.id)}
                         className="ml-2 text-red-400 hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -357,7 +469,7 @@ const Withdraw = ({ onClose }) => {
             />
             <div className="flex flex-col items-end text-right text-xs">
               <span className="text-gray-400">
-                available {availableAmount.toFixed(2)} USDT
+                available {localStorage.getItem("balance")} USDT
               </span>
               <button
                 onClick={() => setWithdrawAmount(availableAmount)}
@@ -378,17 +490,17 @@ const Withdraw = ({ onClose }) => {
         </div>
 
         {/* Number of Accounts */}
-        <div>
+        {/* <div>
           <p className="mb-1 text-gray-400 text-xs">
             Number of accounts received
           </p>
           <div className="p-2 rounded border border-blue-900 bg-[#121c30] text-xs text-gray-200">
-            {withdrawAmount ? withdrawAmount : availableAmount}
+            {localStorage.getItem("balance")}
           </div>
-        </div>
+        </div> */}
 
         {/* Payment Password */}
-        <div>
+        {/* <div>
           <p className="mb-1 text-gray-400 text-xs">Current Payment Password</p>
           <input
             type="password"
@@ -397,7 +509,7 @@ const Withdraw = ({ onClose }) => {
             value={paymentPassword}
             onChange={(e) => setPaymentPassword(e.target.value)}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Submit Button */}

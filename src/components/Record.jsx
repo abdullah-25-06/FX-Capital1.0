@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import axios from "axios";
 
-const Record = ({ onClose, records }) => {
+const Record = ({ onClose }) => {
+  const [records, setRecords] = useState([])
+  useEffect(() => {
+    requestHistory()
+  }, [])
+  async function requestHistory() {
+    try {
+      const resp = await axios.get(`${process.env.REACT_APP_BASE_URL}/with-drawal/get-all-for-user`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      const formattedPayload = resp.data.message.allRequests.map((item) => ({
+        id: item.id,
+        amount: item.amount,
+        fee: 0,
+        status: item.status,
+        date: item.createdAt,
+      }))
+      setRecords(formattedPayload)
+    } catch (error) {
+
+    }
+  }
   return (
     <div className="fixed inset-0 z-50 bg-[#0b1220] text-white font-sans flex flex-col h-full">
       {/* Header */}
@@ -15,7 +39,7 @@ const Record = ({ onClose, records }) => {
 
       {/* Records List (scrollable area) */}
       <div className="overflow-y-auto px-4 py-3 space-y-3 text-sm"
-           style={{ height: "calc(100vh - 56px)", paddingBottom: "80px" }}>
+        style={{ height: "calc(100vh - 56px)", paddingBottom: "80px" }}>
         {records.length === 0 ? (
           <p className="text-center text-gray-400 mt-10">No records found</p>
         ) : (
@@ -28,13 +52,12 @@ const Record = ({ onClose, records }) => {
               <div className="flex justify-between items-center">
                 <p className="font-medium text-[13px]">Withdrawal</p>
                 <span
-                  className={`text-[11px] px-2 py-0.5 rounded ${
-                    rec.status === "Success"
-                      ? "bg-green-700 text-green-100"
-                      : rec.status === "Pending"
+                  className={`text-[11px] px-2 py-0.5 rounded ${rec.status === "Success"
+                    ? "bg-green-700 text-green-100"
+                    : rec.status === "Pending"
                       ? "bg-yellow-700 text-yellow-100"
                       : "bg-gray-700 text-gray-200"
-                  }`}
+                    }`}
                 >
                   {rec.status}
                 </span>
@@ -52,12 +75,12 @@ const Record = ({ onClose, records }) => {
                 <p>
                   Fee: <span className="text-gray-200">{rec.fee} USDT</span>
                 </p>
-                <p>
+                {/* <p>
                   Remark:{" "}
                   <span className="text-gray-200">
                     {rec.remark || "undefined"}
                   </span>
-                </p>
+                </p> */}
                 <p className="text-[11px] text-gray-500">{rec.date}</p>
               </div>
             </div>
