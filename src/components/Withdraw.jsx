@@ -279,18 +279,18 @@ const Withdraw = ({ onClose }) => {
         `${process.env.REACT_APP_BASE_URL}/with-drawal/get-wallet`,
         {
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('auth')
+            Authorization: 'Bearer ' + localStorage.getItem('token')
           }
         }
       ), axios.get(
         `${process.env.REACT_APP_BASE_URL}/with-drawal/get-card`,
         {
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('auth')
+            Authorization: 'Bearer ' + localStorage.getItem('token')
           }
         }
       )])
-
+      console.log(walletResponse, cardResponse)
       const newAddr = walletResponse.data.message.bankDetails.map(elem => ({
         id: elem._id,
         address: elem.wallet_address
