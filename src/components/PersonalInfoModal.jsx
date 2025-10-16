@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -5,9 +6,49 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [disable, setDisable] = useState(false)
   if (!isOpen) return null;
+  async function handleChangeForm() {
+    setDisable(true)
+    if (!currentPassword) {
+      alert("Please enter your current password.");
+      return
+    }
+    console.log(newPassword, confirmPassword)
+    if (newPassword !== confirmPassword) {
+      alert("New password and confirm password do not match.");
+      return
+    }
 
+    try {
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/user/update-user`, {
+        currentPassword,
+        newPassword
+      }, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+          "Content-Type": "application/json"
+        }
+      })
+      alert("Password changed successfully!")
+      onClose()
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401 || error.response.status === 403) {
+          localStorage.clear()
+          navigate("/login");
+        } else {
+          alert("Error fetching orders:")
+        }
+      } else {
+        console.error("Network or server error:", error.message);
+      }
+    }
+    setDisable(false)
+  }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -38,14 +79,14 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
             <label className="text-gray-400 text-sm">Name</label>
             <input
               type="text"
-              value={user?.name || ""}
+              value={localStorage.getItem("username") || ""}
               disabled
               className="w-full mt-1 px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none"
             />
           </div>
 
           {/* Account */}
-          <div>
+          {/* <div>
             <label className="text-gray-400 text-sm">Account</label>
             <input
               type="text"
@@ -53,7 +94,7 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
               disabled
               className="w-full mt-1 px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none"
             />
-          </div>
+          </div> */}
 
           {/* Current Password */}
           <div>
@@ -63,6 +104,7 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
                 type={showCurrent ? "text" : "password"}
                 placeholder="Please enter the current login password"
                 className="w-full mt-1 px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none pr-10"
+                onChange={e => setCurrentPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -82,6 +124,7 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
                 type={showNew ? "text" : "password"}
                 placeholder="Please enter a new login password"
                 className="w-full mt-1 px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none pr-10"
+                onChange={e => setNewPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -101,6 +144,7 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
                 type={showConfirm ? "text" : "password"}
                 placeholder="Please enter a new password to confirm"
                 className="w-full mt-1 px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none pr-10"
+                onChange={e => setConfirmPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -114,8 +158,11 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
         </div>
 
         {/* Submit Button */}
-        <div className="mt-6">
-          <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold rounded-lg hover:opacity-90 transition">
+        <div className="mt-6" onClick={handleChangeForm}>
+          <button
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold rounded-lg hover:opacity-90 transition"
+            disabled={disable}
+          >
             OK
           </button>
         </div>

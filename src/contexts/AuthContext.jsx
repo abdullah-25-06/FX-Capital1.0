@@ -23,6 +23,7 @@ export function AuthProvider({ children }) {
       })
       localStorage.setItem("user", JSON.stringify(data.data));
       localStorage.setItem("token", data.data.accessToken)
+      localStorage.setItem("username", data.data.username)
       setUser(email);
 
     } catch (error) {
