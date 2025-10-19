@@ -79,7 +79,7 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
           orderDuration: seconds,
           timeUnit: "SECONDS",
           amount: amt,
-          openingPrice: pair
+          openingPrice: price
         },
         {
           headers: {

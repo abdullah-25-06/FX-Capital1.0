@@ -27,7 +27,7 @@ const Withdraw = ({ onClose }) => {
 
   const [fetchAgain, setFetchAgain] = useState(true)
 
-  const availableAmount = 485.07;
+  const availableAmount = localStorage.getItem("balance") || 0;
   const handlingFee = 0;
 
   useEffect(() => {
