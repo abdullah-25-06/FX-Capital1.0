@@ -60,16 +60,28 @@ const computeMACD = (closes, times) => {
 
 /* ---------------- Order Modal ---------------- */
 const OrderModal = ({ show, onClose, price, direction, pair }) => {
-  const [selectedTime, setSelectedTime] = useState("180s");
+  const [selectedTime, setSelectedTime] = useState("120s");
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!show) return null;
 
   const handleOk = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     const amt = customAmount || selectedAmount;
-    const seconds = parseInt(selectedTime, 10); // parseInt("180s") => 180
-    // Pass order data back to parent (TradingExactRealtime)
+    const seconds = parseInt(selectedTime, 10);
+    if (!pair) alert("Trading pair is required")
+    if (!direction) alert("Direction is required")
+    if (!amt || isNaN(amt)) alert("Please enter a valid amount")
+    if (!seconds) alert("Please select a valid time duration")
+    if (!price) alert("Current price is unavailable")
+    if (!price || !direction || !pair || !amt || isNaN(amt) || !seconds) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/order-set/create-order`,
@@ -79,7 +91,7 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
           orderDuration: seconds,
           timeUnit: "SECONDS",
           amount: amt,
-          openingPrice: pair
+          openingPrice: price
         },
         {
           headers: {
@@ -101,6 +113,9 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
     } catch (error) {
       console.error("Error creating order:", error);
       alert(error.message)
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -142,7 +157,7 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
           <div>
             <p className="text-xs text-gray-300 mb-1">Amount</p>
             <div className="grid grid-cols-3 gap-1 mb-1">
-              {[500, 2000, 5000, 10000, 50000, 100000, "All"].map((amt) => (
+              {[500, 2000, 5000, 10000, 50000, 100000].map((amt) => (
                 <button key={amt} onClick={() => { setSelectedAmount(amt); setCustomAmount(""); }} className={`py-1.5 rounded-lg border text-xs transition ${selectedAmount === amt ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30" : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"}`}>
                   {amt === "All" ? "All" : `$${amt}`}
                 </button>
@@ -159,7 +174,15 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
 
         <div className="flex border-t border-gray-700">
           <button onClick={() => onClose && onClose(null)} className="flex-1 py-1.5 text-gray-400 bg-[#1e293b] hover:bg-[#2d3b50] rounded-bl-xl text-xs">Cancel</button>
-          <button onClick={handleOk} className="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-br-xl font-semibold text-white text-xs">OK</button>
+          <button
+            onClick={handleOk}
+            disabled={isLoading}
+            className={`flex-1 py-1.5 rounded-br-xl font-semibold text-white text-xs 
+    ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+          >
+            {isLoading ? "Processing..." : "OK"}
+          </button>
+
         </div>
       </div>
     </div>
