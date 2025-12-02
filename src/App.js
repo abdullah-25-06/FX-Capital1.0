@@ -13,9 +13,19 @@ import AboutUs from "./components/AboutUs";
 import AuthModal from "./components/AuthModal";
 import Sidebar from "./components/Sidebar";
 import BackgroundAnimation from "./components/BackgroundAnimation";
+import ResetPassword from "./ResetPassword";
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const initialTab = (() => {
+    const params = new URLSearchParams(window.location.search);
+    if (window.location.pathname.includes("reset-password") || params.get("token")) {
+      return "reset-password";
+    }
+    return "dashboard";
+  })();
+
+  const [activeTab, setActiveTab] = useState(initialTab);
+
   const [showSidebar, setShowSidebar] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
@@ -23,25 +33,29 @@ function AppContent() {
 
   const { isAuthenticated, user, logout } = useAuth();
 
-  // --- LOGIN SCREEN WITH ANIMATION ---
   if (!isAuthenticated) {
+
+    if (activeTab === "reset-password") {
+      return (
+        <div className="relative min-h-screen bg-poloniex-dark overflow-hidden">
+          <BackgroundAnimation />
+          <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+            <ResetPassword />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="relative min-h-screen bg-poloniex-dark overflow-hidden">
-        {/* Animated coins background */}
         <BackgroundAnimation />
-
-        {/* Auth modal on top */}
         <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-          <AuthModal
-            mode="login"
-            onClose={() => {}}
-            onSuccess={() => setActiveTab("dashboard")}
-            alwaysOpen={true} // cannot close until login
-          />
+          <AuthModal mode="login" onClose={() => { }} onSuccess={() => setActiveTab("dashboard")} alwaysOpen={true} />
         </div>
       </div>
     );
   }
+
 
   // --- Handle tab navigation ---
   const handleNavigation = (tab) => {
@@ -72,6 +86,7 @@ function AppContent() {
       case "assets": return <Assets {...commonProps} />;
       case "settings": return <Settings {...commonProps} />;
       case "aboutus": return <AboutUs onBack={() => handleNavigation("dashboard")} />;
+      case "reset-password": return <ResetPassword />;
       default: return <Dashboard {...commonProps} />;
     }
   };

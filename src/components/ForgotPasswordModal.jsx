@@ -13,15 +13,17 @@ export default function ForgotPasswordModal({ onClose }) {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await fetch(`${process.env.REACT_APP_BASE_URL}/user/forgot-password/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      if (!res.ok) throw new Error((await res.json()).message || "Error");
+      if (!res.ok) throw new Error((await res.json()).error || "Error");
       setStatus("sent");
     } catch (err) {
       setStatus("error");
+      console.log(err)
+      alert(err.message)
       setError(err.message || "Something went wrong");
     }
   };
