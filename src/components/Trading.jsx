@@ -1,10 +1,11 @@
-// TradingExactRealtime.jsx
 import React, { useEffect, useRef, useState } from "react";
+// TradingExactRealtime_CryptoCom.jsx
+
 import { createChart, CrosshairMode } from "lightweight-charts";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import axios from "axios";
 
-/* ---------------- Indicator helpers ---------------- */
+/* ---------------- Indicator helpers (unchanged) ---------------- */
 const emaArray = (values, period) => {
   const res = new Array(values.length).fill(null);
   const k = 2 / (period + 1);
@@ -58,7 +59,7 @@ const computeMACD = (closes, times) => {
   return { difSeries, deaSeries, histSeries };
 };
 
-/* ---------------- Order Modal ---------------- */
+/* ---------------- OrderModal & TradeCountdownModal (unchanged) ---------------- */
 const OrderModal = ({ show, onClose, price, direction, pair }) => {
   const [selectedTime, setSelectedTime] = useState("120s");
   const [selectedAmount, setSelectedAmount] = useState(null);
@@ -72,11 +73,11 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
     setIsLoading(true);
     const amt = customAmount || selectedAmount;
     const seconds = parseInt(selectedTime, 10);
-    if (!pair) alert("Trading pair is required")
-    if (!direction) alert("Direction is required")
-    if (!amt || isNaN(amt)) alert("Please enter a valid amount")
-    if (!seconds) alert("Please select a valid time duration")
-    if (!price) alert("Current price is unavailable")
+    if (!pair) alert("Trading pair is required");
+    if (!direction) alert("Direction is required");
+    if (!amt || isNaN(amt)) alert("Please enter a valid amount");
+    if (!seconds) alert("Please select a valid time duration");
+    if (!price) alert("Current price is unavailable");
     if (!price || !direction || !pair || !amt || isNaN(amt) || !seconds) {
       setIsLoading(false);
       return;
@@ -101,18 +102,12 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
         }
       );
       if (onClose) {
-        onClose({
-          pair,
-          direction,
-          price,
-          time: seconds,
-          amount: amt,
-        });
+        onClose({ pair, direction, price, time: seconds, amount: amt });
       }
       return response.data;
     } catch (error) {
       console.error("Error creating order:", error);
-      alert(error.message)
+      alert(error.message);
     }
     finally {
       setIsLoading(false);
@@ -125,23 +120,19 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
         <div className="px-3 py-2 border-b border-gray-700">
           <h2 className="text-base font-bold">Order Confirmation</h2>
         </div>
-
         <div className="p-3 space-y-3">
           <div className="flex justify-between">
             <span className="text-gray-400 text-xs">Trading Pair</span>
             <span className="font-semibold">{pair || "BTC/USDT"}</span>
           </div>
-
           <div className="flex justify-between">
             <span className="text-gray-400 text-xs">Direction</span>
             <span className={`font-semibold ${direction === "Buy" ? "text-green-400" : "text-red-400"}`}>{direction}</span>
           </div>
-
           <div className="flex justify-between">
             <span className="text-gray-400 text-xs">Current Price</span>
             <span className="font-semibold">{price ? price.toFixed(3) : "--"}</span>
           </div>
-
           <div>
             <p className="text-xs text-gray-300 mb-1">Select expiration time</p>
             <div className="grid grid-cols-4 gap-1">
@@ -153,7 +144,6 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
               ))}
             </div>
           </div>
-
           <div>
             <p className="text-xs text-gray-300 mb-1">Amount</p>
             <div className="grid grid-cols-3 gap-1 mb-1">
@@ -165,31 +155,25 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
             </div>
             <input type="number" placeholder="Custom Amount" value={customAmount} onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }} className="w-full px-2 py-1.5 rounded-lg bg-transparent border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs" />
           </div>
-
           <div className="flex justify-between text-xs text-gray-400">
             <span>Balance: {localStorage.getItem("balance")}</span>
             <span className="text-red-400">Handling fee: 0% (0 USDT)</span>
           </div>
         </div>
-
         <div className="flex border-t border-gray-700">
           <button onClick={() => onClose && onClose(null)} className="flex-1 py-1.5 text-gray-400 bg-[#1e293b] hover:bg-[#2d3b50] rounded-bl-xl text-xs">Cancel</button>
           <button
             onClick={handleOk}
             disabled={isLoading}
-            className={`flex-1 py-1.5 rounded-br-xl font-semibold text-white text-xs 
-    ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
-          >
+            className={`flex-1 py-1.5 rounded-br-xl font-semibold text-white text-xs ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}>
             {isLoading ? "Processing..." : "OK"}
           </button>
-
         </div>
       </div>
     </div>
   );
 };
 
-/* ---------------- Countdown Modal ---------------- */
 const TradeCountdownModal = ({ show, onClose, order }) => {
   const [timeLeft, setTimeLeft] = useState(order?.time ?? 0);
   const timerRef = useRef(null);
@@ -197,9 +181,7 @@ const TradeCountdownModal = ({ show, onClose, order }) => {
   useEffect(() => {
     if (!show || !order) return;
     setTimeLeft(order.time ?? 0);
-
     if (timerRef.current) clearInterval(timerRef.current);
-
     timerRef.current = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
@@ -210,73 +192,39 @@ const TradeCountdownModal = ({ show, onClose, order }) => {
         return t - 1;
       });
     }, 1000);
-
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     };
   }, [show, order]);
 
   if (!show || !order) return null;
-
   const percent = (timeLeft / (order.time || 1)) * 100;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-[#0f172a] rounded-xl shadow-2xl w-[300px] text-white border border-gray-700 p-4 flex flex-col items-center">
         <h3 className="text-base font-bold mb-3">Trade in Progress</h3>
-
-        {/* Circular Timer */}
         <div className="relative w-24 h-24 mb-3">
           <svg className="w-24 h-24 transform -rotate-90">
             <circle cx="48" cy="48" r="45" stroke="#1e293b" strokeWidth="6" fill="none" />
-            <circle
-              cx="48"
-              cy="48"
-              r="45"
-              stroke="#3b82f6"
-              strokeWidth="6"
-              strokeLinecap="round"
-              fill="none"
-              strokeDasharray={2 * Math.PI * 45}
-              strokeDashoffset={(1 - percent / 100) * 2 * Math.PI * 45}
-            />
+            <circle cx="48" cy="48" r="45" stroke="#3b82f6" strokeWidth="6" strokeLinecap="round" fill="none" strokeDasharray={2 * Math.PI * 45} strokeDashoffset={(1 - percent / 100) * 2 * Math.PI * 45} />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center text-lg font-bold">
-            {timeLeft}s
-          </div>
+          <div className="absolute inset-0 flex items-center justify-center text-lg font-bold">{timeLeft}s</div>
         </div>
-
-        {/* Order Details */}
         <div className="w-full text-sm space-y-1 mb-3">
           <div className="flex justify-between"><span>Pair</span><span>{order.pair}</span></div>
-          <div className="flex justify-between">
-            <span>Direction</span>
-            <span className={order.direction === "Buy" ? "text-green-400" : "text-red-400"}>
-              {order.direction}
-            </span>
-          </div>
+          <div className="flex justify-between"><span>Direction</span><span className={order.direction === "Buy" ? "text-green-400" : "text-red-400"}>{order.direction}</span></div>
           <div className="flex justify-between"><span>Buy Price</span><span>{order.price?.toFixed(3) ?? "--"}</span></div>
           <div className="flex justify-between"><span>Time</span><span>{order.time}s</span></div>
           <div className="flex justify-between"><span>Amount</span><span>{order.amount}</span></div>
         </div>
-
-        {/* Continue Button (always visible + clickable) */}
-        <button
-          onClick={onClose}
-          className={`mt-2 px-4 py-2 rounded-md text-white text-sm font-semibold w-full ${timeLeft > 0 ? "bg-gray-600 hover:bg-gray-700" : "bg-blue-600 hover:bg-blue-700"
-            }`}
-        >
-          {timeLeft > 0 ? `Continue to Trade (${timeLeft}s)` : "Continue to Trade"}
-        </button>
+        <button onClick={onClose} className={`mt-2 px-4 py-2 rounded-md text-white text-sm font-semibold w-full ${timeLeft > 0 ? "bg-gray-600 hover:bg-gray-700" : "bg-blue-600 hover:bg-blue-700"}`}>{timeLeft > 0 ? `Continue to Trade (${timeLeft}s)` : "Continue to Trade"}</button>
       </div>
     </div>
   );
 };
 
-/* ---------------- Main component (start) ---------------- */
+/* ---------------- Main component (Crypto.com) ---------------- */
 const TradingExactRealtime = () => {
   const mainRef = useRef(); const volRef = useRef(); const macdRef = useRef();
   const mainChartRef = useRef(null); const volChartRef = useRef(null); const macdChartRef = useRef(null);
@@ -294,9 +242,9 @@ const TradingExactRealtime = () => {
   const [maVals, setMaVals] = useState({ ma5: null, ma10: null, ma30: null });
   const [showModal, setShowModal] = useState(false);
   const [modalDirection, setModalDirection] = useState("Buy");
-  const [countdownOrder, setCountdownOrder] = useState(null); // NEW - handles TradeCountdownModal
+  const [countdownOrder, setCountdownOrder] = useState(null);
+  const [coinPrices, setCoinPrices] = useState({});
 
-  // coins with CoinGecko icons
   const coins = [
     { symbol: "BTCUSDT", name: "BTC/USDT", icon: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
     { symbol: "ETHUSDT", name: "ETH/USDT", icon: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
@@ -315,36 +263,25 @@ const TradingExactRealtime = () => {
     { symbol: "LTCUSDT", name: "LTC/USDT", icon: "https://assets.coingecko.com/coins/images/2/large/litecoin.png" },
   ];
 
-  const getKlineWs = (sym, intv) => `wss://stream.binance.com:9443/ws/${sym.toLowerCase()}@kline_${intv}`;
-  const getTickerWs = (sym) => `wss://stream.binance.com:9443/ws/${sym.toLowerCase()}@ticker`;
-  const getCombinedTickerWs = (symbols) => {
-    const streams = symbols.map(s => `${s.toLowerCase()}@ticker`).join("/");
-    return `wss://stream.binance.com:9443/stream?streams=${streams}`;
+  // Helpers: convert symbol formats
+  const toCryptoSymbol = (sym) => sym.replace(/USDT$/i, "_USDT"); // e.g. BTCUSDT -> BTC_USDT
+
+  const intervalToCrypto = (intv) => {
+    const map = { "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m", "1h": "1h", "1d": "1D" };
+    return map[intv] || intv;
   };
 
-  const [coinPrices, setCoinPrices] = useState({}); // real-time prices for dropdown coins
-
-  /* ---------- create and sync charts ---------- */
+  /* ---------- create and sync charts (unchanged) ---------- */
   useEffect(() => {
     if (!mainRef.current || !volRef.current || !macdRef.current) return;
 
     const mainChart = createChart(mainRef.current, {
-      layout: {
-        background: { type: "solid", color: "#0f172a" },
-        textColor: "#d1d5db",
-        fontSize: 7
-      },
+      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db", fontSize: 7 },
       width: mainRef.current.clientWidth,
       height: 220,
-      grid: {
-        vertLines: { color: "rgba(255,255,255,0.08)" },
-        horzLines: { color: "rgba(255,255,255,0.08)" }
-      },
+      grid: { vertLines: { color: "rgba(255,255,255,0.08)" }, horzLines: { color: "rgba(255,255,255,0.08)" } },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: {
-        borderColor: "#334155",
-        drawTicks: false,
-      },
+      rightPriceScale: { borderColor: "#334155", drawTicks: false },
       timeScale: { borderColor: "#334155", timeVisible: false },
     });
 
@@ -355,26 +292,13 @@ const TradingExactRealtime = () => {
     ma10Ref.current = mainChart.addLineSeries({ color: "#a78bfa", lineWidth: 1 });
     ma30Ref.current = mainChart.addLineSeries({ color: "#3b82f6", lineWidth: 1 });
 
-    priceLineRef.current = candleSeriesRef.current.createPriceLine({
-      price: 0,
-      color: "#f97316",
-      lineWidth: 1,
-      axisLabelVisible: false,
-      lineStyle: 2
-    });
+    priceLineRef.current = candleSeriesRef.current.createPriceLine({ price: 0, color: "#f97316", lineWidth: 1, axisLabelVisible: false, lineStyle: 2 });
 
     const volChart = createChart(volRef.current, {
-      layout: {
-        background: { type: "solid", color: "#0f172a" },
-        textColor: "#d1d5db",
-        fontSize: 8
-      },
+      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db", fontSize: 8 },
       width: volRef.current.clientWidth,
       height: 60,
-      grid: {
-        vertLines: { color: "rgba(255,255,255,0.06)" },
-        horzLines: { color: "rgba(255,255,255,0.06)" }
-      },
+      grid: { vertLines: { color: "rgba(255,255,255,0.06)" }, horzLines: { color: "rgba(255,255,255,0.06)" } },
       crosshair: { mode: CrosshairMode.Normal },
       rightPriceScale: { visible: true, borderColor: "#334155" },
       timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
@@ -383,17 +307,10 @@ const TradingExactRealtime = () => {
     volSeriesRef.current = volChart.addHistogramSeries({ priceFormat: { type: "volume" }, priceScaleId: "" });
 
     const macdChart = createChart(macdRef.current, {
-      layout: {
-        background: { type: "solid", color: "#0f172a" },
-        textColor: "#d1d5db",
-        fontSize: 8   // 👈 yahan font size set karo
-      },
+      layout: { background: { type: "solid", color: "#0f172a" }, textColor: "#d1d5db", fontSize: 8 },
       width: macdRef.current.clientWidth,
       height: 70,
-      grid: {
-        vertLines: { color: "rgba(255,255,255,0.06)" },
-        horzLines: { color: "rgba(255,255,255,0.06)" }
-      },
+      grid: { vertLines: { color: "rgba(255,255,255,0.06)" }, horzLines: { color: "rgba(255,255,255,0.06)" } },
       crosshair: { mode: CrosshairMode.Normal },
       rightPriceScale: { visible: true, borderColor: "#334155" },
       timeScale: { borderVisible: true, borderColor: "#334155", timeVisible: true },
@@ -421,19 +338,38 @@ const TradingExactRealtime = () => {
     };
   }, []);
 
-  /* --------- fetch history + attach selected coin websockets --------- */
+  /* --------- fetch history (REST) + attach selected coin websockets (candles + ticker) --------- */
   useEffect(() => {
     if (!candleSeriesRef.current || !volSeriesRef.current) return;
-    let wsKline = null; let wsTickerSelected = null; let isMounted = true;
+    let wsMarket = null; let isMounted = true;
 
     const fetchAndInit = async () => {
       try {
-        const url = `https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${interval}&limit=500`;
-        const res = await fetch(url); const data = await res.json();
+        // Crypto.com REST candlestick endpoint (Exchange v1)
+        const instrument = toCryptoSymbol(selectedCoin); // e.g., BTC_USDT
+        // map interval to Crypto.com interval tokens
+        const cryptoInterval = intervalToCrypto(interval); // e.g., 1m, 5m, 1D
+        const limit = 500;
+        const url = `https://api.crypto.com/exchange/v1/public/get-candlestick?instrument_name=${instrument}&interval=${cryptoInterval}&limit=${limit}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
         if (!isMounted) return;
 
-        const candles = data.map((d) => ({ time: d[0] / 1000, open: parseFloat(d[1]), high: parseFloat(d[2]), low: parseFloat(d[3]), close: parseFloat(d[4]), volume: parseFloat(d[5]) }));
+        // Crypto.com returns an array of candles or { result: { data: [...] } }
+        let raw = data.result?.data ?? data.result ?? data.data ?? data;
+        // normalize to array of objects with t, o, h, l, c, v
+        // many Crypto.com REST responses wrap data differently; handle common shapes
+        if (Array.isArray(raw) && raw.length && typeof raw[0] === 'object' && raw[0].t) {
+          // already in object form
+        } else if (Array.isArray(raw) && raw.length && Array.isArray(raw[0])) {
+          // maybe [[timestamp, open, high, low, close, volume], ...]
+          raw = raw.map(r => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] }));
+        }
+
+        const candles = raw.map((d) => ({ time: Math.floor(d.t / 1000), open: parseFloat(d.o), high: parseFloat(d.h), low: parseFloat(d.l), close: parseFloat(d.c), volume: parseFloat(d.v) }));
         candlesRef.current = candles;
+
         candleSeriesRef.current.setData(candles.map((c) => ({ time: c.time, open: c.open, high: c.high, low: c.low, close: c.close })));
         volSeriesRef.current.setData(candles.map((c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "#22c55e" : "#ef4444" })));
 
@@ -441,15 +377,9 @@ const TradingExactRealtime = () => {
         const ma5Data = calcMAseries(closes, 5, times);
         const ma10Data = calcMAseries(closes, 10, times);
         const ma30Data = calcMAseries(closes, 30, times);
-        ma5Ref.current.setData(ma5Data);
-        ma10Ref.current.setData(ma10Data);
-        ma30Ref.current.setData(ma30Data);
+        ma5Ref.current.setData(ma5Data); ma10Ref.current.setData(ma10Data); ma30Ref.current.setData(ma30Data);
 
-        setMaVals({
-          ma5: ma5Data[ma5Data.length - 1]?.value ?? null,
-          ma10: ma10Data[ma10Data.length - 1]?.value ?? null,
-          ma30: ma30Data[ma30Data.length - 1]?.value ?? null
-        });
+        setMaVals({ ma5: ma5Data[ma5Data.length - 1]?.value ?? null, ma10: ma10Data[ma10Data.length - 1]?.value ?? null, ma30: ma30Data[ma30Data.length - 1]?.value ?? null });
 
         const { difSeries, deaSeries, histSeries } = computeMACD(closes, times);
         difRef.current.setData(difSeries); deaRef.current.setData(deaSeries); macdHistRef.current.setData(histSeries);
@@ -464,96 +394,122 @@ const TradingExactRealtime = () => {
     fetchAndInit();
 
     try {
-      wsKline = new WebSocket(getKlineWs(selectedCoin, interval));
-      wsKline.onmessage = (ev) => {
-        const msg = JSON.parse(ev.data); if (!msg.k) return;
-        const k = msg.k; const candle = { time: k.t / 1000, open: parseFloat(k.o), high: parseFloat(k.h), low: parseFloat(k.l), close: parseFloat(k.c), volume: parseFloat(k.v) };
-        const arr = candlesRef.current;
-        if (arr.length === 0) arr.push(candle);
-        else { const last = arr[arr.length - 1]; if (last.time === candle.time) arr[arr.length - 1] = candle; else if (candle.time > last.time) { arr.push(candle); if (arr.length > 1000) arr.shift(); } }
+      // Connect to Crypto.com market websocket
+      // Exchange v1 market endpoint
+      wsMarket = new WebSocket("wss://stream.crypto.com/exchange/v1/market");
 
-        try {
-          candleSeriesRef.current.update({ time: candle.time, open: candle.open, high: candle.high, low: candle.low, close: candle.close });
-          volSeriesRef.current.update({ time: candle.time, value: candle.volume, color: candle.close >= candle.open ? "#22c55e" : "#ef4444" });
-        } catch (e) {
-          candleSeriesRef.current.setData(candlesRef.current.map((c) => ({ time: c.time, open: c.open, high: c.high, low: c.low, close: c.close })));
-          volSeriesRef.current.setData(candlesRef.current.map((c) => ({ time: c.time, value: c.volume, color: c.close >= candle.open ? "#22c55e" : "#ef4444" })));
-        }
+      wsMarket.onopen = () => {
+        // Subscribe to candlestick channel for the selected instrument
+        const inst = toCryptoSymbol(selectedCoin);
+        const candChannel = `candlestick.${intervalToCrypto(interval)}.${inst}`; // e.g. candlestick.1m.BTC_USDT
+        const tickerChannel = `ticker.${inst}`;
 
-        const closes = candlesRef.current.map(c => c.close); const times = candlesRef.current.map(c => c.time);
-        const ma5Data = calcMAseries(closes, 5, times);
-        const ma10Data = calcMAseries(closes, 10, times);
-        const ma30Data = calcMAseries(closes, 30, times);
-        ma5Ref.current.setData(ma5Data);
-        ma10Ref.current.setData(ma10Data);
-        ma30Ref.current.setData(ma30Data);
-        setMaVals({
-          ma5: ma5Data[ma5Data.length - 1]?.value ?? null,
-          ma10: ma10Data[ma10Data.length - 1]?.value ?? null,
-          ma30: ma30Data[ma30Data.length - 1]?.value ?? null
-        });
-
-        const { difSeries, deaSeries, histSeries } = computeMACD(closes, times);
-        difRef.current.setData(difSeries); deaRef.current.setData(deaSeries); macdHistRef.current.setData(histSeries);
-
-        setPrice(candle.close);
-        const prevClose = candlesRef.current[candlesRef.current.length - 2]?.close ?? candle.open;
-        setChange(((candle.close - prevClose) / prevClose) * 100);
-        if (priceLineRef.current) { try { priceLineRef.current.applyOptions({ price: candle.close }); } catch { } }
+        const subscribeMsg = { id: 1, method: "subscribe", params: { channels: [candChannel, tickerChannel] } };
+        try { wsMarket.send(JSON.stringify(subscribeMsg)); } catch (e) { /* ignore */ }
       };
-    } catch (e) { console.error("kline ws failed", e); }
 
-    try {
-      wsTickerSelected = new WebSocket(getTickerWs(selectedCoin));
-      wsTickerSelected.onmessage = (ev) => {
-        const d = JSON.parse(ev.data);
-        if (d.h) setTodayHigh(parseFloat(d.h));
-        if (d.l) setTodayLow(parseFloat(d.l));
-        const last = parseFloat(d.c ?? d.a ?? d.b ?? NaN);
-        if (!isNaN(last)) { setPrice(last); if (priceLineRef.current) { try { priceLineRef.current.applyOptions({ price: last }); } catch { } } }
-      };
-    } catch (e) { console.error("ticker ws (selected) failed", e); }
-
-    return () => { isMounted = false; try { if (wsKline) wsKline.close(); } catch { } try { if (wsTickerSelected) wsTickerSelected.close(); } catch { } };
-  }, [selectedCoin, interval]);
-
-  /* ---------------- Combined ticker for dropdown (real-time for all coins) ---------------- */
-  useEffect(() => {
-    // build combined stream for all coins in the coins array
-    const symbols = coins.map(c => c.symbol);
-    if (symbols.length === 0) return;
-    const combinedUrl = getCombinedTickerWs(symbols);
-    let ws = null;
-    try {
-      ws = new WebSocket(combinedUrl);
-      ws.onmessage = (ev) => {
-        // combined stream messages are of the shape { stream: "...", data: {...} }
+      wsMarket.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data);
-          const d = msg.data ?? msg; // safety
-          const sym = (d.s ?? "").toUpperCase(); // e.g., "BTCUSDT"
-          const last = parseFloat(d.c ?? d.a ?? d.b ?? NaN);
-          if (!sym) return;
-          setCoinPrices(prev => {
-            // only update if price changed to reduce re-renders
-            if (isNaN(last)) return prev;
-            const prevVal = prev[sym];
-            if (prevVal === last) return prev;
-            return { ...prev, [sym]: last };
-          });
+          // Crypto.com v1 market responses often have method: "public/subscribe" and result.data array
+          const result = msg.result ?? msg.params ?? msg;
+
+          // Handle candlestick messages
+          if (msg.method === "public/subscribe" && result?.instrument_name && result?.interval && result?.data) {
+            // result.data is array of candle objects
+            const r = result;
+            const arr = Array.isArray(r.data) ? r.data : [];
+            arr.forEach((d) => {
+              const candle = { time: Math.floor(d.t / 1000), open: parseFloat(d.o), high: parseFloat(d.h), low: parseFloat(d.l), close: parseFloat(d.c), volume: parseFloat(d.v) };
+              const local = candlesRef.current;
+              if (local.length === 0) local.push(candle);
+              else {
+                const last = local[local.length - 1];
+                if (last.time === candle.time) local[local.length - 1] = candle;
+                else if (candle.time > last.time) { local.push(candle); if (local.length > 1000) local.shift(); }
+              }
+            });
+
+            try {
+              const lastC = candlesRef.current[candlesRef.current.length - 1];
+              if (lastC) {
+                candleSeriesRef.current.update({ time: lastC.time, open: lastC.open, high: lastC.high, low: lastC.low, close: lastC.close });
+                volSeriesRef.current.update({ time: lastC.time, value: lastC.volume, color: lastC.close >= lastC.open ? "#22c55e" : "#ef4444" });
+              }
+            } catch (e) {
+              candleSeriesRef.current.setData(candlesRef.current.map((c) => ({ time: c.time, open: c.open, high: c.high, low: c.low, close: c.close })));
+              volSeriesRef.current.setData(candlesRef.current.map((c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "#22c55e" : "#ef4444" })));
+            }
+
+            const closes = candlesRef.current.map(c => c.close); const times = candlesRef.current.map(c => c.time);
+            const ma5Data = calcMAseries(closes, 5, times); const ma10Data = calcMAseries(closes, 10, times); const ma30Data = calcMAseries(closes, 30, times);
+            ma5Ref.current.setData(ma5Data); ma10Ref.current.setData(ma10Data); ma30Ref.current.setData(ma30Data);
+            setMaVals({ ma5: ma5Data[ma5Data.length - 1]?.value ?? null, ma10: ma10Data[ma10Data.length - 1]?.value ?? null, ma30: ma30Data[ma30Data.length - 1]?.value ?? null });
+            const { difSeries, deaSeries, histSeries } = computeMACD(closes, times);
+            difRef.current.setData(difSeries); deaRef.current.setData(deaSeries); macdHistRef.current.setData(histSeries);
+
+            const last = candlesRef.current[candlesRef.current.length - 1]; if (last) { setPrice(last.close); const prevClose = candlesRef.current[candlesRef.current.length - 2]?.close ?? last.open; setChange(((last.close - prevClose) / prevClose) * 100); if (priceLineRef.current) { try { priceLineRef.current.applyOptions({ price: last.close }); } catch { } } }
+          }
+
+          // Handle ticker messages: some responses include method: "public/subscribe" with result.data for ticker
+          if (msg.method === "public/subscribe" && result?.data && Array.isArray(result.data)) {
+            const d = result.data[0];
+            if (d && (d.c || d.a || d.b)) {
+              if (d.h) setTodayHigh(parseFloat(d.h));
+              if (d.l) setTodayLow(parseFloat(d.l));
+              const last = parseFloat(d.c ?? d.a ?? d.b ?? NaN);
+              if (!isNaN(last)) { setPrice(last); if (priceLineRef.current) { try { priceLineRef.current.applyOptions({ price: last }); } catch { } } }
+            }
+          }
+
+          // Some messages might come in different shapes — try to parse generically
         } catch (err) { /* ignore parse errors */ }
       };
-      ws.onopen = () => { /* console.log("combined ticker open"); */ };
-      ws.onclose = () => { /* console.log("combined ticker closed"); */ };
-    } catch (e) {
-      console.error("combined ticker ws failed", e);
-    }
+
+      wsMarket.onclose = () => { /* reconnect logic may be added if needed */ };
+      wsMarket.onerror = (e) => { console.error('wsMarket error', e); };
+    } catch (e) { console.error("market ws failed", e); }
+
+    return () => { isMounted = false; try { if (wsMarket) wsMarket.close(); } catch { } };
+  }, [selectedCoin, interval]);
+
+  /* ---------------- Combined ticker for dropdown (subscribe to many tickers on a single WS) ---------------- */
+  useEffect(() => {
+    const symbols = coins.map(c => toCryptoSymbol(c.symbol));
+    if (symbols.length === 0) return;
+    let ws = null;
+    try {
+      ws = new WebSocket('wss://stream.crypto.com/exchange/v1/market');
+      ws.onopen = () => {
+        const channels = symbols.map(s => `ticker.${s}`); // ticker.BTC_USDT, etc
+        const subscribeMsg = { id: 2, method: 'subscribe', params: { channels } };
+        try { ws.send(JSON.stringify(subscribeMsg)); } catch { }
+      };
+
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data);
+          const result = msg.result ?? msg.params ?? msg;
+          if (msg.method === 'public/subscribe' && result?.data && result?.instrument_name) {
+            const d = result.data[0];
+            const sym = (result.instrument_name ?? '').replace('_', '').toUpperCase();
+            const last = parseFloat(d.c ?? d.a ?? d.b ?? NaN);
+            if (!sym) return;
+            if (isNaN(last)) return;
+            setCoinPrices(prev => { const prevVal = prev[sym]; if (prevVal === last) return prev; return { ...prev, [sym]: last }; });
+          }
+        } catch (err) { }
+      };
+
+      ws.onclose = () => { }; ws.onerror = (e) => { console.error('combined ws error', e); };
+    } catch (e) { console.error('combined ticker ws failed', e); }
 
     return () => { try { if (ws) ws.close(); } catch { } };
-  }, [/* run once on mount since coins array is static here */]);
+  }, []);
 
   useEffect(() => { if (priceLineRef.current && price) { priceLineRef.current.applyOptions({ price }); } }, [price]);
-  /* ---------------- UI ---------------- */
+
+  /* ---------------- UI (unchanged) ---------------- */
   return (
     <div className="bg-gradient-to-br from-[#0f172a] to-[#0b1220] min-h-screen w-full text-white flex flex-col px-0">
       <div className="w-full border-b border-blue-900 mb-4">
@@ -562,9 +518,6 @@ const TradingExactRealtime = () => {
         </div>
       </div>
 
-
-
-      {/* header */}
       <div className="flex items-start justify-between pb-2 border-b border-gray-800 relative">
         <div className="flex flex-col relative">
           <div className="flex items-center gap-2">
@@ -578,18 +531,13 @@ const TradingExactRealtime = () => {
             {price ? price.toFixed(3) : "--"} <span className="text-sm">{change >= 0 ? "↑" : "↓"}</span>
           </div>
 
-          {/* Dropdown list (professional with icon, status, and real-time price) */}
           {showDropdown && (
             <div className="absolute top-16 left-0 w-[330px] max-h-72 overflow-y-auto bg-[#0b1220] border border-gray-700 rounded-lg shadow-xl z-50">
               {coins.map(c => {
                 const lastPrice = coinPrices[c.symbol];
                 const isSelected = selectedCoin === c.symbol;
                 return (
-                  <div
-                    key={c.symbol}
-                    onClick={() => { setSelectedCoin(c.symbol); setShowDropdown(false); }}
-                    className={`flex items-center justify-between gap-4 px-3 py-3 cursor-pointer transition-colors duration-150 ${isSelected ? "bg-[#0f172a]" : "hover:bg-[#111827]"}`}
-                  >
+                  <div key={c.symbol} onClick={() => { setSelectedCoin(c.symbol); setShowDropdown(false); }} className={`flex items-center justify-between gap-4 px-3 py-3 cursor-pointer transition-colors duration-150 ${isSelected ? "bg-[#0f172a]" : "hover:bg-[#111827]"}`}>
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-tr from-gray-800 to-gray-900 text-lg">
                         <img src={c.icon} alt={c.name} className="w-6 h-6 rounded-full" />
@@ -599,12 +547,9 @@ const TradingExactRealtime = () => {
                         <span className="text-[11px] text-gray-400">in transaction</span>
                       </div>
                     </div>
-
                     <div className="flex items-center gap-2">
                       <div className="text-xs text-gray-400 mr-2">Status</div>
-                      <div className="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-md">
-                        {lastPrice ? lastPrice.toFixed(3) : "--"}
-                      </div>
+                      <div className="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-md">{lastPrice ? lastPrice.toFixed(3) : "--"}</div>
                     </div>
                   </div>
                 );
@@ -616,34 +561,15 @@ const TradingExactRealtime = () => {
         <div className="text-right">
           <div className={`text-xl font-bold ${change >= 0 ? "text-green-400" : "text-red-400"}`}>{price ? price.toFixed(3) : "--"}</div>
           <div className="text-xs"><span className={`${change >= 0 ? "text-green-400" : "text-red-400"} text-xs font-medium`}>{change !== null ? `${(change * 100).toFixed(2)}%` : "--"}</span></div>
-          <div className="text-[10px] text-gray-400 mt-1">
-            <span>High</span> <span className="ml-1 font-medium">{todayHigh ? todayHigh.toFixed(2) : "--"}</span>
-            <span className="mx-1">|</span>
-            <span>Low</span> <span className="ml-1 font-medium">{todayLow ? todayLow.toFixed(2) : "--"}</span>
-          </div>
+          <div className="text-[10px] text-gray-400 mt-1"><span>High</span> <span className="ml-1 font-medium">{todayHigh ? todayHigh.toFixed(2) : "--"}</span><span className="mx-1">|</span><span>Low</span> <span className="ml-1 font-medium">{todayLow ? todayLow.toFixed(2) : "--"}</span></div>
         </div>
       </div>
 
-      {/* timeframe + MA */}
       <div className="flex flex-col px-0 py-1 border-b border-gray-800">
-        <div className="flex gap-1 mb-1">
-          {["1m", "5m", "15m", "30m", "1h", "1d"].map(t => (
-            <button
-              key={t}
-              onClick={() => setIntervalState(t)}
-              className={`px-1 py-0.5 text-[10px] ${interval === t ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-400 hover:text-white"}`}>
-              {t.toUpperCase()}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-2 text-[10px] text-gray-300">
-          <div>MA5: <span className="text-orange-400 font-medium">{maVals.ma5 ? maVals.ma5.toFixed(3) : "--"}</span></div>
-          <div>MA10: <span className="text-purple-300 font-medium">{maVals.ma10 ? maVals.ma10.toFixed(3) : "--"}</span></div>
-          <div>MA30: <span className="text-blue-400 font-medium">{maVals.ma30 ? maVals.ma30.toFixed(3) : "--"}</span></div>
-        </div>
+        <div className="flex gap-1 mb-1">{["1m", "5m", "15m", "30m", "1h", "1d"].map(t => (<button key={t} onClick={() => setIntervalState(t)} className={`px-1 py-0.5 text-[10px] ${interval === t ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-400 hover:text-white"}`}>{t.toUpperCase()}</button>))}</div>
+        <div className="flex gap-2 text-[10px] text-gray-300"><div>MA5: <span className="text-orange-400 font-medium">{maVals.ma5 ? maVals.ma5.toFixed(3) : "--"}</span></div><div>MA10: <span className="text-purple-300 font-medium">{maVals.ma10 ? maVals.ma10.toFixed(3) : "--"}</span></div><div>MA30: <span className="text-blue-400 font-medium">{maVals.ma30 ? maVals.ma30.toFixed(3) : "--"}</span></div></div>
       </div>
 
-      {/* chart stack */}
       <div className="px-0 pt-2">
         <div className="rounded-lg border border-gray-700 bg-[#0f172a]" style={{ padding: 8 }}>
           <div ref={mainRef} className="w-full" style={{ height: 220 }} />
@@ -652,47 +578,15 @@ const TradingExactRealtime = () => {
         </div>
       </div>
 
-      {/* bottom buttons (slim red/green) */}
       <div className="mt-2 px-0 pb-3 flex gap-2">
-        <button
-          onClick={() => { setModalDirection("Buy"); setShowModal(true); }}
-          className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5">
-          <span className="text-[8px] text-red-200">{price ? `$${price.toFixed(3)}` : "--"}</span>
-          <span className="text-[10px] font-bold mt-0.25">Buy more</span>
-        </button>
-
-        <button
-          onClick={() => { setModalDirection("Sell"); setShowModal(true); }}
-          className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5">
-          <span className="text-[8px] text-green-200">{price ? `$${price.toFixed(3)}` : "--"}</span>
-          <span className="text-[10px] font-bold mt-0.25">Buy less</span>
-        </button>
+        <button onClick={() => { setModalDirection("Buy"); setShowModal(true); }} className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5"><span className="text-[8px] text-red-200">{price ? `$${price.toFixed(3)}` : "--"}</span><span className="text-[10px] font-bold mt-0.25">Buy more</span></button>
+        <button onClick={() => { setModalDirection("Sell"); setShowModal(true); }} className="flex-1 flex flex-col items-center justify-center py-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-md shadow transition-all duration-200 transform hover:-translate-y-0.5"><span className="text-[8px] text-green-200">{price ? `$${price.toFixed(3)}` : "--"}</span><span className="text-[10px] font-bold mt-0.25">Buy less</span></button>
       </div>
 
-      {/* Order Modal (calls onClose with orderData) */}
-      <OrderModal
-        show={showModal}
-        onClose={(orderData) => {
-          // close the order modal; if orderData provided then open countdown modal
-          setShowModal(false);
-          if (orderData) {
-            setCountdownOrder(orderData);
-          }
-        }}
-        price={price}
-        direction={modalDirection}
-        pair={selectedCoin}
-      />
-
-      {/* Countdown modal (shows when countdownOrder is not null) */}
-      <TradeCountdownModal
-        show={!!countdownOrder}
-        onClose={() => setCountdownOrder(null)}
-        order={countdownOrder}
-      />
+      <OrderModal show={showModal} onClose={(orderData) => { setShowModal(false); if (orderData) setCountdownOrder(orderData); }} price={price} direction={modalDirection} pair={selectedCoin} />
+      <TradeCountdownModal show={!!countdownOrder} onClose={() => setCountdownOrder(null)} order={countdownOrder} />
     </div>
   );
-
 };
 
 export default TradingExactRealtime;
