@@ -26,9 +26,15 @@ export function AuthProvider({ children }) {
       localStorage.setItem("username", data.data.username)
       setUser(email);
 
-    } catch (error) {
-      console.log(error)
-      throw error;
+    } catch (err) {
+      console.log(err)
+      if (err.response && err.response.status === 401) {
+        // token invalid or expired
+        localStorage.clear();
+        // redirect to login
+        window.location.href = "/?login=true";
+        return;
+      }
 
     }
   };
@@ -62,9 +68,14 @@ export function AuthProvider({ children }) {
 
 
       return response.data;
-    } catch (error) {
-      console.error('Error:', error.response?.data?.error || error.message);
-      throw error;
+    } catch (err) {
+      console.error('Error:', err.response?.data?.error || err.message);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem("token");
+
+        window.location.href = "/?login=true";
+        return;
+      }
     }
 
   }

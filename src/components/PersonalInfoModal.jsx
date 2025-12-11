@@ -35,13 +35,14 @@ const PersonalInfoModal = ({ isOpen, onClose, user }) => {
       })
       alert("Password changed successfully!")
       onClose()
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 401 || error.response.status === 403) {
-          localStorage.clear()
-          navigate("/login");
-        } else {
-          alert("Error fetching orders:")
+    } catch (err) {
+      if (err.response) {
+        if (err.response && err.response.status === 401) {
+          // token invalid or expired
+          localStorage.clear();
+          // redirect to login
+          window.location.href = "/?login=true";
+          return;
         }
       } else {
         console.error("Network or server error:", error.message);

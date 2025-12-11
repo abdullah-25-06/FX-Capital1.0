@@ -21,6 +21,9 @@ function AppContent() {
     if (window.location.pathname.includes("reset-password") || params.get("token")) {
       return "reset-password";
     }
+    else if (window.location.pathname.includes("login")) {
+      return "login";
+    }
     return "dashboard";
   })();
 
@@ -87,6 +90,7 @@ function AppContent() {
       case "settings": return <Settings {...commonProps} />;
       case "aboutus": return <AboutUs onBack={() => handleNavigation("dashboard")} />;
       case "reset-password": return <ResetPassword />;
+      case "login": return <AuthModal mode="login" onClose={() => setActiveTab("dashboard")} onSuccess={handleAuthSuccess} alwaysOpen={true} />;
       default: return <Dashboard {...commonProps} />;
     }
   };

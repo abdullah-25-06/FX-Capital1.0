@@ -22,8 +22,14 @@ const Record = ({ onClose }) => {
         date: item.createdAt,
       }))
       setRecords(formattedPayload)
-    } catch (error) {
-
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        // token invalid or expired
+        localStorage.clear();
+        // redirect to login
+        window.location.href = "/?login=true";
+        return;
+      }
     }
   }
   return (

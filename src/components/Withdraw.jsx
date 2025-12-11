@@ -81,13 +81,22 @@ const Withdraw = ({ onClose }) => {
     setShowRecord(true);
   };
   async function getDetail() {
-    let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token")
+    try {
+      let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        // token invalid or expired
+        localStorage.clear();
+        // redirect to login
+        window.location.href = "/?login=true";
+        return;
       }
-    })
-    localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
-
+    }
   }
   // 🔹 Wallet functions
   const handleAddWalletAddress = async () => {
@@ -306,6 +315,13 @@ const Withdraw = ({ onClose }) => {
       setBankCards(newCards)
     } catch (error) {
       console.error("Failed to fetch wallets:", error);
+    }
+    if (error.response && error.response.status === 401) {
+      // token invalid or expired
+      localStorage.clear();
+      // redirect to login
+      window.location.href = "/?login=true";
+      return;
     }
   };
   // 🔹 Main Page

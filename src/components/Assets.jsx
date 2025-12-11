@@ -38,6 +38,14 @@ const Assets = ({ onNavigate }) => {
         localStorage.setItem("balance", data.data.message.balance);
       } catch (err) {
         console.error("Error fetching wallet details:", err);
+        if (err.response && err.response.status === 401) {
+          // token invalid or expired
+          localStorage.clear();
+
+          // redirect to login
+          window.location.href = "/?login=true";
+          return;
+        }
       }
     }
     getDetail();
@@ -86,6 +94,13 @@ const Assets = ({ onNavigate }) => {
         }
       } catch (err) {
         console.error("Error fetching wallet details:", err);
+        if (err.response && err.response.status === 401) {
+          // token invalid or expired
+          localStorage.clear();
+          // redirect to login
+          window.location.href = "/?login=true";
+          return;
+        }
       }
     }
     getDetail();

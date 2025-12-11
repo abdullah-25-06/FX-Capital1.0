@@ -52,8 +52,15 @@ const Recharge = ({ onBack }) => {
       setAmount(0)
       setFileURL(null)
       setSelectedFile(null)
-    } catch (error) {
-      alert("Recharge Failed")
+    } catch (err) {
+
+      if (err.response && err.response.status === 401) {
+        // token invalid or expired
+        localStorage.clear();
+        // redirect to login
+        window.location.href = "/?login=true";
+        return;
+      }
     }
 
   };

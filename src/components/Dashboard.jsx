@@ -89,14 +89,24 @@ const Dashboard = ({ resetSignal, onNavigate }) => {
 
   useEffect(() => {
     async function getDetail() {
-      let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      })
-      setAmount(Number(data.data.message.balance || 0).toFixed(2))
-      localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
+      try {
+        let data = await axios.get(`${process.env.REACT_APP_BASE_URL}/wallet/details`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token")
+          }
+        })
+        setAmount(Number(data.data.message.balance || 0).toFixed(2))
+        localStorage.setItem("balance", Number(data.data.message.balance || 0).toFixed(2))
+      } catch (err) {
+        console.error("Error fetching wallet details:", err);
+        if (err.response && err.response.status === 401) {
 
+          localStorage.clear();
+          // redirect to login
+          window.location.href = "/login";
+          return;
+        }
+      }
     }
     getDetail()
   }, [])

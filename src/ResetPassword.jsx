@@ -37,6 +37,12 @@ export default function ResetPassword() {
     } catch (err) {
       setStatus("error");
       setError(err.message || "Reset failed.");
+      if (err.response && err.response.status === 401) {
+        localStorage.clear();
+
+        window.location.href = "/?login=true";
+        return;
+      }
     }
   };
 

@@ -105,9 +105,16 @@ const OrderModal = ({ show, onClose, price, direction, pair }) => {
         onClose({ pair, direction, price, time: seconds, amount: amt });
       }
       return response.data;
-    } catch (error) {
-      console.error("Error creating order:", error);
-      alert(error.message);
+    } catch (err) {
+      console.error("Error creating order:", err);
+      if (err.response && err.response.status === 401) {
+        // token invalid or expired
+        localStorage.clear();
+
+        // redirect to login
+        window.location.href = "/?login=true";
+        return;
+      }
     }
     finally {
       setIsLoading(false);
